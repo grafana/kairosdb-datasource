@@ -1,0 +1,21 @@
+{
+  "pluginType": "datasource",
+  "name": "KairosDB",
+
+  "type": "kairosdb",
+  "serviceName": "KairosDBDatasource",
+
+  "module": "plugins/kairosdb/datasource",
+
+  "partials": {
+    "config": "public/plugins/kairosdb/partials/config.html"
+  },
+
+  "staticRoot": {
+    "url": "kairosdb",
+    "path": "."
+  },
+
+  "metrics": true,
+  "annotations": false
+}
