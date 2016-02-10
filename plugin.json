@@ -1,7 +1,8 @@
 {
+  "id": "datasource-plugin-kairosdb",
   "pluginType": "datasource",
   "name": "KairosDB",
-
+  
   "type": "kairosdb",
   "serviceName": "KairosDBDatasource",
 
