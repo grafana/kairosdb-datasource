@@ -26,6 +26,11 @@
       "name": "Raintank Inc.",
       "url": "http://raintank.io"
     },
+    "keywords": ["kairosdb", "cassandra"],
+    "logos": {
+      "small": "img/kairosdb_logo_small.png",
+      "large": "img/kairosdb_logo_large.png"
+    },
     "version": "0.9.0",
     "updated": "2016-02-10"
   },
