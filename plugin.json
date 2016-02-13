@@ -2,7 +2,7 @@
   "id": "datasource-plugin-kairosdb",
   "pluginType": "datasource",
   "name": "KairosDB",
-  
+
   "type": "kairosdb",
   "serviceName": "KairosDBDatasource",
 
@@ -18,5 +18,20 @@
   },
 
   "metrics": true,
-  "annotations": false
+  "annotations": false,
+
+  "info": {
+    "description": "datasource plugin for KairosDB",
+    "author": {
+      "name": "Raintank Inc.",
+      "url": "http://raintank.io"
+    },
+    "version": "0.9.0",
+    "updated": "2016-02-10"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "2.6.x",
+    "plugins": [ ]
+  }
 }
