@@ -1,50 +1,18 @@
-<div class="tight-form">
-	<ul class="tight-form-list pull-right">
-		<li class="tight-form-item small" ng-show="target.datasource">
-			<em>{{target.datasource}}</em>
-		</li>
-		<li class="tight-form-item">
-			<div class="dropdown">
-				<a  class="pointer dropdown-toggle" data-toggle="dropdown" tabindex="1">
-					<i class="fa fa-bars"></i>
-				</a>
-				<ul class="dropdown-menu pull-right" role="menu">
-					<li role="menuitem"><a tabindex="1" ng-click="duplicateDataQuery(target)">Duplicate</a></li>
-					<li role="menuitem"><a tabindex="1" ng-click="moveDataQuery($index, $index-1)">Move up</a></li>
-					<li role="menuitem"><a tabindex="1" ng-click="moveDataQuery($index, $index+1)">Move down</a></li>
-				</ul>
-			</div>
-		</li>
-		<li class="tight-form-item last">
-			<a class="pointer" tabindex="1" ng-click="removeDataQuery(target)">
-				<i class="fa fa-remove"></i>
-			</a>
-		</li>
-	</ul>
-
-	<ul class="tight-form-list">
-		<li class="tight-form-item" style="min-width: 15px; text-align: center">
-			{{target.refId}}
-		</li>
-		<li>
-			<a class="tight-form-item" ng-click="target.hide = !target.hide; targetBlur();" role="menuitem">
-				<i class="fa fa-eye"></i>
-			</a>
-		</li>
+<query-editor-row ctrl="ctrl">
 		<li class="tight-form-item">
 			Metric
 		</li>
 		<li>
 			<input type="text" class="input-large tight-form-input"
-			ng-model="target.metric"
+			ng-model="ctrl.target.metric"
 			spellcheck="false"
-			bs-typeahead="suggestMetrics"
+			bs-typeahead="ctrl.suggestMetrics"
 			placeholder="metric name"
 			data-min-length=0 data-items=100
-			ng-blur="targetBlur()">
-			<a bs-tooltip="target.errors.metric"
+			ng-blur="ctrl.targetBlur()">
+			<a bs-tooltip="ctrl.target.errors.metric"
 				style="color: rgb(229, 189, 28)"
-				ng-show="target.errors.metric">
+				ng-show="ctrl.target.errors.metric">
 				<i class="fa fa-warning"></i>
 			</a>
 		</li>
@@ -52,17 +20,17 @@
 			Alias
 		</li>
 		<li>
-			<input type="text" class="input-medium tight-form-input" ng-model="target.alias"
-			spellcheck='false' placeholder="alias" ng-blur="targetBlur()">
+			<input type="text" class="input-medium tight-form-input" ng-model="ctrl.target.alias"
+			spellcheck='false' placeholder="alias" ng-blur="ctrl.targetBlur()">
 		</li>
 		<li  class="tight-form-item">
 			&nbsp;Peak filter
-			<input class="input-medium" type="checkbox" ng-model="target.exOuter" ng-change="targetBlur()">
+			<input class="input-medium" type="checkbox" ng-model="ctrl.target.exOuter" ng-change="ctrl.targetBlur()">
 		</li>
 	</ul>
 
 	<div class="clearfix"></div>
-</div>
+</query-editor-row>
 
 <!-- TAGS -->
 <div class="tight-form">
@@ -70,47 +38,47 @@
 		<li class="tight-form-item tight-form-align">
 			Tags
 		</li>
-		<li ng-repeat="(key, value) in target.tags track by $index" class="tight-form-item">
+		<li ng-repeat="(key, value) in ctrl.target.tags track by $index" class="tight-form-item">
 			{{key}}&nbsp;=&nbsp;{{value}}
-			<a ng-click="removeFilterTag(key)">
+			<a ng-click="ctrl.removeFilterTag(key)">
 				<i class="fa fa-remove"></i>
 			</a>
 		</li>
 
-		<li class="tight-form-item" ng-hide="addFilterTagMode">
-			<a ng-click="addFilterTag()">
+		<li class="tight-form-item" ng-hide="ctrl.panel.addFilterTagMode">
+			<a ng-click="ctrl.addFilterTag()">
 				<i class="fa fa-plus"></i>
 			</a>
 		</li>
 
-		<li ng-show="addFilterTagMode">
+		<li ng-show="ctrl.panel.addFilterTagMode">
 			<input type="text"
 			class="input-small tight-form-input"
 			spellcheck='false'
-			bs-typeahead="suggestTagKeys"
-			ng-change="validateFilterTag()"
+			bs-typeahead="ctrl.suggestTagKeys"
+			ng-change="ctrl.validateFilterTag()"
 			data-min-length=0 data-items=100
-			ng-model="target.currentTagKey"
+			ng-model="ctrl.target.currentTagKey"
 			placeholder="key">
 		</li>
-		<li ng-show="addFilterTagMode">
+		<li ng-show="ctrl.panel.addFilterTagMode">
 			<input type="text"
 			class="input-small tight-form-input"
 			spellcheck='false'
-			bs-typeahead="suggestTagValues"
-			ng-change="validateFilterTag()"
+			bs-typeahead="ctrl.suggestTagValues"
+			ng-change="ctrl.validateFilterTag()"
 			data-min-length=0 data-items=100
-			ng-model="target.currentTagValue"
+			ng-model="ctrl.target.currentTagValue"
 			placeholder="value">
 			<a bs-tooltip="target.errors.tags"
 				style="color: rgb(229, 189, 28)"
-				ng-show="target.errors.tags">
+				ng-show="ctrl.target.errors.tags">
 				<i class="fa fa-warning"></i>
 			</a>
-			<li class="tight-form-item" ng-show="addFilterTagMode">
-				<a ng-click="addFilterTag()">
-					<i ng-show="target.errors.tags" class="fa fa-remove"></i>
-					<i ng-hide="target.errors.tags" class="fa fa-plus-circle"></i>
+			<li class="tight-form-item" ng-show="ctrl.panel.addFilterTagMode">
+				<a ng-click="ctrl.addFilterTag()">
+					<i ng-show="ctrl.target.errors.tags" class="fa fa-remove"></i>
+					<i ng-hide="ctrl.target.errors.tags" class="fa fa-plus-circle"></i>
 				</a>
 			</li>
 		</li>
@@ -125,101 +93,101 @@
 			Group By
 		</li>
 
-		<li class="tight-form-item" ng-show="target.groupByTags">
+		<li class="tight-form-item" ng-show="ctrl.target.groupByTags">
 			tags:
 		</li>
 
-		<li ng-repeat="key in target.groupByTags track by $index" class="tight-form-item">
+		<li ng-repeat="key in ctrl.target.groupByTags track by $index" class="tight-form-item">
 			{{key}}
-			<a ng-click="removeGroupByTag($index)">
+			<a ng-click="ctrl.removeGroupByTag($index)">
 				<i class="fa fa-remove"></i>
 			</a>
 		</li>
 
-		<li class="tight-form-item" ng-show="target.groupByTags && target.nonTagGroupBys">
+		<li class="tight-form-item" ng-show="ctrl.target.groupByTags && ctrl.target.nonTagGroupBys">
 			and by:
 		</li>
 
-		<li ng-repeat="groupByObject in target.nonTagGroupBys track by $index" class="tight-form-item">
-			{{_.values(groupByObject)}}
-			<a ng-click="removeNonTagGroupBy($index)">
+		<li ng-repeat="groupByObject in ctrl.target.nonTagGroupBys track by $index" class="tight-form-item">
+			{{ctrl.getValuesOfGroupBy(groupByObject)}}
+			<a ng-click="ctrl.removeNonTagGroupBy($index)">
 				<i class="fa fa-remove"></i>
 			</a>
 		</li>
 
-		<li class="tight-form-item" ng-hide="addGroupByMode">
-			<a ng-click="addGroupBy()">
+		<li class="tight-form-item" ng-hide="ctrl.panel.addGroupByMode">
+			<a ng-click="ctrl.addGroupBy()">
 				<i class="fa fa-plus"></i>
 			</a>
 		</li>
-		<li ng-show="addGroupByMode">
+		<li ng-show="ctrl.panel.addGroupByMode">
 			<select class="input-small tight-form-input"
-				ng-change="changeGroupByInput()"
-				ng-model="target.currentGroupByType"
+				ng-change="ctrl.changeGroupByInput()"
+				ng-model="ctrl.target.currentGroupByType"
 				ng-options="f for f in ['tag','value','time']"></select>
 		</li>
-		<li ng-show="isTagGroupBy">
+		<li ng-show="ctrl.panel.isTagGroupBy">
 			<input type="text"
 			class="input-small tight-form-input"
 			spellcheck='false'
-			bs-typeahead="suggestTagKeys"
-			ng-change = "validateGroupBy()"
+			bs-typeahead="ctrl.suggestTagKeys"
+			ng-change = "ctrl.validateGroupBy()"
 			data-min-length=0 data-items=100
-			ng-model="target.groupBy.tagKey"
+			ng-model="ctrl.target.groupBy.tagKey"
 			placeholder="key">
-			<a bs-tooltip="target.errors.groupBy.tagKey"
+			<a bs-tooltip="ctrl.target.errors.groupBy.tagKey"
 				style="color: rgb(229, 189, 28)"
-				ng-show="target.errors.groupBy.tagKey">
+				ng-show="ctrl.target.errors.groupBy.tagKey">
 				<i class="fa fa-warning"></i>
 			</a>
 		</li>
-		<li ng-show="isValueGroupBy">
+		<li ng-show="ctrl.panel.isValueGroupBy">
 			<input type="text"
 			class="input-mini tight-form-input"
 			spellcheck='false'
-			ng-model="target.groupBy.valueRange"
+			ng-model="ctrl.target.groupBy.valueRange"
 			placeholder="range"
 			bs-tooltip="'Range on which values are considered in the same group'"
-			ng-change = "validateGroupBy()" >
-			<a bs-tooltip="target.errors.groupBy.valueRange"
+			ng-change = "ctrl.validateGroupBy()" >
+			<a bs-tooltip="ctrl.target.errors.groupBy.valueRange"
 				style="color: rgb(229, 189, 28)"
-				ng-show="target.errors.groupBy.valueRange">
+				ng-show="ctrl.target.errors.groupBy.valueRange">
 				<i class="fa fa-warning"></i>
 			</a>
 		</li>
-		<li ng-show="isTimeGroupBy">
+		<li ng-show="ctrl.panel.isTimeGroupBy">
 			<input type="text"
 			class="input-mini tight-form-input"
-			ng-model="target.groupBy.timeInterval"
-			ng-init="target.groupBy.timeInterval='1s'"
+			ng-model="ctrl.target.groupBy.timeInterval"
+			ng-init="ctrl.target.groupBy.timeInterval='1s'"
 			placeholder="interval"
 			bs-tooltip="'Duration of time groups'"
 			spellcheck='false'
-			ng-change="validateGroupBy()">
-			<a bs-tooltip="target.errors.groupBy.timeInterval"
+			ng-change="ctrl.validateGroupBy()">
+			<a bs-tooltip="ctrl.target.errors.groupBy.timeInterval"
 				style="color: rgb(229, 189, 28)"
-				ng-show="target.errors.groupBy.timeInterval">
+				ng-show="ctrl.target.errors.groupBy.timeInterval">
 				<i class="fa fa-warning"></i>
 			</a>
 		</li>
-		<li ng-show="isTimeGroupBy">
+		<li ng-show="ctrl.panel.isTimeGroupBy">
 			<input type="text"
 			class="input-mini tight-form-input"
-			ng-model="target.groupBy.groupCount"
+			ng-model="ctrl.target.groupBy.groupCount"
 			placeholder="Count"
 			bs-tooltip="'Number of time groups to be formed'"
 			spellcheck='false'
-			ng-change="validateGroupBy()">
-			<a bs-tooltip="target.errors.groupBy.groupCount"
+			ng-change="ctrl.validateGroupBy()">
+			<a bs-tooltip="ctrl.target.errors.groupBy.groupCount"
 				style="color: rgb(229, 189, 28)"
-				ng-show="target.errors.groupBy.groupCount">
+				ng-show="ctrl.target.errors.groupBy.groupCount">
 				<i class="fa fa-warning"></i>
 			</a>
 		</li>
-		<li class="tight-form-item" ng-show="addGroupByMode">
-			<a ng-click="addGroupBy()">
-				<i ng-hide="isGroupByValid" class="fa fa-remove"></i>
-				<i ng-show="isGroupByValid" class="fa fa-plus-circle"></i>
+		<li class="tight-form-item" ng-show="ctrl.panel.addGroupByMode">
+			<a ng-click="ctrl.addGroupBy()">
+				<i ng-hide="ctrl.panel.isGroupByValid" class="fa fa-remove"></i>
+				<i ng-show="ctrl.panel.isGroupByValid" class="fa fa-plus-circle"></i>
 			</a>
 		</li>
 	</ul>
@@ -232,96 +200,96 @@
 		<li class="tight-form-item tight-form-align">
 			Aggregators
 		</li>
-		<li ng-repeat="aggregatorObject in target.horizontalAggregators track by $index" class="tight-form-item">
+		<li ng-repeat="aggregatorObject in ctrl.target.horizontalAggregators track by $index" class="tight-form-item">
 			{{aggregatorObject.name}}&#40;
 			<span ng-repeat="aggKey in _.keys(_.omit(aggregatorObject,'name'))" bs-tooltip="aggKey">
 				{{$last?aggregatorObject[aggKey]:aggregatorObject[aggKey]+","}}
 			</span>
 			&#41;
-			<a ng-click="removeHorizontalAggregator($index)">
+			<a ng-click="ctrl.removeHorizontalAggregator($index)">
 				<i class="fa fa-remove"></i>
 			</a>
 		</li>
 
-		<li class="tight-form-item" ng-hide="addHorizontalAggregatorMode">
-			<a ng-click="addHorizontalAggregator()">
+		<li class="tight-form-item" ng-hide="ctrl.panel.addHorizontalAggregatorMode">
+			<a ng-click="ctrl.addHorizontalAggregator()">
 				<i class="fa fa-plus"></i>
 			</a>
 		</li>
 
-		<li ng-show="addHorizontalAggregatorMode">
+		<li ng-show="ctrl.panel.addHorizontalAggregatorMode">
 			<select class="input-medium tight-form-input"
-				ng-change="changeHorAggregationInput()"
-				ng-model="target.currentHorizontalAggregatorName"
+				ng-change="ctrl.changeHorAggregationInput()"
+				ng-model="ctrl.target.currentHorizontalAggregatorName"
 				ng-options="f for f in ['avg','dev','max','min','rate','sampler','count','sum','least_squares','percentile','scale','div']"></select>
 		</li>
 
 		<!-- Different parameters -->
-		<li ng-show="hasSamplingRate" class="tight-form-item">
+		<li ng-show="ctrl.panel.hasSamplingRate" class="tight-form-item">
 			every
 		</li>
-		<li ng-show="hasSamplingRate">
+		<li ng-show="ctrl.panel.hasSamplingRate">
 			<input type="text"
 			class="input-mini tight-form-input"
-			ng-model="target.horAggregator.samplingRate"
-			ng-init="target.horAggregator.samplingRate='1s'"
+			ng-model="ctrl.target.horAggregator.samplingRate"
+			ng-init="ctrl.target.horAggregator.samplingRate='1s'"
 			spellcheck='false'
-			ng-change="validateHorizontalAggregator()" >
-			<a bs-tooltip="target.errors.horAggregator.samplingRate"
+			ng-change="ctrl.validateHorizontalAggregator()" >
+			<a bs-tooltip="ctrl.target.errors.horAggregator.samplingRate"
 				style="color: rgb(229, 189, 28)"
-				ng-show="target.errors.horAggregator.samplingRate">
+				ng-show="ctrl.target.errors.horAggregator.samplingRate">
 				<i class="fa fa-warning"></i>
 			</a>
 		</li>
 
-		<li ng-show="hasUnit" class="tight-form-item">
+		<li ng-show="ctrl.panel.hasUnit" class="tight-form-item">
 			every
 		</li>
-		<li ng-show="hasUnit">
+		<li ng-show="ctrl.panel.hasUnit">
 			<select class="input-medium tight-form-input"
-				ng-model="target.horAggregator.unit"
-				ng-init="target.horAggregator.unit='millisecond'"
+				ng-model="ctrl.target.horAggregator.unit"
+				ng-init="ctrl.target.horAggregator.unit='millisecond'"
 				ng-options="f for f in ['millisecond','second','minute','hour','day','week','month','year']"></select>
 		</li>
 
-		<li ng-show="hasFactor" class="tight-form-item">
+		<li ng-show="ctrl.panel.hasFactor" class="tight-form-item">
 			by
 		</li>
-		<li ng-show="hasFactor">
+		<li ng-show="ctrl.panel.hasFactor">
 			<input type="text"
 			class="input-mini tight-form-input"
-			ng-model="target.horAggregator.factor"
-			ng-init="target.horAggregator.factor='1'"
+			ng-model="ctrl.target.horAggregator.factor"
+			ng-init="ctrl.target.horAggregator.factor='1'"
 			spellcheck='false'
-			ng-change="validateHorizontalAggregator()" >
-			<a bs-tooltip="target.errors.horAggregator.factor"
+			ng-change="ctrl.validateHorizontalAggregator()" >
+			<a bs-tooltip="ctrl.target.errors.horAggregator.factor"
 				style="color: rgb(229, 189, 28)"
-				ng-show="target.errors.horAggregator.factor">
+				ng-show="ctrl.target.errors.horAggregator.factor">
 				<i class="fa fa-warning"></i>
 			</a>
 		</li>
 
-		<li ng-show="hasPercentile" class="tight-form-item">
+		<li ng-show="ctrl.panel.hasPercentile" class="tight-form-item">
 			percentile
 		</li>
-		<li ng-show="hasPercentile">
+		<li ng-show="ctrl.panel.hasPercentile">
 			<input type="text"
 			class="input-mini tight-form-input"
-			ng-model="target.horAggregator.percentile"
-			ng-init="target.horAggregator.percentile='0.75'"
+			ng-model="ctrl.target.horAggregator.percentile"
+			ng-init="ctrl.target.horAggregator.percentile='0.75'"
 			spellcheck='false'
-			ng-change="validateHorizontalAggregator()" >
-			<a bs-tooltip="target.errors.horAggregator.percentile"
+			ng-change="ctrl.validateHorizontalAggregator()" >
+			<a bs-tooltip="ctrl.target.errors.horAggregator.percentile"
 				style="color: rgb(229, 189, 28)"
-				ng-show="target.errors.horAggregator.percentile">
+				ng-show="ctrl.target.errors.horAggregator.percentile">
 				<i class="fa fa-warning"></i>
 			</a>
 		</li>
 
-		<li class="tight-form-item" ng-show="addHorizontalAggregatorMode">
-			<a ng-click="addHorizontalAggregator()">
-				<i ng-hide="isAggregatorValid" class="fa fa-remove"></i>
-				<i ng-show="isAggregatorValid" class="fa fa-plus-circle"></i>
+		<li class="tight-form-item" ng-show="ctrl.panel.addHorizontalAggregatorMode">
+			<a ng-click="ctrl.addHorizontalAggregator()">
+				<i ng-hide="ctrl.panel.isAggregatorValid" class="fa fa-remove"></i>
+				<i ng-show="ctrl.panel.isAggregatorValid" class="fa fa-plus-circle"></i>
 			</a>
 		</li>
 	</ul>

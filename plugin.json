@@ -1,24 +1,12 @@
 {
-  "id": "datasource-plugin-kairosdb",
-  "pluginType": "datasource",
+  "id": "kairosdb",
   "name": "KairosDB",
-
-  "type": "kairosdb",
-  "serviceName": "KairosDBDatasource",
-
-  "module": "plugins/kairosdb/datasource",
-
-  "partials": {
-    "config": "public/plugins/kairosdb/partials/config.html"
-  },
-
-  "staticRoot": {
-    "url": "kairosdb",
-    "path": "."
-  },
+  "type": "datasource",
 
   "metrics": true,
   "annotations": false,
+
+  "staticRoot": ".",
 
   "info": {
     "description": "datasource plugin for KairosDB",
