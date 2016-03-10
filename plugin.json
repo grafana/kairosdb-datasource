@@ -19,12 +19,12 @@
       "small": "img/kairosdb_logo_small.png",
       "large": "img/kairosdb_logo_large.png"
     },
-    "version": "0.9.0",
+    "version": "1.0.0",
     "updated": "2016-02-10"
   },
 
   "dependencies": {
-    "grafanaVersion": "2.6.x",
+    "grafanaVersion": "3.x.x",
     "plugins": [ ]
   }
 }
