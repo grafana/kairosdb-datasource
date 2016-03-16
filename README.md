@@ -7,10 +7,10 @@ But it is easy to install this plugin!
 
 ### Installation
 
-Use the new grafana-cli tool to install piechart-panel from the commandline:
+Use the new grafana-cli tool to install the KairosDB datasource from the commandline:
 
 ```
-grafana-cli install piechart-panel
+grafana-cli install kairosdb-datasource
 ```
 
 The plugin will be installed into your grafana plugins directory; the default is /var/lib/grafana/plugins if you installed the grafana package.
