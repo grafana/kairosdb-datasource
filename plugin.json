@@ -1,5 +1,5 @@
 {
-  "id": "kairosdb-datasource",
+  "id": "kairosdb",
   "name": "KairosDB",
   "type": "datasource",
 
