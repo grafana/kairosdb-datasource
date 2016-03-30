@@ -1,5 +1,5 @@
 {
-  "id": "kairosdb-datasource",
+  "id": "grafana-kairosdb-datasource",
   "name": "KairosDB",
   "type": "datasource",
 
