@@ -27,7 +27,7 @@ function (angular, _, sdk) {
     KairosDBQueryCtrl.prototype = Object.create(_super.prototype);
     KairosDBQueryCtrl.prototype.constructor = KairosDBQueryCtrl;
 
-    KairosDBQueryCtrl.templateUrl = 'public/plugins/kairosdb/partials/query.editor.html';
+    KairosDBQueryCtrl.templateUrl = 'public/plugins/grafana-kairosdb-datasource/partials/query.editor.html';
 
     KairosDBQueryCtrl.prototype.targetBlur = function() {
       this.target.errors = validateTarget(this.target);
