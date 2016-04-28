@@ -30,9 +30,9 @@ function (angular, _, dateMath, kbn) {
 
     var queries = _.compact(_.map(options.targets, _.partial(convertTargetToQuery, options)));
     var plotParams = _.compact(_.map(options.targets, function(target) {
-      var alias = target.alias;
+	var alias = self.templateSrv.replace(target.alias);
       if (typeof target.alias === 'undefined' || target.alias === "") {
-        alias = target.metric;
+          alias = self.templateSrv.replace(target.metric);
       }
 
       if (!target.hide) {
@@ -337,7 +337,7 @@ function (angular, _, dateMath, kbn) {
     if (target.tags) {
       query.tags = angular.copy(target.tags);
       _.forOwn(query.tags, function(value, key) {
-        query.tags[key] = _.map(value, function(tag) { return self.templateSrv.replace(tag); });
+          query.tags[key] = _.map(value, function(tag) { return self.templateSrv.replace(tag); });
       });
     }
 

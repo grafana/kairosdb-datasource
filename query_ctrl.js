@@ -241,6 +241,7 @@ function (angular, _, sdk) {
         if (this.panel.hasSamplingRate) {aggregator.sampling_rate = this.target.horAggregator.samplingRate;}
         if (this.panel.hasUnit) {aggregator.unit = this.target.horAggregator.unit;}
         if (this.panel.hasFactor) {aggregator.factor = this.target.horAggregator.factor;}
+        if (this.panel.hasNothing) {aggregator.nothing = this.target.horAggregator.nothing;}
         if (this.panel.hasPercentile) {aggregator.percentile = this.target.horAggregator.percentile;}
         this.target.horizontalAggregators.push(aggregator);
         this.targetBlur();
@@ -250,6 +251,7 @@ function (angular, _, sdk) {
       this.panel.hasSamplingRate = false;
       this.panel.hasUnit = false;
       this.panel.hasFactor = false;
+      this.panel.hasNothing = false;
       this.panel.hasPercentile = false;
     };
 
@@ -263,10 +265,11 @@ function (angular, _, sdk) {
     };
 
     KairosDBQueryCtrl.prototype.changeHorAggregationInput = function() {
-      this.panel.hasSamplingRate = _.contains(['avg','dev','max','min','sum','least_squares','count','percentile'],
+      this.panel.hasSamplingRate = _.contains(['avg','dev','max','min','sum','least_squares','count','percentile', 'first', 'gaps', 'last'],
                                           this.target.currentHorizontalAggregatorName);
       this.panel.hasUnit = _.contains(['sampler','rate'], this.target.currentHorizontalAggregatorName);
       this.panel.hasFactor = _.contains(['div','scale'], this.target.currentHorizontalAggregatorName);
+      this.panel.hasNothing = _.contains(['diff'], this.target.currentHorizontalAggregatorName);
       this.panel.hasPercentile = 'percentile' === this.target.currentHorizontalAggregatorName;
       this.validateHorizontalAggregator();
     };
