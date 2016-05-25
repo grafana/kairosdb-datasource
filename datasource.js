@@ -289,8 +289,9 @@ function (angular, _, dateMath, kbn) {
 
     if (target.downsampling !== '(NONE)') {
       if (target.downsampling === undefined) {
-        target.downsampling = 'avg';
-        target.sampling = '10s';
+        target.downsampling = '(NONE)';
+        //target.downsampling = 'avg';
+	//target.sampling = '10s';
       }
       query.aggregators.push({
         name: target.downsampling,

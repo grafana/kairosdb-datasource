@@ -14,13 +14,14 @@ function (angular, _, sdk) {
 
       this.panel.stack = false;
       if (!this.panel.downsampling) {
-        this.panel.downsampling = 'avg';
+        this.panel.downsampling = '(NONE)';
+	this.targetBlur();
       }
-      if (!this.target.downsampling) {
-        this.target.downsampling = this.panel.downsampling;
-        this.target.sampling = this.panel.sampling;
-      }
-      this.target.errors = validateTarget(this.target);
+      //if (!this.target.downsampling) {
+        //this.target.downsampling = this.panel.downsampling;
+        //this.target.sampling = this.panel.sampling;
+      //}
+      //this.target.errors = validateTarget(this.target);
       self = this;
     }
 
