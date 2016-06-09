@@ -201,8 +201,8 @@
       </li>
       <li ng-repeat="aggregatorObject in ctrl.target.horizontalAggregators track by $index" class="tight-form-item">
         {{aggregatorObject.name}}&#40;
-        <span ng-repeat="aggKey in _.keys(_.omit(aggregatorObject,'name'))" bs-tooltip="aggKey">
-          {{$last?aggregatorObject[aggKey]:aggregatorObject[aggKey]+","}}
+        <span ng-repeat="val in aggregatorObject">
+            {{val != aggregatorObject.name ? val : ''}}
         </span>
         &#41;
         <a ng-click="ctrl.removeHorizontalAggregator($index)">
