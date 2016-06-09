@@ -24,7 +24,7 @@
       {"name": "License", "url": "https://github.com/grafana/kairosdb-datasource/blob/master/LICENSE"}
     ],
     "version": "1.0.1",
-    "updated": "2016-02-10"
+    "updated": "2016-06-09"
   },
 
   "dependencies": {
