@@ -6,7 +6,7 @@ define([
   'app/core/utils/kbn',
   './query_ctrl'
 ],
-function (angular, _, dateMath, kbn) {
+function (angular, _, sdk, dateMath, kbn) {
   'use strict';
 
   var self;
