@@ -201,8 +201,8 @@
       </li>
       <li ng-repeat="aggregatorObject in ctrl.target.horizontalAggregators track by $index" class="tight-form-item">
         {{aggregatorObject.name}}&#40;
-        <span ng-repeat="aggKey in _.keys(_.omit(aggregatorObject,'name'))" bs-tooltip="aggKey">
-          {{$last?aggregatorObject[aggKey]:aggregatorObject[aggKey]+","}}
+        <span ng-repeat="val in aggregatorObject">
+            {{val != aggregatorObject.name ? val : ''}}
         </span>
         &#41;
         <a ng-click="ctrl.removeHorizontalAggregator($index)">
@@ -220,7 +220,7 @@
         <select class="input-medium tight-form-input"
           ng-change="ctrl.changeHorAggregationInput()"
           ng-model="ctrl.target.currentHorizontalAggregatorName"
-          ng-options="f for f in ['avg','dev','max','min','rate','sampler','count','sum','least_squares','percentile','scale','div']"></select>
+          ng-options="f for f in ['avg','dev','max','min','rate','sampler','count','sum','least_squares','percentile','scale','div', 'first', 'gaps', 'last', 'diff']"></select>
       </li>
 
       <!-- Different parameters -->
