@@ -6,7 +6,7 @@ define([
   'app/core/utils/kbn',
   './query_ctrl'
 ],
-function (angular, _, dateMath, kbn) {
+function (angular, _, sdk, dateMath, kbn) {
   'use strict';
 
   var self;
@@ -30,9 +30,9 @@ function (angular, _, dateMath, kbn) {
 
     var queries = _.compact(_.map(options.targets, _.partial(convertTargetToQuery, options)));
     var plotParams = _.compact(_.map(options.targets, function(target) {
-      var alias = target.alias;
+      var alias = self.templateSrv.replace(target.alias);
       if (typeof target.alias === 'undefined' || target.alias === "") {
-        alias = target.metric;
+        alias = self.templateSrv.replace(target.metric);
       }
 
       if (!target.hide) {
@@ -286,19 +286,6 @@ function (angular, _, dateMath, kbn) {
     };
 
     query.aggregators = [];
-
-    if (target.downsampling !== '(NONE)') {
-      if (target.downsampling === undefined) {
-        target.downsampling = 'avg';
-        target.sampling = '10s';
-      }
-      query.aggregators.push({
-        name: target.downsampling,
-        align_sampling: true,
-        //align_start_time: true,
-        sampling: self.convertToKairosInterval(target.sampling || options.interval)
-      });
-    }
 
     if (target.horizontalAggregators) {
       _.each(target.horizontalAggregators, function(chosenAggregator) {
