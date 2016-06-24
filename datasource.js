@@ -340,7 +340,28 @@ function (angular, _, sdk, dateMath, kbn) {
     if (target.tags) {
       query.tags = angular.copy(target.tags);
       _.forOwn(query.tags, function(value, key) {
-        query.tags[key] = _.map(value, function(tag) { return self.templateSrv.replace(tag); });
+        var tagValue;
+        // Make sure there is a variable in the value
+        if (self.templateSrv.variableExists(value)) {
+          // Check to see if the value is just a single variable
+          var fullVariableRegex = /^\s*(\$(\w+)|\[\[\s*(\w+)\s*\]\])\s*$/;
+          var match = fullVariableRegex.exec(value);
+          if (match) {
+            var variableName = match[2] || match[3];
+            if (options.scopedVars && options.scopedVars[variableName]) {
+              tagValue = options.scopedVars[variableName].value;
+            } else {
+              tagValue = self.templateSrv.variables.find(function(v) { return v.name == variableName }).current.value;
+            }
+          } else {
+            // The value isn't a full value match, try to use the template replace
+            tagValue = self.templateSrv.replace(value, options.scopedVars);
+          }
+        } else {
+          // The value does not have a variable
+          tagValue = value;
+        }
+        query.tags[key] = _.flatten([ tagValue ]);
       });
     }
 
