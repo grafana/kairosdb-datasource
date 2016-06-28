@@ -12,13 +12,13 @@ function (angular, _, sdk) {
     function KairosDBQueryCtrl($scope, $injector) {
       _super.call(this, $scope, $injector);
 
-      this.panel.stack = false;
-      if (!this.panel.downsampling) {
-        this.panel.downsampling = 'avg';
+      this.target.stack = false;
+      if (!this.target.downsampling) {
+        this.target.downsampling = 'avg';
       }
       if (!this.target.downsampling) {
-        this.target.downsampling = this.panel.downsampling;
-        this.target.sampling = this.panel.sampling;
+        this.target.downsampling = this.target.downsampling;
+        this.target.sampling = this.target.sampling;
       }
       this.target.errors = validateTarget(this.target);
       self = this;
@@ -61,8 +61,8 @@ function (angular, _, sdk) {
 
     // Filter metric by tag
     KairosDBQueryCtrl.prototype.addFilterTag = function() {
-      if (!this.panel.addFilterTagMode) {
-        this.panel.addFilterTagMode = true;
+      if (!this.target.addFilterTagMode) {
+        this.target.addFilterTagMode = true;
         this.validateFilterTag();
         return;
       }
@@ -82,7 +82,7 @@ function (angular, _, sdk) {
         this.targetBlur();
       }
 
-      this.panel.addFilterTagMode = false;
+      this.target.addFilterTagMode = false;
     };
 
     KairosDBQueryCtrl.prototype.removeFilterTag = function(key) {
@@ -104,10 +104,10 @@ function (angular, _, sdk) {
     // GROUP BY
     //////////////////////////////
     KairosDBQueryCtrl.prototype.addGroupBy = function() {
-      if (!this.panel.addGroupByMode) {
+      if (!this.target.addGroupByMode) {
         this.target.currentGroupByType = 'tag';
-        this.panel.addGroupByMode = true;
-        this.panel.isTagGroupBy = true;
+        this.target.addGroupByMode = true;
+        this.target.isTagGroupBy = true;
         this.validateGroupBy();
         return;
       }
@@ -115,7 +115,7 @@ function (angular, _, sdk) {
       // nb: if error is found, means that user clicked on cross : cancels input
 
       if (_.isEmpty(this.target.errors.groupBy)) {
-        if (this.panel.isTagGroupBy) {
+        if (this.target.isTagGroupBy) {
           if (!this.target.groupByTags) {
             this.target.groupByTags = [];
           }
@@ -132,9 +132,9 @@ function (angular, _, sdk) {
           var groupBy = {
             name: this.target.currentGroupByType
           };
-          if (this.panel.isValueGroupBy) {
+          if (this.target.isValueGroupBy) {
             groupBy.range_size = this.target.groupBy.valueRange;
-          } else if (this.panel.isTimeGroupBy) {
+          } else if (this.target.isTimeGroupBy) {
             groupBy.range_size = this.target.groupBy.timeInterval;
             groupBy.group_count = this.target.groupBy.groupCount;
           }
@@ -143,10 +143,10 @@ function (angular, _, sdk) {
         this.targetBlur();
       }
 
-      this.panel.isTagGroupBy = false;
-      this.panel.isValueGroupBy = false;
-      this.panel.isTimeGroupBy = false;
-      this.panel.addGroupByMode = false;
+      this.target.isTagGroupBy = false;
+      this.target.isValueGroupBy = false;
+      this.target.isTimeGroupBy = false;
+      this.target.addGroupByMode = false;
     };
 
     KairosDBQueryCtrl.prototype.removeGroupByTag = function(index) {
@@ -166,9 +166,9 @@ function (angular, _, sdk) {
     };
 
     KairosDBQueryCtrl.prototype.changeGroupByInput = function() {
-      this.panel.isTagGroupBy = this.target.currentGroupByType === 'tag';
-      this.panel.isValueGroupBy = this.target.currentGroupByType === 'value';
-      this.panel.isTimeGroupBy = this.target.currentGroupByType === 'time';
+      this.target.isTagGroupBy = this.target.currentGroupByType === 'tag';
+      this.target.isValueGroupBy = this.target.currentGroupByType === 'value';
+      this.target.isTimeGroupBy = this.target.currentGroupByType === 'time';
       this.validateGroupBy();
     };
 
@@ -179,22 +179,22 @@ function (angular, _, sdk) {
     KairosDBQueryCtrl.prototype.validateGroupBy = function() {
       delete this.target.errors.groupBy;
       var errors = {};
-      this.panel.isGroupByValid = true;
-      if (this.panel.isTagGroupBy) {
+      this.target.isGroupByValid = true;
+      if (this.target.isTagGroupBy) {
         if (!this.target.groupBy.tagKey) {
-          this.panel.isGroupByValid = false;
+          this.target.isGroupByValid = false;
           errors.tagKey = 'You must supply a tag name';
         }
       }
 
-      if (this.panel.isValueGroupBy) {
+      if (this.target.isValueGroupBy) {
         if (!this.target.groupBy.valueRange || !isInt(this.target.groupBy.valueRange)) {
           errors.valueRange = "Range must be an integer";
           this.isGroupByValid = false;
         }
       }
 
-      if (this.panel.isTimeGroupBy) {
+      if (this.target.isTimeGroupBy) {
         try {
           this.datasource.convertToKairosInterval(this.target.groupBy.timeInterval);
         } catch (err) {
@@ -221,10 +221,10 @@ function (angular, _, sdk) {
     //////////////////////////////
 
     KairosDBQueryCtrl.prototype.addHorizontalAggregator = function() {
-      if (!this.panel.addHorizontalAggregatorMode) {
-        this.panel.addHorizontalAggregatorMode = true;
+      if (!this.target.addHorizontalAggregatorMode) {
+        this.target.addHorizontalAggregatorMode = true;
         this.target.currentHorizontalAggregatorName = 'avg';
-        this.panel.hasSamplingRate = true;
+        this.target.hasSamplingRate = true;
         this.validateHorizontalAggregator();
         return;
       }
@@ -238,21 +238,21 @@ function (angular, _, sdk) {
         var aggregator = {
           name:this.target.currentHorizontalAggregatorName
         };
-        if (this.panel.hasSamplingRate) {aggregator.sampling_rate = this.target.horAggregator.samplingRate;}
-        if (this.panel.hasUnit) {aggregator.unit = this.target.horAggregator.unit;}
-        if (this.panel.hasFactor) {aggregator.factor = this.target.horAggregator.factor;}
-        if (this.panel.hasNothing) {aggregator.nothing = this.target.horAggregator.nothing;}
-        if (this.panel.hasPercentile) {aggregator.percentile = this.target.horAggregator.percentile;}
+        if (this.target.hasSamplingRate) {aggregator.sampling_rate = this.target.horAggregator.samplingRate;}
+        if (this.target.hasUnit) {aggregator.unit = this.target.horAggregator.unit;}
+        if (this.target.hasFactor) {aggregator.factor = this.target.horAggregator.factor;}
+        if (this.target.hasNothing) {aggregator.nothing = this.target.horAggregator.nothing;}
+        if (this.target.hasPercentile) {aggregator.percentile = this.target.horAggregator.percentile;}
         this.target.horizontalAggregators.push(aggregator);
         this.targetBlur();
       }
 
-      this.panel.addHorizontalAggregatorMode = false;
-      this.panel.hasSamplingRate = false;
-      this.panel.hasUnit = false;
-      this.panel.hasFactor = false;
-      this.panel.hasNothing = false;
-      this.panel.hasPercentile = false;
+      this.target.addHorizontalAggregatorMode = false;
+      this.target.hasSamplingRate = false;
+      this.target.hasUnit = false;
+      this.target.hasFactor = false;
+      this.target.hasNothing = false;
+      this.target.hasPercentile = false;
     };
 
     KairosDBQueryCtrl.prototype.removeHorizontalAggregator = function(index) {
@@ -265,46 +265,46 @@ function (angular, _, sdk) {
     };
 
     KairosDBQueryCtrl.prototype.changeHorAggregationInput = function() {
-      this.panel.hasSamplingRate = _.contains(['avg','dev','max','min','sum','least_squares','count','percentile', 'first', 'gaps', 'last'],
+      this.target.hasSamplingRate = _.contains(['avg','dev','max','min','sum','least_squares','count','percentile', 'first', 'gaps', 'last'],
                                           this.target.currentHorizontalAggregatorName);
-      this.panel.hasUnit = _.contains(['sampler','rate'], this.target.currentHorizontalAggregatorName);
-      this.panel.hasFactor = _.contains(['div','scale'], this.target.currentHorizontalAggregatorName);
-      this.panel.hasNothing = _.contains(['diff'], this.target.currentHorizontalAggregatorName);
-      this.panel.hasPercentile = 'percentile' === this.target.currentHorizontalAggregatorName;
+      this.target.hasUnit = _.contains(['sampler','rate'], this.target.currentHorizontalAggregatorName);
+      this.target.hasFactor = _.contains(['div','scale'], this.target.currentHorizontalAggregatorName);
+      this.target.hasNothing = _.contains(['diff'], this.target.currentHorizontalAggregatorName);
+      this.target.hasPercentile = 'percentile' === this.target.currentHorizontalAggregatorName;
       this.validateHorizontalAggregator();
     };
 
     KairosDBQueryCtrl.prototype.validateHorizontalAggregator = function() {
       delete this.target.errors.horAggregator;
       var errors = {};
-      this.panel.isAggregatorValid = true;
+      this.target.isAggregatorValid = true;
 
-      if (this.panel.hasSamplingRate) {
+      if (this.target.hasSamplingRate) {
         try {
           this.datasource.convertToKairosInterval(this.target.horAggregator.samplingRate);
         } catch (err) {
           errors.samplingRate = err.message;
-          this.panel.isAggregatorValid = false;
+          this.target.isAggregatorValid = false;
         }
       }
 
       if (this.hasFactor) {
         if (!this.target.horAggregator.factor) {
           errors.factor = 'You must supply a numeric value for this aggregator';
-          this.panel.isAggregatorValid = false;
+          this.target.isAggregatorValid = false;
         }
         else if (parseInt(this.target.horAggregator.factor) === 0 && this.target.currentHorizontalAggregatorName === 'div') {
           errors.factor = 'Cannot divide by 0';
-          this.panel.isAggregatorValid = false;
+          this.target.isAggregatorValid = false;
         }
       }
 
-      if (this.panel.hasPercentile) {
+      if (this.target.hasPercentile) {
         if (!this.target.horAggregator.percentile ||
           this.target.horAggregator.percentile<=0 ||
           this.target.horAggregator.percentile>1) {
           errors.percentile = 'Percentile must be between 0 and 1';
-          this.panel.isAggregatorValid = false;
+          this.target.isAggregatorValid = false;
         }
       }
 
