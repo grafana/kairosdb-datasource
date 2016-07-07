@@ -340,7 +340,7 @@ function (angular, _, sdk, dateMath, kbn) {
     if (target.tags) {
       query.tags = angular.copy(target.tags);
       _.forOwn(query.tags, function(value, key) {
-        query.tags[key] = _.map(value, function(tag) { return self.templateSrv.replace(tag); });
+        query.tags[key] = _.map(value, function(tag) { return self.templateSrv.replace(tag, options.scopedVars); });
       });
     }
 
