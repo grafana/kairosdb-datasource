@@ -10,6 +10,7 @@ function (angular, _, sdk, dateMath, kbn) {
   'use strict';
 
   var self;
+  var TEMPLATE_VAL_REGEX = new RegExp(/^{.*}$/);
 
   function KairosDBDatasource(instanceSettings, $q, backendSrv, templateSrv) {
     this.type = instanceSettings.type;
@@ -28,8 +29,10 @@ function (angular, _, sdk, dateMath, kbn) {
     var start = options.rangeRaw.from;
     var end = options.rangeRaw.to;
 
-    var queries = _.compact(_.map(options.targets, _.partial(convertTargetToQuery, options)));
-    var plotParams = _.compact(_.map(options.targets, function(target) {
+    var targets = expandTemplatedTargets(options.targets);
+
+    var queries = _.compact(_.map(targets, _.partial(convertTargetToQuery, options)));
+    var plotParams = _.compact(_.map(targets, function(target) {
       var alias = self.templateSrv.replace(target.alias);
       if (typeof target.alias === 'undefined' || target.alias === "") {
         alias = self.templateSrv.replace(target.metric);
@@ -55,6 +58,22 @@ function (angular, _, sdk, dateMath, kbn) {
     return this.performTimeSeriesQuery(queries, start, end)
       .then(handleKairosDBQueryResponseAlias, handleQueryError);
   };
+
+  function expandTemplatedTargets(targets) {
+    return _.flatten(_.map(angular.copy(targets), function(target) {
+      var metric = self.templateSrv.replace(target.metric);
+      if (TEMPLATE_VAL_REGEX.test(metric)) {
+        var strippedName = metric.substring(1,metric.length-1);
+        return _.map(strippedName.split(','), function(m) {
+          var clonedTarget = angular.copy(target);
+          clonedTarget.metric = m;
+          return clonedTarget;
+        });
+      } else {
+        return target;
+      }
+    }));
+  }
 
   KairosDBDatasource.prototype.performTimeSeriesQuery = function(queries, start, end) {
     var reqBody = {
