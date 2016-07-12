@@ -23,13 +23,30 @@ function (angular, _, sdk, dateMath, kbn) {
     self = this;
   }
 
+  function expandTargets(options) {
+    return _.flatten(_.map(
+      options.targets,
+      function(target) {
+        return _.map(
+          currentTemplateValue(target.metric, self.templateSrv, options.scopedVars),
+          function(metric) {
+            var copy = angular.copy(target);
+            copy.metric = metric;
+            return copy;
+          }
+        )
+      }
+    ));
+  }
+
   // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function(options) {
     var start = options.rangeRaw.from;
     var end = options.rangeRaw.to;
 
-    var queries = _.compact(_.map(options.targets, _.partial(convertTargetToQuery, options)));
-    var plotParams = _.compact(_.map(options.targets, function(target) {
+    var targets = expandTargets(options);
+    var queries = _.compact(_.map(targets, _.partial(convertTargetToQuery, options)));
+    var plotParams = _.compact(_.map(targets, function(target) {
       var alias = self.templateSrv.replace(target.alias);
       if (typeof target.alias === 'undefined' || target.alias === "") {
         alias = self.templateSrv.replace(target.metric);
@@ -304,7 +321,13 @@ function (angular, _, sdk, dateMath, kbn) {
         if (scopedVars && scopedVars[variableName]) {
           replacedValue = scopedVars[variableName].value;
         } else {
-          replacedValue = templateSrv.variables.find(function(v) { return v.name == variableName }).current.value;
+          var variable = templateSrv.variables.find(function(v) { return v.name == variableName });
+          if (variable.current.value == "$__all") {
+            var filteredOptions = _.filter(variable.options, function(v) { return v.value != "$__all"; });
+            replacedValue = _.map(filteredOptions, function(opt) { return opt.value; });
+          } else {
+            replacedValue = variable.current.value;
+          }
         }
       } else {
         // The value isn't a full value match, try to use the template replace
