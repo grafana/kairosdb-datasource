@@ -175,7 +175,7 @@ function (angular, _, sdk, dateMath, kbn) {
       }
     };
 
-    return ibacbackendSrv.datasourceRequest(options).then(function(response) {
+    return this.backendSrv.datasourceRequest(options).then(function(response) {
       if (!response.data) {
         return [];
       }
