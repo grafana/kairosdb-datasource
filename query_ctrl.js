@@ -12,7 +12,6 @@ function (angular, _, sdk) {
     function KairosDBQueryCtrl($scope, $injector) {
       _super.call(this, $scope, $injector);
 
-      this.target.stack = false;
       if (!this.target.downsampling) {
         this.target.downsampling = 'avg';
       }

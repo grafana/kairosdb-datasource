@@ -23,13 +23,30 @@ function (angular, _, sdk, dateMath, kbn) {
     self = this;
   }
 
+  function expandTargets(options) {
+    return _.flatten(_.map(
+      options.targets,
+      function(target) {
+        return _.map(
+          currentTemplateValue(target.metric, self.templateSrv, options.scopedVars),
+          function(metric) {
+            var copy = angular.copy(target);
+            copy.metric = metric;
+            return copy;
+          }
+        )
+      }
+    ));
+  }
+
   // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function(options) {
     var start = options.rangeRaw.from;
     var end = options.rangeRaw.to;
 
-    var queries = _.compact(_.map(options.targets, _.partial(convertTargetToQuery, options)));
-    var plotParams = _.compact(_.map(options.targets, function(target) {
+    var targets = expandTargets(options);
+    var queries = _.compact(_.map(targets, _.partial(convertTargetToQuery, options)));
+    var plotParams = _.compact(_.map(targets, function(target) {
       var alias = self.templateSrv.replace(target.alias);
       if (typeof target.alias === 'undefined' || target.alias === "") {
         alias = self.templateSrv.replace(target.metric);
@@ -292,13 +309,45 @@ function (angular, _, sdk, dateMath, kbn) {
     return { data: _.flatten(output) };
   }
 
+  function currentTemplateValue(value, templateSrv, scopedVars) {
+    var replacedValue;
+    // Make sure there is a variable in the value
+    if (templateSrv.variableExists(value)) {
+      // Check to see if the value is just a single variable
+      var fullVariableRegex = /^\s*(\$(\w+)|\[\[\s*(\w+)\s*\]\])\s*$/;
+      var match = fullVariableRegex.exec(value);
+      if (match) {
+        var variableName = match[2] || match[3];
+        if (scopedVars && scopedVars[variableName]) {
+          replacedValue = scopedVars[variableName].value;
+        } else {
+          var variable = templateSrv.variables.find(function(v) { return v.name == variableName });
+          if (variable.current.value == "$__all") {
+            var filteredOptions = _.filter(variable.options, function(v) { return v.value != "$__all"; });
+            replacedValue = _.map(filteredOptions, function(opt) { return opt.value; });
+          } else {
+            replacedValue = variable.current.value;
+          }
+        }
+      } else {
+        // The value isn't a full value match, try to use the template replace
+        replacedValue = templateSrv.replace(value, scopedVars);
+      }
+    } else {
+      // The value does not have a variable
+      replacedValue = value;
+    }
+    return _.flatten([ replacedValue ]);
+  }
+
   function convertTargetToQuery(options, target) {
     if (!target.metric || target.hide) {
       return null;
     }
 
+    var metricName = currentTemplateValue(target.metric, self.templateSrv, options.scopedVars);
     var query = {
-      name: self.templateSrv.replace(target.metric)
+      name: metricName
     };
 
     query.aggregators = [];
@@ -340,7 +389,7 @@ function (angular, _, sdk, dateMath, kbn) {
     if (target.tags) {
       query.tags = angular.copy(target.tags);
       _.forOwn(query.tags, function(value, key) {
-        query.tags[key] = _.map(value, function(tag) { return self.templateSrv.replace(tag); });
+        query.tags[key] = currentTemplateValue(value, self.templateSrv, options.scopedVars);
       });
     }
 
