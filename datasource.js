@@ -378,6 +378,11 @@ function (angular, _, sdk, dateMath, kbn) {
         if (chosenAggregator.percentile) {
           returnedAggregator.percentile = chosenAggregator.percentile;
         }
+
+        if (chosenAggregator.trim) {
+          returnedAggregator.trim = chosenAggregator.trim;
+        }
+
         query.aggregators.push(returnedAggregator);
       });
     }
