@@ -273,7 +273,18 @@ function (angular, _, sdk, dateMath, kbn) {
         _.each(result.group_by, function(element) {
           if (element.name === "tag") {
             _.each(element.group, function(value, key) {
-              details += key + "=" + value + " ";
+
+              // If the Alias name starts with $group_by, then use that
+              // as the label
+              if (target.startsWith('$group_by(')) {
+                var aliasname = target.split('$group_by(')[1].slice(0, -1);
+                if ( aliasname === key ) {
+                  target = value;
+                }
+              }
+              else {
+                details += key + "=" + value + " ";
+              }
             });
           }
           else if (element.name === "value") {
