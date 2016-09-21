@@ -6,7 +6,7 @@ define([
   'app/core/utils/kbn',
   './query_ctrl'
 ],
-function (angular, _, dateMath, kbn) {
+function (angular, _, sdk, dateMath, kbn) {
   'use strict';
 
   var self;
@@ -23,16 +23,33 @@ function (angular, _, dateMath, kbn) {
     self = this;
   }
 
+  function expandTargets(options) {
+    return _.flatten(_.map(
+      options.targets,
+      function(target) {
+        return _.map(
+          currentTemplateValue(target.metric, self.templateSrv, options.scopedVars),
+          function(metric) {
+            var copy = angular.copy(target);
+            copy.metric = metric;
+            return copy;
+          }
+        )
+      }
+    ));
+  }
+
   // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function(options) {
     var start = options.rangeRaw.from;
     var end = options.rangeRaw.to;
 
-    var queries = _.compact(_.map(options.targets, _.partial(convertTargetToQuery, options)));
-    var plotParams = _.compact(_.map(options.targets, function(target) {
-      var alias = target.alias;
+    var targets = expandTargets(options);
+    var queries = _.compact(_.map(targets, _.partial(convertTargetToQuery, options)));
+    var plotParams = _.compact(_.map(targets, function(target) {
+      var alias = self.templateSrv.replace(target.alias);
       if (typeof target.alias === 'undefined' || target.alias === "") {
-        alias = target.metric;
+        alias = self.templateSrv.replace(target.metric);
       }
 
       if (!target.hide) {
@@ -125,16 +142,32 @@ function (angular, _, dateMath, kbn) {
     });
   };
 
-  KairosDBDatasource.prototype._performMetricKeyValueLookup = function(metric, key) {
+  KairosDBDatasource.prototype._performMetricKeyValueLookup = function(metric, key, otherTags) {
     if(!metric || !key) {
       return this.q.when([]);
+    }
+
+    var metricsOptions = { name: metric };
+    if (otherTags) {
+      var tags = {};
+      var kvps = otherTags.split(',');
+      kvps.forEach(function(pair) {
+        var kv = pair.split("=");
+        var key = kv[0] ? kv[0].trim() : "";
+        var value = kv[1] ? kv[1].trim() : "";
+        if (key && value) {
+          tags[key] = value;
+        }
+      });
+      metricsOptions["tags"] = tags;
+
     }
 
     var options = {
       method: 'POST',
       url: this.url + '/api/v1/datapoints/query/tags',
       data: {
-        metrics: [{ name: metric }],
+        metrics: [metricsOptions],
         cache_time: 0,
         start_absolute: 0
       }
@@ -159,7 +192,7 @@ function (angular, _, dateMath, kbn) {
       }
     };
 
-    return ibacbackendSrv.datasourceRequest(options).then(function(response) {
+    return this.backendSrv.datasourceRequest(options).then(function(response) {
       if (!response.data) {
         return [];
       }
@@ -188,7 +221,7 @@ function (angular, _, dateMath, kbn) {
 
     var metrics_regex = /metrics\((.*)\)/;
     var tag_names_regex = /tag_names\((.*)\)/;
-    var tag_values_regex = /tag_values\((.*),\s?(.*?)\)/;
+    var tag_values_regex = /tag_values\(([^,]*),\s*([^,]*)(,\s*\w+=.+)*\)/;
 
     var metrics_query = interpolated.match(metrics_regex);
     if (metrics_query) {
@@ -202,7 +235,7 @@ function (angular, _, dateMath, kbn) {
 
     var tag_values_query = interpolated.match(tag_values_regex);
     if (tag_values_query) {
-      return this._performMetricKeyValueLookup(tag_values_query[1], tag_values_query[2]).then(responseTransform);
+      return this._performMetricKeyValueLookup(tag_values_query[1], tag_values_query[2], tag_values_query[3]).then(responseTransform);
     }
 
     return this.q.when([]);
@@ -276,29 +309,48 @@ function (angular, _, dateMath, kbn) {
     return { data: _.flatten(output) };
   }
 
+  function currentTemplateValue(value, templateSrv, scopedVars) {
+    var replacedValue;
+    // Make sure there is a variable in the value
+    if (templateSrv.variableExists(value)) {
+      // Check to see if the value is just a single variable
+      var fullVariableRegex = /^\s*(\$(\w+)|\[\[\s*(\w+)\s*\]\])\s*$/;
+      var match = fullVariableRegex.exec(value);
+      if (match) {
+        var variableName = match[2] || match[3];
+        if (scopedVars && scopedVars[variableName]) {
+          replacedValue = scopedVars[variableName].value;
+        } else {
+          var variable = templateSrv.variables.find(function(v) { return v.name == variableName });
+          if (variable.current.value == "$__all") {
+            var filteredOptions = _.filter(variable.options, function(v) { return v.value != "$__all"; });
+            replacedValue = _.map(filteredOptions, function(opt) { return opt.value; });
+          } else {
+            replacedValue = variable.current.value;
+          }
+        }
+      } else {
+        // The value isn't a full value match, try to use the template replace
+        replacedValue = templateSrv.replace(value, scopedVars);
+      }
+    } else {
+      // The value does not have a variable
+      replacedValue = value;
+    }
+    return _.flatten([ replacedValue ]);
+  }
+
   function convertTargetToQuery(options, target) {
     if (!target.metric || target.hide) {
       return null;
     }
 
+    var metricName = currentTemplateValue(target.metric, self.templateSrv, options.scopedVars);
     var query = {
-      name: self.templateSrv.replace(target.metric)
+      name: metricName
     };
 
     query.aggregators = [];
-
-    if (target.downsampling !== '(NONE)') {
-      if (target.downsampling === undefined) {
-        target.downsampling = 'avg';
-        target.sampling = '10s';
-      }
-      query.aggregators.push({
-        name: target.downsampling,
-        align_sampling: true,
-        //align_start_time: true,
-        sampling: self.convertToKairosInterval(target.sampling || options.interval)
-      });
-    }
 
     if (target.horizontalAggregators) {
       _.each(target.horizontalAggregators, function(chosenAggregator) {
@@ -337,7 +389,7 @@ function (angular, _, dateMath, kbn) {
     if (target.tags) {
       query.tags = angular.copy(target.tags);
       _.forOwn(query.tags, function(value, key) {
-        query.tags[key] = _.map(value, function(tag) { return self.templateSrv.replace(tag); });
+        query.tags[key] = currentTemplateValue(value, self.templateSrv, options.scopedVars);
       });
     }
 
