@@ -15,6 +15,7 @@ function (angular, _, sdk, dateMath, kbn) {
     this.type = instanceSettings.type;
     this.url = instanceSettings.url;
     this.name = instanceSettings.name;
+    this.withCredentials = instanceSettings.withCredentials;
     this.supportMetrics = true;
     this.q = $q;
     this.backendSrv = backendSrv;
@@ -68,6 +69,7 @@ function (angular, _, sdk, dateMath, kbn) {
     var options = {
       method: 'POST',
       url: this.url + '/api/v1/datapoints/query',
+      withCredentials: this.withCredentials,
       data: reqBody
     };
 
@@ -81,6 +83,7 @@ function (angular, _, sdk, dateMath, kbn) {
   KairosDBDatasource.prototype._performMetricSuggestQuery = function(metric) {
     var options = {
       url: this.url + '/api/v1/metricnames',
+      withCredentials: this.withCredentials,
       method: 'GET'
     };
 
@@ -104,6 +107,7 @@ function (angular, _, sdk, dateMath, kbn) {
     var options = {
       method: 'POST',
       url: this.url + '/api/v1/datapoints/query/tags',
+      withCredentials: this.withCredentials,
       data: {
         metrics: [{ name: metric }],
         cache_time: 0,
@@ -149,6 +153,7 @@ function (angular, _, sdk, dateMath, kbn) {
     var options = {
       method: 'POST',
       url: this.url + '/api/v1/datapoints/query/tags',
+      withCredentials: this.withCredentials,
       data: {
         metrics: [metricsOptions],
         cache_time: 0,
@@ -167,6 +172,7 @@ function (angular, _, sdk, dateMath, kbn) {
   KairosDBDatasource.prototype.performTagSuggestQuery = function(metric) {
     var options = {
       url: this.url + '/api/v1/datapoints/query/tags',
+      withCredentials: this.withCredentials,
       method: 'POST',
       data: {
         metrics: [{ name: metric }],
