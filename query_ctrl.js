@@ -19,6 +19,10 @@ function (angular, _, sdk) {
         this.target.downsampling = this.target.downsampling;
         this.target.sampling = this.target.sampling;
       }
+      if (!this.target.aliasMode) {
+        this.target.aliasMode = 'default';
+        this.target.alias = this.datasource.getDefaultAlias(this.target);
+      }
       this.target.errors = validateTarget(this.target);
       self = this;
     }
@@ -30,6 +34,9 @@ function (angular, _, sdk) {
 
     KairosDBQueryCtrl.prototype.targetBlur = function() {
       this.target.errors = validateTarget(this.target);
+      if (this.target.aliasMode === 'default') {
+        this.target.alias = this.datasource.getDefaultAlias(this.target);
+      }
       if (!_.isEqual(this.oldTarget, this.target) && _.isEmpty(this.target.errors)) {
         this.oldTarget = angular.copy(this.target);
         this.panelCtrl.refresh();
@@ -98,6 +105,7 @@ function (angular, _, sdk) {
         this.target.errors.tags = "You must specify a tag name and value.";
       }
     };
+
 
     //////////////////////////////
     // GROUP BY

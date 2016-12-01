@@ -47,10 +47,7 @@ function (angular, _, sdk, dateMath, kbn) {
     var targets = expandTargets(options);
     var queries = _.compact(_.map(targets, _.partial(convertTargetToQuery, options)));
     var plotParams = _.compact(_.map(targets, function(target) {
-      var alias = self.templateSrv.replace(target.alias);
-      if (typeof target.alias === 'undefined' || target.alias === "") {
-        alias = self.templateSrv.replace(target.metric);
-      }
+      var alias = target.alias || self.getDefaultAlias(target);
 
       if (!target.hide) {
         return { alias: alias, exouter: target.exOuter };
@@ -60,7 +57,7 @@ function (angular, _, sdk, dateMath, kbn) {
       }
     }));
 
-    var handleKairosDBQueryResponseAlias = _.partial(handleKairosDBQueryResponse, plotParams);
+    var handleKairosDBQueryResponseAlias = _.partial(handleKairosDBQueryResponse, plotParams, self.templateSrv);
 
     // No valid targets, return the empty result to save a round trip.
     if (_.isEmpty(queries)) {
@@ -262,33 +259,35 @@ function (angular, _, sdk, dateMath, kbn) {
     }
   }
 
-  function handleKairosDBQueryResponse(plotParams, results) {
+  function handleKairosDBQueryResponse(plotParams, templateSrv, results) {
     var output = [];
     var index = 0;
     _.each(results.data.queries, function(series) {
       _.each(series.results, function(result) {
         var target = plotParams[index].alias;
-        var details = " ( ";
+        
+        var groupAliases = {};
+        var valueGroup = 1;
+        var timeGroup = 1;
 
+        // collect values for group aliases, then use them as scopedVars for templating
         _.each(result.group_by, function(element) {
           if (element.name === "tag") {
             _.each(element.group, function(value, key) {
-              details += key + "=" + value + " ";
+              groupAliases["_tag_group_" + key] = { value : value };
             });
           }
           else if (element.name === "value") {
-            details += 'value_group=' + element.group.group_number + " ";
+            groupAliases["_value_group_" + valueGroup] = { value : element.group.group_number.toString() };
+            valueGroup ++;
           }
           else if (element.name === "time") {
-            details += 'time_group=' + element.group.group_number + " ";
+            groupAliases["_time_group_" + timeGroup] = { value : element.group.group_number.toString() };
+            timeGroup ++;
           }
         });
 
-        details += ") ";
-
-        if (details !== " ( ) ") {
-          target += details;
-        }
+        target = templateSrv.replace(target, groupAliases);
 
         var datapoints = [];
 
@@ -414,6 +413,33 @@ function (angular, _, sdk, dateMath, kbn) {
     }
     return query;
   }
+
+  KairosDBDatasource.prototype.getDefaultAlias = function(target) {
+    var groupAlias = " ( ";
+    var valueGroup = 1;
+    var timeGroup = 1;
+
+    _.forEach(target.groupByTags, function(tag) {
+      groupAlias += tag + "=$_tag_group_" + tag + ", "; 
+    });
+    _.forEach(target.nonTagGroupBys, function(group) {
+      if (group.name == "value") {
+        groupAlias += "value_group_" + valueGroup + "=$_value_group_" + valueGroup.toString() + ", ";
+        valueGroup ++;
+      } else if (group.name == "time") {
+        groupAlias += "time_group_" + timeGroup + "=$_time_group_" + timeGroup.toString() + ", ";
+        timeGroup ++;
+      }
+    });
+
+    if (groupAlias == " ( ") {
+      groupAlias = "";
+    } else {
+      groupAlias = groupAlias.substring(0, groupAlias.length -2) + " )";
+    }
+
+    return target.metric + groupAlias;
+  };
 
   ///////////////////////////////////////////////////////////////////////
   /// Time conversion functions specifics to KairosDB
