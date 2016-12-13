@@ -415,6 +415,10 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   KairosDBDatasource.prototype.getDefaultAlias = function(target) {
+    if (!target.metric) {
+      return "";
+    }
+
     var groupAlias = " ( ";
     var valueGroup = 1;
     var timeGroup = 1;
