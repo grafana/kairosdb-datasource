@@ -41,16 +41,16 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   // Function to check Datasource health
-  KairosDBDatasource.prototype.testDatasource = function(options) {
+  KairosDBDatasource.prototype.testDatasource = function() {
     return this.backendSrv.datasourceRequest({
       url: this.url + '/api/v1/health/check',
       method: 'GET'
-    }).then(response => {
+    }).then(function(response) {
       if (response.status === 204) {
         return { status: "success", message: "Data source is working", title: "Success" };
       }
-    }); 
-  }
+    });
+  };
 
   // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function(options) {
