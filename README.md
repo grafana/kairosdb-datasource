@@ -2,8 +2,6 @@ Starting in Grafana 3.x the KairosDB data source is no longer included out of th
 
 But it is easy to install this plugin!
 
-> **NOTICE** Plugin looking for maintainer.
-
 ## Documentation
 [KairosDB Plugin Documentation](http://docs.grafana.org/datasources/kairosdb/)
 
