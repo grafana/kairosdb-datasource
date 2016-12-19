@@ -275,8 +275,8 @@ function (angular, _, sdk, dateMath, kbn) {
     var index = 0;
     _.each(results.data.queries, function (series) {
       _.each(series.results, function (result) {
+        var details = " ( ";
         var target = plotParams[index].alias;
-        
         var groupAliases = {};
         var valueGroup = 1;
         var timeGroup = 1;
@@ -297,6 +297,9 @@ function (angular, _, sdk, dateMath, kbn) {
               }
               else {
                 details += key + "=" + value + " ";
+              }
+              if (details !== " ( ) ") {
+                target += details;
               }
             });
           }
@@ -455,19 +458,19 @@ function (angular, _, sdk, dateMath, kbn) {
     var timeGroup = 1;
 
     _.forEach(target.groupByTags, function(tag) {
-      groupAlias += tag + "=$_tag_group_" + tag + ", "; 
+      groupAlias += tag + "=$_tag_group_" + tag + ", ";
     });
     _.forEach(target.nonTagGroupBys, function(group) {
-      if (group.name == "value") {
+      if (group.name === "value") {
         groupAlias += "value_group_" + valueGroup + "=$_value_group_" + valueGroup.toString() + ", ";
         valueGroup ++;
-      } else if (group.name == "time") {
+      } else if (group.name === "time") {
         groupAlias += "time_group_" + timeGroup + "=$_time_group_" + timeGroup.toString() + ", ";
         timeGroup ++;
       }
     });
 
-    if (groupAlias == " ( ") {
+    if (groupAlias === " ( ") {
       groupAlias = "";
     } else {
       groupAlias = groupAlias.substring(0, groupAlias.length -2) + " )";
