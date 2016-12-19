@@ -266,8 +266,9 @@ function (angular, _, sdk) {
     };
 
     KairosDBQueryCtrl.prototype.changeHorAggregationInput = function() {
-      this.target.hasSamplingRate = _.contains(['avg','dev','max','min','sum','least_squares','count','percentile', 'first', 'gaps', 'last'],
-                                          this.target.currentHorizontalAggregatorName);
+      this.target.hasSamplingRate = _.contains(
+          ['avg','dev','max','min','sum','least_squares','count','percentile', 'first', 'gaps', 'last'],
+          this.target.currentHorizontalAggregatorName);
       this.target.hasUnit = _.contains(['sampler','rate'], this.target.currentHorizontalAggregatorName);
       this.target.hasFactor = _.contains(['div','scale'], this.target.currentHorizontalAggregatorName);
       this.target.hasNothing = _.contains(['diff'], this.target.currentHorizontalAggregatorName);
@@ -312,9 +313,9 @@ function (angular, _, sdk) {
 
       if (this.target.hasTrim) {
         if (!this.target.horAggregator.trim ||
-          (this.target.horAggregator.trim != 'both' &&
-          this.target.horAggregator.trim != 'first' &&
-          this.target.horAggregator.trim != 'last')) {
+          (this.target.horAggregator.trim !== 'both' &&
+          this.target.horAggregator.trim !== 'first' &&
+          this.target.horAggregator.trim !== 'last')) {
           errors.trim = 'Trim must be of value both, first, or last';
           this.target.isAggregatorValid = false;
         }

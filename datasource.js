@@ -35,7 +35,7 @@ function (angular, _, sdk, dateMath, kbn) {
             copy.metric = metric;
             return copy;
           }
-        )
+        );
       }
     ));
   }
@@ -327,9 +327,9 @@ function (angular, _, sdk, dateMath, kbn) {
         if (scopedVars && scopedVars[variableName]) {
           replacedValue = scopedVars[variableName].value;
         } else {
-          var variable = templateSrv.variables.find(function(v) { return v.name == variableName });
-          if (variable.current.value == "$__all") {
-            var filteredOptions = _.filter(variable.options, function(v) { return v.value != "$__all"; });
+          var variable = templateSrv.variables.find(function(v) { return v.name === variableName; });
+          if (variable.current.value === "$__all") {
+            var filteredOptions = _.filter(variable.options, function(v) { return v.value !== "$__all"; });
             replacedValue = _.map(filteredOptions, function(opt) { return opt.value; });
           } else {
             replacedValue = variable.current.value;
@@ -343,7 +343,7 @@ function (angular, _, sdk, dateMath, kbn) {
       // The value does not have a variable
       replacedValue = value;
     }
-    return _.flatten([ replacedValue ]);
+    return _.flatten([replacedValue]);
   }
 
   function convertTargetToQuery(options, target) {

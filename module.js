@@ -5,10 +5,10 @@ define([
 function(KairosDBDatasource, KairosDBQueryCtrl) {
   'use strict';
 
-  var KairosDBConfigCtrl = function() {}
+  var KairosDBConfigCtrl = function() {};
   KairosDBConfigCtrl.templateUrl = "partials/config.html";
 
-  var KairosDBQueryOptionsCtrl = function() {}
+  var KairosDBQueryOptionsCtrl = function() {};
   KairosDBQueryOptionsCtrl.templateUrl = "partials/query.options.html";
 
   return {
