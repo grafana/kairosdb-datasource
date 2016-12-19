@@ -159,7 +159,7 @@ function (angular, _, sdk, dateMath, kbn) {
         var kv = pair.split("=");
         var k = kv[0] ? kv[0].trim() : "";
         var value = kv[1] ? kv[1].trim() : "";
-        if (value.search(/^\{.*\}$/) != -1) // multi-value, probably from a template var. e.g., "{dog,cat,bird}"
+        if (value.search(/^\{.*\}$/) !== -1) // multi-value, probably from a template var. e.g., "{dog,cat,bird}"
         {
           value = value.slice(1,-1).split(/\s*,\s*/);
         }
