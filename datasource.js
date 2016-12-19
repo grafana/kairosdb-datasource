@@ -11,6 +11,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
   var self;
 
+  /** @ngInject */
   function KairosDBDatasource(instanceSettings, $q, backendSrv, templateSrv) {
     this.type = instanceSettings.type;
     this.url = instanceSettings.url;
@@ -22,22 +23,6 @@ function (angular, _, sdk, dateMath, kbn) {
     this.templateSrv = templateSrv;
 
     self = this;
-  }
-
-  function expandTargets(options) {
-    return _.flatten(_.map(
-      options.targets,
-      function(target) {
-        return _.map(
-          currentTemplateValue(target.metric, self.templateSrv, options.scopedVars),
-          function(metric) {
-            var copy = angular.copy(target);
-            copy.metric = metric;
-            return copy;
-          }
-        );
-      }
-    ));
   }
 
   // Function to check Datasource health
@@ -53,17 +38,14 @@ function (angular, _, sdk, dateMath, kbn) {
   };
 
   // Called once per panel (graph)
-  KairosDBDatasource.prototype.query = function(options) {
+  KairosDBDatasource.prototype.query = function (options) {
     var start = options.rangeRaw.from;
     var end = options.rangeRaw.to;
 
     var targets = expandTargets(options);
     var queries = _.compact(_.map(targets, _.partial(convertTargetToQuery, options)));
     var plotParams = _.compact(_.map(targets, function(target) {
-      var alias = self.templateSrv.replace(target.alias);
-      if (typeof target.alias === 'undefined' || target.alias === "") {
-        alias = self.templateSrv.replace(target.metric);
-      }
+      var alias = target.alias || self.getDefaultAlias(target);
 
       if (!target.hide) {
         return { alias: alias, exouter: target.exOuter };
@@ -73,7 +55,7 @@ function (angular, _, sdk, dateMath, kbn) {
       }
     }));
 
-    var handleKairosDBQueryResponseAlias = _.partial(handleKairosDBQueryResponse, plotParams);
+    var handleKairosDBQueryResponseAlias = _.partial(handleKairosDBQueryResponse, plotParams, self.templateSrv);
 
     // No valid targets, return the empty result to save a round trip.
     if (_.isEmpty(queries)) {
@@ -86,7 +68,7 @@ function (angular, _, sdk, dateMath, kbn) {
       .then(handleKairosDBQueryResponseAlias, handleQueryError);
   };
 
-  KairosDBDatasource.prototype.performTimeSeriesQuery = function(queries, start, end) {
+  KairosDBDatasource.prototype.performTimeSeriesQuery = function (queries, start, end) {
     var reqBody = {
       metrics: queries,
       cache_time: 0
@@ -97,8 +79,8 @@ function (angular, _, sdk, dateMath, kbn) {
 
     var options = {
       method: 'POST',
-      url: this.url + '/api/v1/datapoints/query',
       withCredentials: this.withCredentials,
+      url: this.url + '/api/v1/datapoints/query',
       data: reqBody
     };
 
@@ -109,19 +91,19 @@ function (angular, _, sdk, dateMath, kbn) {
    * Gets the list of metrics
    * @returns {*|Promise}
    */
-  KairosDBDatasource.prototype._performMetricSuggestQuery = function(metric) {
+  KairosDBDatasource.prototype._performMetricSuggestQuery = function (metric) {
     var options = {
       url: this.url + '/api/v1/metricnames',
       withCredentials: this.withCredentials,
       method: 'GET'
     };
 
-    return this.backendSrv.datasourceRequest(options).then(function(response) {
+    return this.backendSrv.datasourceRequest(options).then(function (response) {
       if (!response.data) {
         return this.q.when([]);
       }
       var metrics = [];
-      _.each(response.data.results, function(r) {
+      _.each(response.data.results, function (r) {
         if (r.indexOf(metric) >= 0) {
           metrics.push(r);
         }
@@ -130,27 +112,31 @@ function (angular, _, sdk, dateMath, kbn) {
     });
   };
 
-  KairosDBDatasource.prototype._performMetricKeyLookup = function(metric) {
-    if(!metric) { return this.q.when([]); }
+  KairosDBDatasource.prototype._performMetricKeyLookup = function (metric) {
+    if (!metric) {
+      return this.q.when([]);
+    }
 
     var options = {
       method: 'POST',
       url: this.url + '/api/v1/datapoints/query/tags',
       withCredentials: this.withCredentials,
       data: {
-        metrics: [{ name: metric }],
+        metrics: [
+          { name: metric }
+        ],
         cache_time: 0,
         start_absolute: 0
       }
     };
 
-    return this.backendSrv.datasourceRequest(options).then(function(result) {
+    return this.backendSrv.datasourceRequest(options).then(function (result) {
       if (!result.data) {
         return this.q.when([]);
       }
       var tagks = [];
-      _.each(result.data.queries[0].results[0].tags, function(tagv, tagk) {
-        if(tagks.indexOf(tagk) === -1) {
+      _.each(result.data.queries[0].results[0].tags, function (tagv, tagk) {
+        if (tagks.indexOf(tagk) === -1) {
           tagks.push(tagk);
         }
       });
@@ -158,8 +144,8 @@ function (angular, _, sdk, dateMath, kbn) {
     });
   };
 
-  KairosDBDatasource.prototype._performMetricKeyValueLookup = function(metric, key, otherTags) {
-    if(!metric || !key) {
+  KairosDBDatasource.prototype._performMetricKeyValueLookup = function (metric, key, otherTags) {
+    if (!metric || !key) {
       return this.q.when([]);
     }
 
@@ -167,7 +153,7 @@ function (angular, _, sdk, dateMath, kbn) {
     if (otherTags) {
       var tags = {};
       var kvps = otherTags.split(',');
-      kvps.forEach(function(pair) {
+      kvps.forEach(function (pair) {
         var kv = pair.split("=");
         var key = kv[0] ? kv[0].trim() : "";
         var value = kv[1] ? kv[1].trim() : "";
@@ -181,8 +167,8 @@ function (angular, _, sdk, dateMath, kbn) {
 
     var options = {
       method: 'POST',
-      url: this.url + '/api/v1/datapoints/query/tags',
       withCredentials: this.withCredentials,
+      url: this.url + '/api/v1/datapoints/query/tags',
       data: {
         metrics: [metricsOptions],
         cache_time: 0,
@@ -190,7 +176,7 @@ function (angular, _, sdk, dateMath, kbn) {
       }
     };
 
-    return this.backendSrv.datasourceRequest(options).then(function(result) {
+    return this.backendSrv.datasourceRequest(options).then(function (result) {
       if (!result.data) {
         return this.q.when([]);
       }
@@ -198,19 +184,21 @@ function (angular, _, sdk, dateMath, kbn) {
     });
   };
 
-  KairosDBDatasource.prototype.performTagSuggestQuery = function(metric) {
+  KairosDBDatasource.prototype.performTagSuggestQuery = function (metric) {
     var options = {
       url: this.url + '/api/v1/datapoints/query/tags',
-      withCredentials: this.withCredentials,
       method: 'POST',
+      withCredentials: this.withCredentials,
       data: {
-        metrics: [{ name: metric }],
+        metrics: [
+          { name: metric }
+        ],
         cache_time: 0,
         start_absolute: 0
       }
     };
 
-    return this.backendSrv.datasourceRequest(options).then(function(response) {
+    return this.backendSrv.datasourceRequest(options).then(function (response) {
       if (!response.data) {
         return [];
       }
@@ -220,8 +208,10 @@ function (angular, _, sdk, dateMath, kbn) {
     });
   };
 
-  KairosDBDatasource.prototype.metricFindQuery = function(query) {
-    if (!query) { return this.q.when([]); }
+  KairosDBDatasource.prototype.metricFindQuery = function (query) {
+    if (!query) {
+      return this.q.when([]);
+    }
 
     var interpolated;
     try {
@@ -231,8 +221,8 @@ function (angular, _, sdk, dateMath, kbn) {
       return this.q.reject(err);
     }
 
-    var responseTransform = function(result) {
-      return _.map(result, function(value) {
+    var responseTransform = function (result) {
+      return _.map(result, function (value) {
         return {text: value};
       });
     };
@@ -280,17 +270,22 @@ function (angular, _, sdk, dateMath, kbn) {
     }
   }
 
-  function handleKairosDBQueryResponse(plotParams, results) {
+  function handleKairosDBQueryResponse(plotParams, templateSrv, results) {
     var output = [];
     var index = 0;
-    _.each(results.data.queries, function(series) {
-      _.each(series.results, function(result) {
+    _.each(results.data.queries, function (series) {
+      _.each(series.results, function (result) {
         var target = plotParams[index].alias;
-        var details = " ( ";
+        
+        var groupAliases = {};
+        var valueGroup = 1;
+        var timeGroup = 1;
 
+        // collect values for group aliases, then use them as scopedVars for templating
         _.each(result.group_by, function(element) {
           if (element.name === "tag") {
             _.each(element.group, function(value, key) {
+              groupAliases["_tag_group_" + key] = { value : value };
 
               // If the Alias name starts with $group_by, then use that
               // as the label
@@ -306,18 +301,16 @@ function (angular, _, sdk, dateMath, kbn) {
             });
           }
           else if (element.name === "value") {
-            details += 'value_group=' + element.group.group_number + " ";
+            groupAliases["_value_group_" + valueGroup] = { value : element.group.group_number.toString() };
+            valueGroup ++;
           }
           else if (element.name === "time") {
-            details += 'time_group=' + element.group.group_number + " ";
+            groupAliases["_time_group_" + timeGroup] = { value : element.group.group_number.toString() };
+            timeGroup ++;
           }
         });
 
-        details += ") ";
-
-        if (details !== " ( ) ") {
-          target += details;
-        }
+        target = templateSrv.replace(target, groupAliases);
 
         var datapoints = [];
 
@@ -382,9 +375,9 @@ function (angular, _, sdk, dateMath, kbn) {
     query.aggregators = [];
 
     if (target.horizontalAggregators) {
-      _.each(target.horizontalAggregators, function(chosenAggregator) {
+      _.each(target.horizontalAggregators, function (chosenAggregator) {
         var returnedAggregator = {
-          name:chosenAggregator.name
+          name: chosenAggregator.name
         };
 
         if (chosenAggregator.sampling_rate) {
@@ -423,7 +416,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
     if (target.tags) {
       query.tags = angular.copy(target.tags);
-      _.forOwn(query.tags, function(value, key) {
+      _.forOwn(query.tags, function (value, key) {
         query.tags[key] = currentTemplateValue(value, self.templateSrv, options.scopedVars);
       });
     }
@@ -433,12 +426,14 @@ function (angular, _, sdk, dateMath, kbn) {
       if (target.groupByTags) {
         query.group_by.push({
           name: "tag",
-          tags: _.map(angular.copy(target.groupByTags), function(tag) { return self.templateSrv.replace(tag); })
+          tags: _.map(angular.copy(target.groupByTags), function (tag) {
+            return self.templateSrv.replace(tag);
+          })
         });
       }
 
       if (target.nonTagGroupBys) {
-        _.each(target.nonTagGroupBys, function(rawGroupBy) {
+        _.each(target.nonTagGroupBys, function (rawGroupBy) {
           var formattedGroupBy = angular.copy(rawGroupBy);
           if (formattedGroupBy.name === 'time') {
             formattedGroupBy.range_size = self.convertToKairosInterval(formattedGroupBy.range_size);
@@ -450,11 +445,42 @@ function (angular, _, sdk, dateMath, kbn) {
     return query;
   }
 
+  KairosDBDatasource.prototype.getDefaultAlias = function(target) {
+    if (!target.metric) {
+      return "";
+    }
+
+    var groupAlias = " ( ";
+    var valueGroup = 1;
+    var timeGroup = 1;
+
+    _.forEach(target.groupByTags, function(tag) {
+      groupAlias += tag + "=$_tag_group_" + tag + ", "; 
+    });
+    _.forEach(target.nonTagGroupBys, function(group) {
+      if (group.name == "value") {
+        groupAlias += "value_group_" + valueGroup + "=$_value_group_" + valueGroup.toString() + ", ";
+        valueGroup ++;
+      } else if (group.name == "time") {
+        groupAlias += "time_group_" + timeGroup + "=$_time_group_" + timeGroup.toString() + ", ";
+        timeGroup ++;
+      }
+    });
+
+    if (groupAlias == " ( ") {
+      groupAlias = "";
+    } else {
+      groupAlias = groupAlias.substring(0, groupAlias.length -2) + " )";
+    }
+
+    return target.metric + groupAlias;
+  };
+
   ///////////////////////////////////////////////////////////////////////
   /// Time conversion functions specifics to KairosDB
   //////////////////////////////////////////////////////////////////////
 
-  KairosDBDatasource.prototype.convertToKairosInterval = function(intervalString) {
+  KairosDBDatasource.prototype.convertToKairosInterval = function (intervalString) {
     intervalString = self.templateSrv.replace(intervalString);
 
     var interval_regex = /(\d+(?:\.\d+)?)([Mwdhmsy])/;
@@ -469,7 +495,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
     var value = matches[1];
     var unit = matches[2];
-    if (value%1 !== 0) {
+    if (value % 1 !== 0) {
       if (unit === 'ms') {
         throw new Error('Invalid interval value, cannot be smaller than the millisecond');
       }
@@ -519,25 +545,25 @@ function (angular, _, sdk, dateMath, kbn) {
 
   function convertToKairosDBTimeUnit(unit) {
     switch (unit) {
-    case 'ms':
-      return 'milliseconds';
-    case 's':
-      return 'seconds';
-    case 'm':
-      return 'minutes';
-    case 'h':
-      return 'hours';
-    case 'd':
-      return 'days';
-    case 'w':
-      return 'weeks';
-    case 'M':
-      return 'months';
-    case 'y':
-      return 'years';
-    default:
-      console.log("Unknown unit ", unit);
-      return '';
+      case 'ms':
+        return 'milliseconds';
+      case 's':
+        return 'seconds';
+      case 'm':
+        return 'minutes';
+      case 'h':
+        return 'hours';
+      case 'd':
+        return 'days';
+      case 'w':
+        return 'weeks';
+      case 'M':
+        return 'months';
+      case 'y':
+        return 'years';
+      default:
+        console.log("Unknown unit ", unit);
+        return '';
     }
   }
 
@@ -572,6 +598,22 @@ function (angular, _, sdk, dateMath, kbn) {
     }
 
     return datapoints;
+  }
+
+  function expandTargets(options) {
+    return _.flatten(_.map(
+      options.targets,
+      function(target) {
+        return _.map(
+          currentTemplateValue(target.metric, self.templateSrv, options.scopedVars),
+          function(metric) {
+            var copy = angular.copy(target);
+            copy.metric = metric;
+            return copy;
+          }
+        );
+      }
+    ));
   }
 
   return KairosDBDatasource;

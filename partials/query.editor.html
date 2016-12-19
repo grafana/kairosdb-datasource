@@ -16,13 +16,6 @@
           <i class="fa fa-warning"></i>
         </a>
       </li>
-      <li class="tight-form-item">
-        Alias
-      </li>
-      <li>
-        <input type="text" class="input-medium tight-form-input" ng-model="ctrl.target.alias"
-        spellcheck='false' placeholder="alias" ng-blur="ctrl.targetBlur()">
-      </li>
       <li  class="tight-form-item">
         &nbsp;Peak filter
         <input class="input-medium" type="checkbox" ng-model="ctrl.target.exOuter" ng-change="ctrl.targetBlur()">
@@ -305,6 +298,32 @@
       </li>
     </ul>
     <div class="clearfix"></div>
+  </div>
+
+  <!-- ALIAS -->
+  <div class="tight-form">
+    <ul class="tight-form-list">
+      <li class="tight-form-item">Alias</li>
+      <li>
+        <select class="input-small tight-form-input ng-pristine ng-valid ng-not-empty" ng-change="ctrl.targetBlur()" 
+          ng-model="ctrl.target.aliasMode" ng-options="o for o in ['default', 'custom']"/>
+      </li>
+      <li>
+        <input type="text" class="input-xxlarge tight-form-input" ng-model="ctrl.target.alias"
+        spellcheck='false' ng-blur="ctrl.targetBlur()" ng-readonly="ctrl.target.aliasMode!='custom'"
+        ng-style="ctrl.target.aliasMode!='custom' && {color : 'gray'}">
+      </li>
+      <li class="tight-form-item">
+        <i class="fa fa-question-circle ng-scope text-left" data-placement="right" data-html="true"
+           bs-tooltip="'Expression used for metric and group aliasing <br />
+           The following variables are available to differentiate the data groups: <br />
+           $_tag_group_[tag name] -> The tag\'s value in a tag groupby <br />
+           $_value_group_[n] -> The group number in the nth value groupby <br />
+           $_time_group_[n] -> The group number in the nth time groupby <br />'">
+        </i>
+      </li>
+    </ul>
+  <div class="clearfix"></div>
   </div>
 
 </query-editor-row>
