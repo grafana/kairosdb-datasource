@@ -237,7 +237,9 @@ function (angular, _, sdk) {
         var aggregator = {
           name:this.target.currentHorizontalAggregatorName
         };
-        if (this.target.hasSamplingRate) {aggregator.sampling_rate = this.target.horAggregator.samplingRate ? this.target.horAggregator.samplingRate:"auto";}
+        if (this.target.hasSamplingRate) {
+          aggregator.sampling_rate = this.target.horAggregator.samplingRate ? this.target.horAggregator.samplingRate:"auto";
+        }
         if (this.target.hasUnit) {aggregator.unit = this.target.horAggregator.unit;}
         if (this.target.hasFactor) {aggregator.factor = this.target.horAggregator.factor;}
         if (this.target.hasNothing) {aggregator.nothing = this.target.horAggregator.nothing;}

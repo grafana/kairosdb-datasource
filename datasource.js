@@ -365,7 +365,8 @@ function (angular, _, sdk, dateMath, kbn) {
         };
 
         if (chosenAggregator.sampling_rate) {
-          returnedAggregator.sampling = self.convertToKairosInterval(chosenAggregator.sampling_rate==="auto" ? options.interval : chosenAggregator.sampling_rate);
+          returnedAggregator.sampling = self.convertToKairosInterval(
+              chosenAggregator.sampling_rate==="auto" ? options.interval : chosenAggregator.sampling_rate);
           returnedAggregator.align_sampling = true;
           //returnedAggregator.align_start_time = true;
         }
