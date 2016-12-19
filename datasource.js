@@ -144,7 +144,9 @@ function (angular, _, sdk, dateMath, kbn) {
     });
   };
 
-  KairosDBDatasource.prototype._performMetricKeyValueLookup = function (metric, key, otherTags) {
+  KairosDBDatasource.prototype._performMetricKeyValueLookup = function(metric, key, otherTags) {
+    metric = metric.trim();
+    key = key.trim();
     if (!metric || !key) {
       return this.q.when([]);
     }
@@ -152,17 +154,20 @@ function (angular, _, sdk, dateMath, kbn) {
     var metricsOptions = { name: metric };
     if (otherTags) {
       var tags = {};
-      var kvps = otherTags.split(',');
-      kvps.forEach(function (pair) {
+      var kvps = otherTags.match(/\w+\s*=\s*(?:[^,{}]+|\{[^,{}]+(?:,\s*[^,{}]+)*\})/g);
+      kvps.forEach(function(pair) {
         var kv = pair.split("=");
-        var key = kv[0] ? kv[0].trim() : "";
+        var k = kv[0] ? kv[0].trim() : "";
         var value = kv[1] ? kv[1].trim() : "";
-        if (key && value) {
-          tags[key] = value;
+        if (value.search(/^\{.*\}$/) != -1) // multi-value, probably from a template var. e.g., "{dog,cat,bird}"
+        {
+          value = value.slice(1,-1).split(/\s*,\s*/);
+        }
+        if (k && value) {
+          tags[k] = value;
         }
       });
       metricsOptions["tags"] = tags;
-
     }
 
     var options = {
@@ -229,7 +234,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
     var metrics_regex = /metrics\((.*)\)/;
     var tag_names_regex = /tag_names\((.*)\)/;
-    var tag_values_regex = /tag_values\(([^,]*),\s*([^,]*)(,\s*\w+=.+)*\)/;
+    var tag_values_regex = /tag_values\(([^,]*),\s*([^,]*)(?:,\s*)?(\w+\s*=.*)?\)/;
 
     var metrics_query = interpolated.match(metrics_regex);
     if (metrics_query) {
