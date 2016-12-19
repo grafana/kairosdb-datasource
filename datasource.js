@@ -25,6 +25,18 @@ function (angular, _, sdk, dateMath, kbn) {
     self = this;
   }
 
+  // Function to check Datasource health
+  KairosDBDatasource.prototype.testDatasource = function() {
+    return this.backendSrv.datasourceRequest({
+      url: this.url + '/api/v1/health/check',
+      method: 'GET'
+    }).then(function(response) {
+      if (response.status === 204) {
+        return { status: "success", message: "Data source is working", title: "Success" };
+      }
+    });
+  };
+
   // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function (options) {
     var start = options.rangeRaw.from;
@@ -274,7 +286,18 @@ function (angular, _, sdk, dateMath, kbn) {
           if (element.name === "tag") {
             _.each(element.group, function(value, key) {
               groupAliases["_tag_group_" + key] = { value : value };
-              details += key + "=" + value + " ";
+
+              // If the Alias name starts with $group_by, then use that
+              // as the label
+              if (target.startsWith('$group_by(')) {
+                var aliasname = target.split('$group_by(')[1].slice(0, -1);
+                if (aliasname === key) {
+                  target = value;
+                }
+              }
+              else {
+                details += key + "=" + value + " ";
+              }
             });
           }
           else if (element.name === "value") {
@@ -358,7 +381,8 @@ function (angular, _, sdk, dateMath, kbn) {
         };
 
         if (chosenAggregator.sampling_rate) {
-          returnedAggregator.sampling = self.convertToKairosInterval(chosenAggregator.sampling_rate);
+          returnedAggregator.sampling = self.convertToKairosInterval(
+              chosenAggregator.sampling_rate==="auto" ? options.interval : chosenAggregator.sampling_rate);
           returnedAggregator.align_sampling = true;
           //returnedAggregator.align_start_time = true;
         }
@@ -377,6 +401,11 @@ function (angular, _, sdk, dateMath, kbn) {
         if (chosenAggregator.percentile) {
           returnedAggregator.percentile = chosenAggregator.percentile;
         }
+
+        if (chosenAggregator.trim) {
+          returnedAggregator.trim = chosenAggregator.trim;
+        }
+
         query.aggregators.push(returnedAggregator);
       });
     }

@@ -213,7 +213,7 @@
         <select class="input-medium tight-form-input"
           ng-change="ctrl.changeHorAggregationInput()"
           ng-model="ctrl.target.currentHorizontalAggregatorName"
-          ng-options="f for f in ['avg','dev','max','min','rate','sampler','count','sum','least_squares','percentile','scale','div', 'first', 'gaps', 'last', 'diff']"></select>
+          ng-options="f for f in ['avg','dev','max','min','rate','sampler','count','sum','least_squares','percentile','scale','div', 'first', 'gaps', 'last', 'diff', 'trim']"></select>
       </li>
 
       <!-- Different parameters -->
@@ -223,6 +223,8 @@
       <li ng-show="ctrl.target.hasSamplingRate">
         <input type="text"
         class="input-mini tight-form-input"
+        bs-tooltip="'Leave blank for auto handling based on time range and panel width'"
+        placeholder="{{interval}}"
         ng-model="ctrl.target.horAggregator.samplingRate"
         ng-init="ctrl.target.horAggregator.samplingRate='1s'"
         spellcheck='false'
@@ -276,6 +278,16 @@
           ng-show="ctrl.target.errors.horAggregator.percentile">
           <i class="fa fa-warning"></i>
         </a>
+      </li>
+
+      <li ng-show="ctrl.target.hasTrim" class="tight-form-item">
+        by
+      </li>
+      <li ng-show="ctrl.target.hasTrim">
+        <select class="input-medium tight-form-input"
+          ng-model="ctrl.target.horAggregator.trim"
+          ng-init="ctrl.target.horAggregator.trim='both'"
+          ng-options="f for f in ['both','first','last']"></select>
       </li>
 
       <li class="tight-form-item" ng-show="ctrl.target.addHorizontalAggregatorMode">

@@ -249,7 +249,7 @@ function (angular, _, sdk) {
           name: this.target.currentHorizontalAggregatorName
         };
         if (this.target.hasSamplingRate) {
-          aggregator.sampling_rate = this.target.horAggregator.samplingRate;
+          aggregator.sampling_rate = this.target.horAggregator.samplingRate ? this.target.horAggregator.samplingRate:"auto";
         }
         if (this.target.hasUnit) {
           aggregator.unit = this.target.horAggregator.unit;
@@ -273,6 +273,7 @@ function (angular, _, sdk) {
       this.target.hasFactor = false;
       this.target.hasNothing = false;
       this.target.hasPercentile = false;
+      this.target.hasTrim = false;
     };
 
     KairosDBQueryCtrl.prototype.removeHorizontalAggregator = function (index) {
@@ -284,14 +285,16 @@ function (angular, _, sdk) {
       this.targetBlur();
     };
 
-    KairosDBQueryCtrl.prototype.changeHorAggregationInput = function () {
-      this.target.hasSamplingRate =
-      _.contains(['avg', 'dev', 'max', 'min', 'sum', 'least_squares', 'count', 'percentile', 'first', 'gaps', 'last'],
-      this.target.currentHorizontalAggregatorName);
-      this.target.hasUnit = _.contains(['sampler', 'rate'], this.target.currentHorizontalAggregatorName);
-      this.target.hasFactor = _.contains(['div', 'scale'], this.target.currentHorizontalAggregatorName);
+    KairosDBQueryCtrl.prototype.changeHorAggregationInput = function() {
+      this.target.hasSamplingRate = _.contains(
+          ['avg','dev','max','min','sum','least_squares','count','percentile', 'first', 'gaps', 'last'],
+          this.target.currentHorizontalAggregatorName);
+      this.target.hasUnit = _.contains(['sampler','rate'], this.target.currentHorizontalAggregatorName);
+      this.target.hasFactor = _.contains(['div','scale'], this.target.currentHorizontalAggregatorName);
+
       this.target.hasNothing = _.contains(['diff'], this.target.currentHorizontalAggregatorName);
       this.target.hasPercentile = 'percentile' === this.target.currentHorizontalAggregatorName;
+      this.target.hasTrim = _.contains(['trim'], this.target.currentHorizontalAggregatorName);
       this.validateHorizontalAggregator();
     };
 
@@ -300,7 +303,7 @@ function (angular, _, sdk) {
       var errors = {};
       this.target.isAggregatorValid = true;
 
-      if (this.target.hasSamplingRate) {
+      if (this.target.hasSamplingRate && this.target.horAggregator.samplingRate) {
         try {
           this.datasource.convertToKairosInterval(this.target.horAggregator.samplingRate);
         } catch (err) {
@@ -325,6 +328,16 @@ function (angular, _, sdk) {
           this.target.horAggregator.percentile<=0 ||
           this.target.horAggregator.percentile>1) {
           errors.percentile = 'Percentile must be between 0 and 1';
+          this.target.isAggregatorValid = false;
+        }
+      }
+
+      if (this.target.hasTrim) {
+        if (!this.target.horAggregator.trim ||
+          (this.target.horAggregator.trim !== 'both' &&
+          this.target.horAggregator.trim !== 'first' &&
+          this.target.horAggregator.trim !== 'last')) {
+          errors.trim = 'Trim must be of value both, first, or last';
           this.target.isAggregatorValid = false;
         }
       }
