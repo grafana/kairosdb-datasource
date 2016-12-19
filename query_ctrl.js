@@ -6,9 +6,10 @@ define([
 function (angular, _, sdk) {
   'use strict';
 
-  var KairosDBQueryCtrl = (function(_super) {
+  var KairosDBQueryCtrl = (function (_super) {
     var self;
 
+    /** @ngInject */
     function KairosDBQueryCtrl($scope, $injector) {
       _super.call(this, $scope, $injector);
 
@@ -32,7 +33,7 @@ function (angular, _, sdk) {
 
     KairosDBQueryCtrl.templateUrl = 'partials/query.editor.html';
 
-    KairosDBQueryCtrl.prototype.targetBlur = function() {
+    KairosDBQueryCtrl.prototype.targetBlur = function () {
       this.target.errors = validateTarget(this.target);
       if (this.target.aliasMode === 'default') {
         this.target.alias = this.datasource.getDefaultAlias(this.target);
@@ -43,30 +44,32 @@ function (angular, _, sdk) {
       }
     };
 
-    KairosDBQueryCtrl.prototype.getTextValues = function(metricFindResult) {
-      return _.map(metricFindResult, function(value) { return value.text; });
+    KairosDBQueryCtrl.prototype.getTextValues = function (metricFindResult) {
+      return _.map(metricFindResult, function (value) {
+        return value.text;
+      });
     };
 
-    KairosDBQueryCtrl.prototype.suggestMetrics = function(query, callback) {
+    KairosDBQueryCtrl.prototype.suggestMetrics = function (query, callback) {
       self.datasource.metricFindQuery('metrics(' + query + ')')
         .then(self.getTextValues)
         .then(callback);
     };
 
-    KairosDBQueryCtrl.prototype.suggestTagKeys = function(query, callback) {
+    KairosDBQueryCtrl.prototype.suggestTagKeys = function (query, callback) {
       self.datasource.metricFindQuery('tag_names(' + self.target.metric + ')')
         .then(self.getTextValues)
         .then(callback);
     };
 
-    KairosDBQueryCtrl.prototype.suggestTagValues = function(query, callback) {
+    KairosDBQueryCtrl.prototype.suggestTagValues = function (query, callback) {
       self.datasource.metricFindQuery('tag_values(' + self.target.metric + ',' + self.target.currentTagKey + ')')
         .then(self.getTextValues)
         .then(callback);
     };
 
     // Filter metric by tag
-    KairosDBQueryCtrl.prototype.addFilterTag = function() {
+    KairosDBQueryCtrl.prototype.addFilterTag = function () {
       if (!this.target.addFilterTagMode) {
         this.target.addFilterTagMode = true;
         this.validateFilterTag();
@@ -91,7 +94,7 @@ function (angular, _, sdk) {
       this.target.addFilterTagMode = false;
     };
 
-    KairosDBQueryCtrl.prototype.removeFilterTag = function(key) {
+    KairosDBQueryCtrl.prototype.removeFilterTag = function (key) {
       delete this.target.tags[key];
       if (_.size(this.target.tags) === 0) {
         this.target.tags = null;
@@ -99,7 +102,7 @@ function (angular, _, sdk) {
       this.targetBlur();
     };
 
-    KairosDBQueryCtrl.prototype.validateFilterTag = function() {
+    KairosDBQueryCtrl.prototype.validateFilterTag = function () {
       this.target.errors.tags = null;
       if (!this.target.currentTagKey || !this.target.currentTagValue) {
         this.target.errors.tags = "You must specify a tag name and value.";
@@ -110,7 +113,7 @@ function (angular, _, sdk) {
     //////////////////////////////
     // GROUP BY
     //////////////////////////////
-    KairosDBQueryCtrl.prototype.addGroupBy = function() {
+    KairosDBQueryCtrl.prototype.addGroupBy = function () {
       if (!this.target.addGroupByMode) {
         this.target.currentGroupByType = 'tag';
         this.target.addGroupByMode = true;
@@ -156,7 +159,7 @@ function (angular, _, sdk) {
       this.target.addGroupByMode = false;
     };
 
-    KairosDBQueryCtrl.prototype.removeGroupByTag = function(index) {
+    KairosDBQueryCtrl.prototype.removeGroupByTag = function (index) {
       this.target.groupByTags.splice(index, 1);
       if (_.size(this.target.groupByTags) === 0) {
         this.target.groupByTags = null;
@@ -164,7 +167,7 @@ function (angular, _, sdk) {
       this.targetBlur();
     };
 
-    KairosDBQueryCtrl.prototype.removeNonTagGroupBy = function(index) {
+    KairosDBQueryCtrl.prototype.removeNonTagGroupBy = function (index) {
       this.target.nonTagGroupBys.splice(index, 1);
       if (_.size(this.target.nonTagGroupBys) === 0) {
         this.target.nonTagGroupBys = null;
@@ -172,18 +175,18 @@ function (angular, _, sdk) {
       this.targetBlur();
     };
 
-    KairosDBQueryCtrl.prototype.changeGroupByInput = function() {
+    KairosDBQueryCtrl.prototype.changeGroupByInput = function () {
       this.target.isTagGroupBy = this.target.currentGroupByType === 'tag';
       this.target.isValueGroupBy = this.target.currentGroupByType === 'value';
       this.target.isTimeGroupBy = this.target.currentGroupByType === 'time';
       this.validateGroupBy();
     };
 
-    KairosDBQueryCtrl.prototype.getValuesOfGroupBy = function(groupBy) {
+    KairosDBQueryCtrl.prototype.getValuesOfGroupBy = function (groupBy) {
       return _.values(groupBy);
     };
 
-    KairosDBQueryCtrl.prototype.validateGroupBy = function() {
+    KairosDBQueryCtrl.prototype.validateGroupBy = function () {
       delete this.target.errors.groupBy;
       var errors = {};
       this.target.isGroupByValid = true;
@@ -227,7 +230,7 @@ function (angular, _, sdk) {
     // HORIZONTAL AGGREGATION
     //////////////////////////////
 
-    KairosDBQueryCtrl.prototype.addHorizontalAggregator = function() {
+    KairosDBQueryCtrl.prototype.addHorizontalAggregator = function () {
       if (!this.target.addHorizontalAggregatorMode) {
         this.target.addHorizontalAggregatorMode = true;
         this.target.currentHorizontalAggregatorName = 'avg';
@@ -243,13 +246,23 @@ function (angular, _, sdk) {
           this.target.horizontalAggregators = [];
         }
         var aggregator = {
-          name:this.target.currentHorizontalAggregatorName
+          name: this.target.currentHorizontalAggregatorName
         };
-        if (this.target.hasSamplingRate) {aggregator.sampling_rate = this.target.horAggregator.samplingRate;}
-        if (this.target.hasUnit) {aggregator.unit = this.target.horAggregator.unit;}
-        if (this.target.hasFactor) {aggregator.factor = this.target.horAggregator.factor;}
-        if (this.target.hasNothing) {aggregator.nothing = this.target.horAggregator.nothing;}
-        if (this.target.hasPercentile) {aggregator.percentile = this.target.horAggregator.percentile;}
+        if (this.target.hasSamplingRate) {
+          aggregator.sampling_rate = this.target.horAggregator.samplingRate;
+        }
+        if (this.target.hasUnit) {
+          aggregator.unit = this.target.horAggregator.unit;
+        }
+        if (this.target.hasFactor) {
+          aggregator.factor = this.target.horAggregator.factor;
+        }
+        if (this.target.hasNothing) {
+          aggregator.nothing = this.target.horAggregator.nothing;
+        }
+        if (this.target.hasPercentile) {
+          aggregator.percentile = this.target.horAggregator.percentile;
+        }
         this.target.horizontalAggregators.push(aggregator);
         this.targetBlur();
       }
@@ -262,7 +275,7 @@ function (angular, _, sdk) {
       this.target.hasPercentile = false;
     };
 
-    KairosDBQueryCtrl.prototype.removeHorizontalAggregator = function(index) {
+    KairosDBQueryCtrl.prototype.removeHorizontalAggregator = function (index) {
       this.target.horizontalAggregators.splice(index, 1);
       if (_.size(this.target.horizontalAggregators) === 0) {
         this.target.horizontalAggregators = null;
@@ -271,17 +284,18 @@ function (angular, _, sdk) {
       this.targetBlur();
     };
 
-    KairosDBQueryCtrl.prototype.changeHorAggregationInput = function() {
-      this.target.hasSamplingRate = _.contains(['avg','dev','max','min','sum','least_squares','count','percentile', 'first', 'gaps', 'last'],
-                                          this.target.currentHorizontalAggregatorName);
-      this.target.hasUnit = _.contains(['sampler','rate'], this.target.currentHorizontalAggregatorName);
-      this.target.hasFactor = _.contains(['div','scale'], this.target.currentHorizontalAggregatorName);
+    KairosDBQueryCtrl.prototype.changeHorAggregationInput = function () {
+      this.target.hasSamplingRate =
+      _.contains(['avg', 'dev', 'max', 'min', 'sum', 'least_squares', 'count', 'percentile', 'first', 'gaps', 'last'],
+      this.target.currentHorizontalAggregatorName);
+      this.target.hasUnit = _.contains(['sampler', 'rate'], this.target.currentHorizontalAggregatorName);
+      this.target.hasFactor = _.contains(['div', 'scale'], this.target.currentHorizontalAggregatorName);
       this.target.hasNothing = _.contains(['diff'], this.target.currentHorizontalAggregatorName);
       this.target.hasPercentile = 'percentile' === this.target.currentHorizontalAggregatorName;
       this.validateHorizontalAggregator();
     };
 
-    KairosDBQueryCtrl.prototype.validateHorizontalAggregator = function() {
+    KairosDBQueryCtrl.prototype.validateHorizontalAggregator = function () {
       delete this.target.errors.horAggregator;
       var errors = {};
       this.target.isAggregatorValid = true;
@@ -320,7 +334,7 @@ function (angular, _, sdk) {
       }
     };
 
-    KairosDBQueryCtrl.prototype.alert = function(message) {
+    KairosDBQueryCtrl.prototype.alert = function (message) {
       alert(message);
     };
 
