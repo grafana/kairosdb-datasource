@@ -296,7 +296,7 @@ function (angular, _, sdk, dateMath, kbn) {
               // as the label
               if (target.startsWith('$group_by(')) {
                 var aliasname = target.split('$group_by(')[1].slice(0, -1);
-                if ( aliasname === key ) {
+                if (aliasname === key) {
                   target = value;
                 }
               }
