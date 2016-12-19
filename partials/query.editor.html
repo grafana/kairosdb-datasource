@@ -230,6 +230,8 @@
       <li ng-show="ctrl.target.hasSamplingRate">
         <input type="text"
         class="input-mini tight-form-input"
+        bs-tooltip="'Leave blank for auto handling based on time range and panel width'"
+        placeholder="{{interval}}"
         ng-model="ctrl.target.horAggregator.samplingRate"
         ng-init="ctrl.target.horAggregator.samplingRate='1s'"
         spellcheck='false'
