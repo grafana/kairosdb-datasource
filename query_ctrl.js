@@ -29,6 +29,7 @@ function (angular, _, sdk) {
 
       this.metricNamesCallDelay = 1000;
       this.metricNamesPromise = null;
+      this.lastSuggestedMetricName = null;
 
       self = this;
     }
@@ -56,6 +57,8 @@ function (angular, _, sdk) {
     };
 
     KairosDBQueryCtrl.prototype.suggestMetrics = function (query, callback) {
+      if (self.lastSuggestedMetricName === query) { return; }
+      self.lastSuggestedMetricName = query;
       self.$timeout.cancel(self.metricNamesPromise);
       self.metricNamesPromise = self.$timeout(
           function() {
