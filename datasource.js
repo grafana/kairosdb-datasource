@@ -626,5 +626,7 @@ function (angular, _, sdk, dateMath, kbn) {
     ));
   }
 
-  return KairosDBDatasource;
+  return {
+    KairosDBDatasource: KairosDBDatasource
+  };
 });
