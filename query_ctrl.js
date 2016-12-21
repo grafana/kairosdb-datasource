@@ -10,9 +10,10 @@ function (angular, _, sdk) {
     var self;
 
     /** @ngInject */
-    function KairosDBQueryCtrl($scope, $injector) {
+    function KairosDBQueryCtrl($scope, $injector, $timeout) {
       _super.call(this, $scope, $injector);
 
+      this.$timeout = $timeout;
       if (!this.target.downsampling) {
         this.target.downsampling = 'avg';
       }
@@ -25,6 +26,10 @@ function (angular, _, sdk) {
         this.target.alias = this.datasource.getDefaultAlias(this.target);
       }
       this.target.errors = validateTarget(this.target);
+
+      this.metricNamesCallDelay = 1000;
+      this.metricNamesPromise = null;
+
       self = this;
     }
 
@@ -51,9 +56,15 @@ function (angular, _, sdk) {
     };
 
     KairosDBQueryCtrl.prototype.suggestMetrics = function (query, callback) {
-      self.datasource.metricFindQuery('metrics(' + query + ')')
-        .then(self.getTextValues)
-        .then(callback);
+      self.$timeout.cancel(self.metricNamesPromise);
+      self.metricNamesPromise = self.$timeout(
+          function() {
+            return self.datasource.metricFindQuery('metrics(' + query + ')')
+                .then(self.getTextValues)
+                .then(callback);
+          },
+          self.metricNamesCallDelay
+      );
     };
 
     KairosDBQueryCtrl.prototype.suggestTagKeys = function (query, callback) {
