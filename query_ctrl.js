@@ -65,9 +65,7 @@ function (angular, _, sdk) {
             return self.datasource.metricFindQuery('metrics(' + query + ')')
                 .then(self.getTextValues)
                 .then(callback);
-          },
-          self.metricNamesCallDelay
-      );
+          }, self.metricNamesCallDelay);
     };
 
     KairosDBQueryCtrl.prototype.suggestTagKeys = function (query, callback) {
