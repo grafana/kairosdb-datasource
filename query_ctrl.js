@@ -6,7 +6,7 @@ define([
 function (angular, _, sdk) {
   'use strict';
 
-  var KairosDBQueryCtrl = (function (_super) {
+  return (function (_super) {
     var self;
 
     /** @ngInject */
@@ -369,9 +369,9 @@ function (angular, _, sdk) {
       return errs;
     }
 
-    return KairosDBQueryCtrl;
+    return {
+      KairosDBQueryCtrl: KairosDBQueryCtrl
+    };
 
   })(sdk.QueryCtrl);
-
-  return KairosDBQueryCtrl;
 });
