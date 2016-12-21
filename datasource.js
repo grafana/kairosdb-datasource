@@ -96,7 +96,8 @@ function (angular, _, sdk, dateMath, kbn) {
     var options = {
       url: this.url + '/api/v1/metricnames?containing=' + metric,
       withCredentials: this.withCredentials,
-      method: 'GET'
+      method: 'GET',
+      requestId: "metricnames"
     };
 
     return this.backendSrv.datasourceRequest(options).then(function (response) {
