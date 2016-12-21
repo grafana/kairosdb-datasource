@@ -92,8 +92,9 @@ function (angular, _, sdk, dateMath, kbn) {
    * @returns {*|Promise}
    */
   KairosDBDatasource.prototype._performMetricSuggestQuery = function (metric) {
+    //Requires a KairosDB version supporting server-side metric names filtering
     var options = {
-      url: this.url + '/api/v1/metricnames',
+      url: this.url + '/api/v1/metricnames?containing=' + metric,
       withCredentials: this.withCredentials,
       method: 'GET'
     };
