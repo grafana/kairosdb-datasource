@@ -23,6 +23,21 @@ function (angular, _, sdk, dateMath, kbn) {
     this.templateSrv = templateSrv;
 
     self = this;
+    self.metricNames = [];
+
+    var responseTransform = function (result) {
+      return _.map(result, function (value) {
+        return {text: value};
+      });
+    };
+
+    self._performMetricSuggestQuery("")
+    .then(responseTransform)
+    .then(function(data){
+      self.metricNames = data;
+      //todo: move to localStorage
+    })
+
   }
 
   // Function to check Datasource health
@@ -93,8 +108,12 @@ function (angular, _, sdk, dateMath, kbn) {
    */
   KairosDBDatasource.prototype._performMetricSuggestQuery = function (metric) {
     //Requires a KairosDB version supporting server-side metric names filtering
+    var url = this.url + '/api/v1/metricnames';
+    if(metric.length) {
+      url += "?containing=" + metric;
+    }
     var options = {
-      url: this.url + '/api/v1/metricnames?containing=' + metric,
+      url: url,
       withCredentials: this.withCredentials,
       method: 'GET',
       requestId: "metricnames"
@@ -240,7 +259,19 @@ function (angular, _, sdk, dateMath, kbn) {
 
     var metrics_query = interpolated.match(metrics_regex);
     if (metrics_query) {
-      return this._performMetricSuggestQuery(metrics_query[1]).then(responseTransform);
+
+      var deferred = self.q.defer();
+
+      var queryMetricName = metrics_query[1];
+      console.log("Start filtering");
+      var filteredMetricNames = _.filter(self.metricNames, function(metricName) {
+        return metricName.text.indexOf(queryMetricName) >= 0;
+      });
+
+      deferred.resolve(filteredMetricNames);
+
+      return deferred.promise;
+      // return this._performMetricSuggestQuery(metrics_query[1]).then(responseTransform);
     }
 
     var tag_names_query = interpolated.match(tag_names_regex);
