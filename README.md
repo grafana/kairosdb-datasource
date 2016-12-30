@@ -5,19 +5,20 @@ But it is easy to install this plugin!
 ## Documentation
 [KairosDB Plugin Documentation](http://docs.grafana.org/datasources/kairosdb/)
 
-## Alternative installation method - Clone into plugins directory
-Either clone this repo into your grafana plugins directory (default /var/lib/grafana/plugins if your installing grafana with package).
+## Installation
+Either clone this repo into your grafana plugins directory (default /var/lib/grafana/plugins if your installing grafana with package). Then run grunt to compile typescript.
 Restart grafana-server and the plugin should be automatically detected and used.
 
 ```
 git clone git@github.com:grafana/datasource-plugin-kairosdb.git
+npm install
+grunt
 sudo service grafana-server restart
 ```
 
-
 ## Clone into a directory of your choice
 
-The edit your grafana.ini config file (Default location is at /etc/grafana/grafana.ini) and add this:
+Then edit your grafana.ini config file (Default location is at /etc/grafana/grafana.ini) and add this:
 
 ```ini
 [plugin.kairosdb]
