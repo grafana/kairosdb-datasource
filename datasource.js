@@ -354,7 +354,7 @@ function (angular, _, sdk, dateMath, kbn) {
           replacedValue = scopedVars[variableName].value;
         } else {
           var variable = templateSrv.variables.find(function(v) { return v.name === variableName; });
-          if (variable.current.value === "$__all") {
+          if (variable.current.value[0] === "$__all") {
             var filteredOptions = _.filter(variable.options, function(v) { return v.value !== "$__all"; });
             replacedValue = _.map(filteredOptions, function(opt) { return opt.value; });
           } else {
