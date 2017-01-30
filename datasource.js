@@ -14,7 +14,7 @@ function (angular, _, sdk, dateMath, kbn) {
   /** @ngInject */
   function KairosDBDatasource(instanceSettings, $q, backendSrv, templateSrv) {
     this.type = instanceSettings.type;
-    this.url = instanceSettings.url;
+    this.url = instanceSettings.url.replace(/\/+$/, "");
     this.name = instanceSettings.name;
     this.withCredentials = instanceSettings.withCredentials;
     this.supportMetrics = true;
