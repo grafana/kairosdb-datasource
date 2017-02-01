@@ -27,20 +27,27 @@
 
   <!--TAGS ALTERNATIVE-->
   <div class="tight-form">
-    <div ng-repeat="(tagName, tagValues) in ctrl.metricTags">
-      <ul class="tight-form-list" role="menu">
-        <li>
-          <div class="tight-form-item">{{tagName}}</div>
-        </li>
-        <li>
-          <input type="text"
-                 class="input-small tight-form-input"
-                 data-min-length=0 data-items=100
-                 bs-typeahead="ctrl.getTagValues(tagName)"/>
-        </li>
-      </ul>
-      <div class="clearfix"></div>
-    </div>
+    <ul class="tight-form-list" role="menu">
+      <li class="tight-form-item">
+        Tags
+      </li>
+      <li>
+
+      </li>
+      <div class="container">
+        <table class="table table-striped">
+          <tbody>
+          <tr ng-repeat="(tagName, tagValues) in ctrl.metricTags">
+            <td>{{tagName}}</td>
+            <td><input type="text"
+                       class="input-small tight-form-input"
+                       data-min-length=0 data-items=100
+                       bs-typeahead="ctrl.getTagValues(tagName)"/></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </ul>
   </div>
 
   <!-- TAGS -->
