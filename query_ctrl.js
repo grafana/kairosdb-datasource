@@ -9,6 +9,10 @@ function (angular, _, sdk) {
   return (function (_super) {
     var self;
 
+    function isPromisePending(promise) {
+      return promise && promise.$$state.status === 0;
+    }
+
     /** @ngInject */
     function KairosDBQueryCtrl($scope, $injector, $timeout) {
       _super.call(this, $scope, $injector);
@@ -28,10 +32,16 @@ function (angular, _, sdk) {
       this.target.errors = validateTarget(this.target);
 
       this.metricNamesCallDelay = 1000;
-      this.metricNamesPromise = null;
       this.lastSuggestedMetricName = null;
 
+      this.metricNamesTimeoutPromise = null;
+      this.metricNamesRequestPromise = null;
+
       self = this;
+
+      this.isMetricLoading = function() {
+        return isPromisePending(self.metricNamesTimeoutPromise) || isPromisePending(self.metricNamesRequestPromise);
+      };
     }
 
     KairosDBQueryCtrl.prototype = Object.create(_super.prototype);
@@ -59,12 +69,14 @@ function (angular, _, sdk) {
     KairosDBQueryCtrl.prototype.suggestMetrics = function (query, callback) {
       if (self.lastSuggestedMetricName === query) { return; }
       self.lastSuggestedMetricName = query;
-      self.$timeout.cancel(self.metricNamesPromise);
-      self.metricNamesPromise = self.$timeout(
+      self.$timeout.cancel(self.metricNamesTimeoutPromise);
+      self.metricNamesTimeoutPromise = self.$timeout(
           function() {
-            return self.datasource.metricFindQuery('metrics(' + query + ')')
-                .then(self.getTextValues)
-                .then(callback);
+            self.metricNamesRequestPromise =
+              self.datasource.metricFindQuery('metrics(' + query + ')')
+                  .then(self.getTextValues)
+                  .then(callback);
+            return self.metricNamesRequestPromise;
           }, self.metricNamesCallDelay);
     };
 
