@@ -59,10 +59,10 @@ function (angular, _, sdk) {
       var metricName = this.target.metric;
       self.tagsLoading = true;
       self.datasource.performTagSuggestQuery(metricName)
-        .then(function(tags) {
-          console.log(tags);
-          self.metricTags = tags;
+        .then(function(response) {
+          self.metricTags = response.tags;
           self.tagsLoading = false;
+          console.log(self.metricTags);
         });
 
       //todo: tags loading end
