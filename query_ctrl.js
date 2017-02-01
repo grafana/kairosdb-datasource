@@ -44,6 +44,10 @@ function (angular, _, sdk) {
       this.isMetricLoading = function() {
         return isPromisePending(self.metricNamesTimeoutPromise) || isPromisePending(self.metricNamesRequestPromise);
       };
+
+      this.getTagValues = function(tagName) {
+        return this.metricTags[tagName];
+      }
     }
 
     KairosDBQueryCtrl.prototype = Object.create(_super.prototype);

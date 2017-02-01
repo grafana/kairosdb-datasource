@@ -27,14 +27,16 @@
 
   <!--TAGS ALTERNATIVE-->
   <div class="tight-form">
-
     <div ng-repeat="(tagName, tagValues) in ctrl.metricTags">
       <ul class="tight-form-list" role="menu">
         <li>
           <div class="tight-form-item">{{tagName}}</div>
         </li>
-        <li ng-repeat="tagValue in tagValues">
-          <div class="tight-form-item">{{tagValue}}</div>
+        <li>
+          <input type="text"
+                 class="input-small tight-form-input"
+                 data-min-length=0 data-items=100
+                 bs-typeahead="ctrl.getTagValues(tagName)"/>
         </li>
       </ul>
       <div class="clearfix"></div>
