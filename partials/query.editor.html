@@ -25,6 +25,22 @@
 	<div class="clearfix"></div>
   </div>
 
+  <!--TAGS ALTERNATIVE-->
+  <div class="tight-form">
+
+    <div ng-repeat="(tagName, tagValues) in ctrl.metricTags">
+      <ul class="tight-form-list" role="menu">
+        <li>
+          <div class="tight-form-item">{{tagName}}</div>
+        </li>
+        <li ng-repeat="tagValue in tagValues">
+          <div class="tight-form-item">{{tagValue}}</div>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
   <!-- TAGS -->
   <div class="tight-form">
     <ul class="tight-form-list" role="menu">
