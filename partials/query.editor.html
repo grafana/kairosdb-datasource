@@ -16,10 +16,6 @@
           <i class="fa fa-warning"></i>
         </a>
       </li>
-      <li  class="tight-form-item">
-        &nbsp;Peak filter
-        <input class="input-medium" type="checkbox" ng-model="ctrl.target.exOuter" ng-change="ctrl.targetBlur()">
-      </li>
 	</ul>
 	<div class="clearfix"></div>
   </div>
@@ -324,6 +320,12 @@
       </li>
     </ul>
   <div class="clearfix"></div>
+  </div>
+  <div class="tight-form">
+    <li  class="tight-form-item">
+      &nbsp;Peak filter
+      <input class="input-medium" type="checkbox" ng-model="ctrl.target.exOuter" ng-change="ctrl.targetBlur()">
+    </li>
   </div>
 
 </query-editor-row>
