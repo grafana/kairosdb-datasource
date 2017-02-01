@@ -28,10 +28,11 @@
   <!-- TAGS -->
   <div class="tight-form">
     <ul class="tight-form-list" role="menu">
-      <li class="tight-form-item">
+      <li class="tight-form-item" ng-style="ctrl.tagsLoading && {'color': 'gray'}">
         Tags
       </li>
-      <li ng-repeat="(key, value) in ctrl.target.tags track by $index" class="tight-form-item">
+      <li ng-repeat="(key, value) in ctrl.target.tags track by $index" class="tight-form-item"
+          ng-style="ctrl.tagsLoading && {'color': 'gray'}">
         {{key}}&nbsp;=&nbsp;{{value}}
         <a ng-click="ctrl.removeFilterTag(key)">
           <i class="fa fa-remove"></i>
@@ -45,7 +46,7 @@
       </li>
 
       <li ng-show="ctrl.target.addFilterTagMode">
-        <input type="text"
+        <input type="text" ng-disabled="ctrl.tagsLoading"
         class="input-small tight-form-input"
         spellcheck='false'
         bs-typeahead="ctrl.suggestTagKeys"
@@ -55,7 +56,7 @@
         placeholder="key">
       </li>
       <li ng-show="ctrl.target.addFilterTagMode">
-        <input type="text"
+        <input type="text" ng-disabled="ctrl.tagsLoading"
         class="input-small tight-form-input"
         spellcheck='false'
         bs-typeahead="ctrl.suggestTagValues"
@@ -74,6 +75,9 @@
             <i ng-hide="ctrl.target.errors.tags" class="fa fa-plus-circle"></i>
           </a>
         </li>
+      </li>
+      <li ng-show="ctrl.tagsLoading" class="tight-form-item">
+        <span class="fa fa-spinner fa-spin"></span>
       </li>
     </ul>
     <div class="clearfix"></div>

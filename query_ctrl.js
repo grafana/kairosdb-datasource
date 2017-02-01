@@ -36,6 +36,8 @@ function (angular, _, sdk) {
 
       this.metricNamesTimeoutPromise = null;
       this.metricNamesRequestPromise = null;
+      this.tagsLoading = false;
+      this.metricTags = null;
 
       self = this;
 
@@ -51,6 +53,19 @@ function (angular, _, sdk) {
 
     KairosDBQueryCtrl.prototype.targetBlur = function () {
       this.target.errors = validateTarget(this.target);
+
+      //todo: tags loading
+
+      var metricName = this.target.metric;
+      self.tagsLoading = true;
+      self.datasource.performTagSuggestQuery(metricName)
+        .then(function(tags) {
+          console.log(tags);
+          self.metricTags = tags;
+          self.tagsLoading = false;
+        });
+
+      //todo: tags loading end
       if (this.target.aliasMode === 'default') {
         this.target.alias = this.datasource.getDefaultAlias(this.target);
       }
