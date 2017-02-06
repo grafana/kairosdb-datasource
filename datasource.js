@@ -123,6 +123,7 @@ function (angular, _, sdk, dateMath, kbn) {
       method: 'POST',
       url: this.url + '/api/v1/datapoints/query/tags',
       withCredentials: this.withCredentials,
+      requestId: "metricKeyLookup",
       data: {
         metrics: [
           { name: metric }
@@ -176,6 +177,7 @@ function (angular, _, sdk, dateMath, kbn) {
       method: 'POST',
       withCredentials: this.withCredentials,
       url: this.url + '/api/v1/datapoints/query/tags',
+      requestId: "metricKeyValueLookup",
       data: {
         metrics: [metricsOptions],
         cache_time: 0,
@@ -196,6 +198,7 @@ function (angular, _, sdk, dateMath, kbn) {
       url: this.url + '/api/v1/datapoints/query/tags',
       method: 'POST',
       withCredentials: this.withCredentials,
+      requestId: "tagSuggestQuery",
       data: {
         metrics: [
           { name: metric }
