@@ -23,8 +23,8 @@
       {"name": "GitHub", "url": "https://github.com/grafana/kairosdb-datasource"},
       {"name": "License", "url": "https://github.com/grafana/kairosdb-datasource/blob/master/LICENSE"}
     ],
-    "version": "1.0.1",
-    "updated": "2016-02-10"
+    "version": "1.0.2",
+    "updated": "2017-02-07"
   },
 
   "dependencies": {
