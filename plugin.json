@@ -1,10 +1,11 @@
 {
-  "id": "grafana-kairosdb-datasource",
+  "id": "kairosdb",
   "name": "KairosDB",
   "type": "datasource",
 
   "metrics": true,
   "annotations": false,
+  "alerting": true,
 
   "staticRoot": ".",
 
@@ -23,12 +24,12 @@
       {"name": "GitHub", "url": "https://github.com/grafana/kairosdb-datasource"},
       {"name": "License", "url": "https://github.com/grafana/kairosdb-datasource/blob/master/LICENSE"}
     ],
-    "version": "1.0.1",
-    "updated": "2016-02-10"
+    "version": "2.0.0",
+    "updated": "2017-02-07"
   },
 
   "dependencies": {
-    "grafanaVersion": "3.x.x",
+    "grafanaVersion": "4.x.x",
     "plugins": [ ]
   }
 }
