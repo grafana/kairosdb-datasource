@@ -28,6 +28,7 @@ function (angular, _, sdk) {
       this.target.errors = validateTarget(this.target);
 
       this.metricNamesCallDelay = 1000;
+      this.metricNamesSuggestionsLimit = 100;
       this.metricNamesPromise = null;
       this.lastSuggestedMetricName = null;
 
@@ -64,6 +65,10 @@ function (angular, _, sdk) {
           function() {
             return self.datasource.metricFindQuery('metrics(' + query + ')')
                 .then(self.getTextValues)
+                .then(function(metricNames) {
+                  metricNames.splice(self.metricNamesSuggestionsLimit);
+                  return metricNames;
+                })
                 .then(callback);
           }, self.metricNamesCallDelay);
     };
