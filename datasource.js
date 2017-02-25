@@ -263,11 +263,15 @@ function (angular, _, sdk, dateMath, kbn) {
       var deferred = self.q.defer();
 
       var queryMetricName = metrics_query[1];
+      console.log(self.metricNames.length);
       console.log("Start filtering");
       var filteredMetricNames = _.filter(self.metricNames, function(metricName) {
-        return metricName.text.indexOf(queryMetricName) >= 0;
+        return metricName.text.indexOf(queryMetricName) >= 0; //todo: startswith?
       });
-
+      console.log(filteredMetricNames.length);
+      var LIMIT = 100;
+      filteredMetricNames.splice(LIMIT); //todo
+      console.log(filteredMetricNames.length);
       deferred.resolve(filteredMetricNames);
 
       return deferred.promise;
