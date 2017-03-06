@@ -39,6 +39,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
   // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function (options) {
+    self.panelId = options.panelId;
     var start = options.rangeRaw.from;
     var end = options.rangeRaw.to;
 
@@ -97,7 +98,7 @@ function (angular, _, sdk, dateMath, kbn) {
       url: this.url + '/api/v1/metricnames?containing=' + metric,
       withCredentials: this.withCredentials,
       method: 'GET',
-      requestId: "metricnames"
+      requestId: self.panelId + ".metricnames"
     };
 
     return this.backendSrv.datasourceRequest(options).then(function (response) {
@@ -177,7 +178,7 @@ function (angular, _, sdk, dateMath, kbn) {
       method: 'POST',
       withCredentials: this.withCredentials,
       url: this.url + '/api/v1/datapoints/query/tags',
-      requestId: "metricKeyValueLookup",
+      requestId: self.panelId + "." + metric + "." + key + "." + "metricKeyValueLookup",
       data: {
         metrics: [metricsOptions],
         cache_time: 0,
