@@ -145,7 +145,7 @@ function (angular, _, sdk) {
           if (!this.target.groupByTags) {
             this.target.groupByTags = [];
           }
-          if (!_.includes(this.target.groupByTags, this.target.groupBy.tagKey)) {
+          if (!_.contains(this.target.groupByTags, this.target.groupBy.tagKey)) {
             this.target.groupByTags.push(this.target.groupBy.tagKey);
             this.targetBlur();
           }
@@ -302,15 +302,15 @@ function (angular, _, sdk) {
     };
 
     KairosDBQueryCtrl.prototype.changeHorAggregationInput = function() {
-      this.target.hasSamplingRate = _.includes(
+      this.target.hasSamplingRate = _.contains(
           ['avg','dev','max','min','sum','least_squares','count','percentile', 'first', 'gaps', 'last'],
           this.target.currentHorizontalAggregatorName);
-      this.target.hasUnit = _.includes(['sampler','rate'], this.target.currentHorizontalAggregatorName);
-      this.target.hasFactor = _.includes(['div','scale'], this.target.currentHorizontalAggregatorName);
+      this.target.hasUnit = _.contains(['sampler','rate'], this.target.currentHorizontalAggregatorName);
+      this.target.hasFactor = _.contains(['div','scale'], this.target.currentHorizontalAggregatorName);
 
-      this.target.hasNothing = _.includes(['diff'], this.target.currentHorizontalAggregatorName);
+      this.target.hasNothing = _.contains(['diff'], this.target.currentHorizontalAggregatorName);
       this.target.hasPercentile = 'percentile' === this.target.currentHorizontalAggregatorName;
-      this.target.hasTrim = _.includes(['trim'], this.target.currentHorizontalAggregatorName);
+      this.target.hasTrim = _.contains(['trim'], this.target.currentHorizontalAggregatorName);
       this.validateHorizontalAggregator();
     };
 
