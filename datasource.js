@@ -286,7 +286,7 @@ function (angular, _, sdk, dateMath, kbn) {
     var index = 0;
     _.each(results.data.queries, function (series) {
       _.each(series.results, function (result) {
-        var details = " ( ";
+        var details = "";
         var target = plotParams[index].alias;
         var groupAliases = {};
         var valueGroup = 1;
@@ -308,9 +308,6 @@ function (angular, _, sdk, dateMath, kbn) {
               }
               else {
                 details += key + "=" + value + " ";
-              }
-              if (details !== " ( ) ") {
-                target += details;
               }
             });
           }
