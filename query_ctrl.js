@@ -279,6 +279,9 @@ function (angular, _, sdk) {
         if (this.target.hasPercentile) {
           aggregator.percentile = this.target.horAggregator.percentile;
         }
+        if (this.target.hasTrim) {
+          aggregator.trim = this.target.horAggregator.trim;
+        }
         this.target.horizontalAggregators.push(aggregator);
         this.targetBlur();
       }
