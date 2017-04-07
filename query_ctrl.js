@@ -59,20 +59,20 @@ function (angular, _, sdk) {
     KairosDBQueryCtrl.prototype.buildTagsOptions = function() {
       //todo: filter out missing tags
       this.tagsOptions = _.map(this.tags, function (tagValues, tagName) {
+        var isMulti = tagValues.length > 1,
+        options = _.map(tagValues, function(tagValue) {
+          return {
+            value: tagValue,
+            text: tagValue
+          }
+        }),
+        current = isMulti ? { value: null, text: "Choose values" } : options[0];
         return {
           label: tagName,
           name: tagName,
-          current: {
-            value: null,
-            text: "Choose values"
-          },
-          multi: true, //todo: if multiple values
-          options: _.map(tagValues, function(tagValue) {
-            return {
-              value: tagValue,
-              text: tagValue
-            }
-          })
+          current: current,
+          multi: isMulti,
+          options: options
         }
       });
     };
