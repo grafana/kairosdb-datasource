@@ -14,48 +14,12 @@ function (angular, _, sdk) {
     function KairosDBQueryCtrl($scope, $injector, $timeout) {
       _super.call(this, $scope, $injector);
 
-      var that = this;
-
       this.tags = {
-        tag1: ["val1","val2","val3","val4"],
-        tag2: ["val5","val10","val11","val16"],
-        tag3: ["val6","val9","val12","val15"],
-        tag4: ["val7","val8","val13","val14"]
+        tag1: ["val1", "val2", "val3", "val4"],
+        tag2: ["val5", "val10", "val11", "val16"],
+        tag3: ["val6", "val9", "val12", "val15"],
+        tag4: ["val7", "val8", "val13", "val14"]
       };
-
-      this.getNewTags = function(value) {
-        return that.tags.tag1;
-      };
-
-      this.addNewTag = function(tagName, tagVlue) {
-        debugger;
-      };
-
-      var currentValue = {
-        value: "value",
-        text: "Text"
-      };
-
-      this.variable = {
-        label: "label",
-        name: "name",
-        options: [
-            {
-          value: "value1",
-              text: "text1"
-        },
-          {
-            value: "value2",
-            text: "text2"
-          },
-          {
-            value: "value2",
-            text: "text2"
-          }],
-        current: currentValue,
-        multi: true
-      };
-
 
       this.$timeout = $timeout;
       if (!this.target.downsampling) {
