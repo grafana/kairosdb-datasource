@@ -1,7 +1,8 @@
 define([
   'angular',
   'lodash',
-  'app/plugins/sdk'
+  'app/plugins/sdk',
+  './tags_select'
 ],
 function (angular, _, sdk) {
   'use strict';

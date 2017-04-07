@@ -37,19 +37,6 @@
                 <div class="gf-form-label gf-form-label--grow"></div>
             </div>
         </div>
-        <div class="gf-form-inline" ng-repeat="(tagName, tagValues) in ctrl.tags">
-            <div class="gf-form">
-                <label class="gf-form-label offset-width-8">
-                    {{tagName}}
-                </label>
-            </div>
-            <div class="gf-form" style="background-color: #292929">
-                <value-select-dropdown variable="ctrl.variable"></value-select-dropdown>
-            </div>
-
-            <div class="gf-form gf-form--grow">
-                <div class="gf-form-label gf-form-label--grow"></div>
-            </div>
-        </div>
+        <tags-select ng-repeat="(tagName, tagValues) in ctrl.tags"></tags-select>
     </div>
 </query-editor-row>
