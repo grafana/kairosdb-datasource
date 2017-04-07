@@ -26,6 +26,35 @@ function (angular, _, sdk) {
         return that.tags.tag1;
       };
 
+      this.addNewTag = function(tagName, tagVlue) {
+        debugger;
+      };
+
+      var currentValue = {
+        value: "value",
+        text: "Text"
+      };
+
+      this.variable = {
+        label: "label",
+        name: "name",
+        options: [
+            {
+          value: "value1",
+              text: "text1"
+        },
+          {
+            value: "value2",
+            text: "text2"
+          },
+          {
+            value: "value2",
+            text: "text2"
+          }],
+        current: currentValue,
+        multi: true
+      };
+
 
       this.$timeout = $timeout;
       if (!this.target.downsampling) {

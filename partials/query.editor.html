@@ -43,17 +43,9 @@
                     {{tagName}}
                 </label>
             </div>
-
-            <div class="gf-form">
-
-                <input type="text"
-                       class="input-small tight-form-input"
-                       spellcheck='false'
-                       bs-typeahead="ctrl.getNewTags"
-                       data-min-length=0 data-items=100
-                       placeholder="Add tag">
+            <div class="gf-form" style="background-color: #292929">
+                <value-select-dropdown variable="ctrl.variable"></value-select-dropdown>
             </div>
-
 
             <div class="gf-form gf-form--grow">
                 <div class="gf-form-label gf-form-label--grow"></div>
