@@ -19,6 +19,8 @@
         </div>
     </div>
 
+    <!--todo: seperate directive for tag input-->
+
     <div class="gf-form-group">
         <div class="gf-form-inline">
             <div class="gf-form">
@@ -28,33 +30,22 @@
             </div>
             <div class="gf-form">
                 <label class="gf-form-label">
-                    asdfasdf
+                    Some text for tags
                 </label>
             </div>
             <div class="gf-form gf-form--grow">
                 <div class="gf-form-label gf-form-label--grow"></div>
             </div>
         </div>
-        <div class="gf-form-inline">
+        <div class="gf-form-inline" ng-repeat="(tagName, tagValues) in ctrl.tags">
             <div class="gf-form">
                 <label class="gf-form-label offset-width-8">
-                    asdfasdf
+                    {{tagName}}
                 </label>
             </div>
             <div class="gf-form gf-form--grow">
                 <div class="gf-form-label gf-form-label--grow"></div>
             </div>
         </div>
-        <div class="gf-form-inline offset-width-8">
-            <div class="gf-form">
-                <label class="gf-form-label">
-                    asdfasdf
-                </label>
-            </div>
-            <div class="gf-form gf-form--grow">
-                <div class="gf-form-label gf-form-label--grow"></div>
-            </div>
-        </div>
-
     </div>
 </query-editor-row>
