@@ -14,13 +14,6 @@ function (angular, _, sdk) {
     function KairosDBQueryCtrl($scope, $injector, $timeout) {
       _super.call(this, $scope, $injector);
 
-      this.tags = {
-        tag1: ["val1", "val2", "val3", "val4"],
-        tag2: ["val5", "val10", "val11", "val16"],
-        tag3: ["val6", "val9", "val12", "val15"],
-        tag4: ["val7", "val8", "val13", "val14"]
-      };
-
       this.$timeout = $timeout;
       if (!this.target.downsampling) {
         this.target.downsampling = 'avg';
@@ -49,14 +42,51 @@ function (angular, _, sdk) {
     KairosDBQueryCtrl.templateUrl = 'partials/query.editor.html';
 
     KairosDBQueryCtrl.prototype.targetBlur = function () {
-      this.target.errors = validateTarget(this.target);
-      if (this.target.aliasMode === 'default') {
-        this.target.alias = this.datasource.getDefaultAlias(this.target);
-      }
-      if (!_.isEqual(this.oldTarget, this.target) && _.isEmpty(this.target.errors)) {
-        this.oldTarget = angular.copy(this.target);
-        this.panelCtrl.refresh();
-      }
+
+      this.updateTags()
+
+      // todo: revert
+      // this.target.errors = validateTarget(this.target);
+      // if (this.target.aliasMode === 'default') {
+      //   this.target.alias = this.datasource.getDefaultAlias(this.target);
+      // }
+      // if (!_.isEqual(this.oldTarget, this.target) && _.isEmpty(this.target.errors)) {
+      //   this.oldTarget = angular.copy(this.target);
+      //   this.panelCtrl.refresh();
+      // }
+    };
+
+    KairosDBQueryCtrl.prototype.buildTagsOptions = function() {
+      this.tagsOptions = _.map(this.tags, function (tagValues, tagName) {
+        return {
+          label: tagName,
+          name: tagName,
+          current: {
+            value: null,
+            text: "Choose values"
+          },
+          multi: true, //todo: if multiple values
+          options: _.map(tagValues, function(tagValue) {
+            return {
+              value: tagValue,
+              text: tagValue
+            }
+          })
+        }
+      });
+    };
+
+    KairosDBQueryCtrl.prototype.updateTags = function() {
+      this.tags = {
+        tag1: ["val1", "val2", "val3", "val4"],
+        tag2: ["val5", "val10", "val11", "val16"],
+        tag3: ["val6", "val9", "val12", "val15"],
+        tag4: ["val7", "val8", "val13", "val14"],
+        tag5: ["single"],
+        tag6: [],
+        tag7: ["single two"]
+      };
+      this.buildTagsOptions();
     };
 
     KairosDBQueryCtrl.prototype.getTextValues = function (metricFindResult) {
