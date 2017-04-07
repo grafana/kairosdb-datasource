@@ -57,6 +57,7 @@ function (angular, _, sdk) {
     };
 
     KairosDBQueryCtrl.prototype.buildTagsOptions = function() {
+      //todo: filter out missing tags
       this.tagsOptions = _.map(this.tags, function (tagValues, tagName) {
         return {
           label: tagName,
