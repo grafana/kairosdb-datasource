@@ -11,8 +11,7 @@ define([
           .directive('tagsSelect', function () {
             return {
               restrict: 'E',
-              // todo
-              templateUrl: '/public/app/plugins/datasource/grafana-kairosdb-datasource/partials/tags.select.html',
+              templateUrl: 'public/plugins/kairosdb-datasource/partials/tags.select.html',
               link: function (scope) {
                 var that = this;
 
