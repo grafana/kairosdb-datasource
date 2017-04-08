@@ -1,5 +1,5 @@
 {
-  "name": "grafana-kairosdb-datasource",
+  "name": "kairosdb-datasource",
   "private": true,
   "version": "1.0.0",
   "description": "",

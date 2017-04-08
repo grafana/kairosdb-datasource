@@ -13,7 +13,7 @@ module.exports = function (grunt) {
       src_to_dist: {
         cwd: 'src',
         expand: true,
-        src: ['**/*', '!**/*.js', '!**/*.css'],
+        src: ['**/*', '*.js', 'css/*.css'],
         dest: 'dist'
       },
       pluginDef: {
