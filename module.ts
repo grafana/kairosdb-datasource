@@ -1,6 +1,6 @@
+import {loadPluginCss} from 'app/plugins/sdk';
 import {KairosDBDatasource} from './datasource';
 import {KairosDBQueryCtrl} from './query_ctrl';
-import {loadPluginCss} from 'app/plugins/sdk';
 
 loadPluginCss({
     dark: 'app/plugins/datasource/grafana-kairosdb-datasource/css/plugin.css',
@@ -24,3 +24,5 @@ export {
     KairosDBConfigCtrl as ConfigCtrl,
     KairosDBQueryOptionsCtrl as QueryOptionsCtrl
 };
+
+//todo: seperate directive for dist
