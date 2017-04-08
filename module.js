@@ -3,12 +3,9 @@ import {KairosDBDatasource} from './datasource';
 import {KairosDBQueryCtrl} from './query_ctrl';
 
 loadPluginCss({
-    dark: 'app/plugins/datasource/grafana-kairosdb-datasource/css/plugin.css',
-    light: 'app/plugins/datasource/grafana-kairosdb-datasource/css/plugin.css'
+    dark: 'plugins/kairosdb-datasource/css/plugin.css',
+    light: 'plugins/kairosdb-datasource/css/plugin.css'
 });
-
-//todo: only plugins
-//todo: import from /var/grafana/plugins/ dir
 
 class KairosDBConfigCtrl {
   static templateUrl = "partials/config.html";
@@ -25,4 +22,6 @@ export {
     KairosDBQueryOptionsCtrl as QueryOptionsCtrl
 };
 
-//todo: seperate directive for dist
+//todo: only plugins
+//todo: import from /var/grafana/plugins/ dir
+//todo: seperate directory for dist
