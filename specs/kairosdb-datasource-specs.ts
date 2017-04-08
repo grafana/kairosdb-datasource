@@ -1,6 +1,6 @@
 import {describe, beforeEach, it, sinon, expect, angularMocks} from "test/lib/common";
 import helpers from 'test/specs/helpers';
-import {KairosDBDatasource} from '../datasource';
+import {KairosDBDatasource} from '../src/datasource';
 
 describe('KairosDBDatasource', function() {
   var ctx = new helpers.ServiceTestContext();

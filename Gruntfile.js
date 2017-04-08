@@ -1,19 +1,34 @@
-'use strict';
-module.exports = function(grunt) {
-grunt.loadNpmTasks('grunt-typescript');
+module.exports = function (grunt) {
 
-grunt.initConfig({
-typescript: {
-    base: {
-      src: ['*.ts'],
-      dest: '.',
-      options: {
-        module: 'amd'
-      }      
-    }
-  }
-});
+  require('load-grunt-tasks')(grunt);
 
-grunt.registerTask('default', ['typescript']);
+  grunt.loadNpmTasks('grunt-execute');
+  grunt.loadNpmTasks('grunt-contrib-clean');
 
-}
+  grunt.initConfig({
+
+    clean: ["dist"],
+
+    copy: {
+      src_to_dist: {
+        cwd: 'src',
+        expand: true,
+        src: ['**/*', '!**/*.js', '!**/*.css'],
+        dest: 'dist'
+      },
+      pluginDef: {
+        expand: true,
+        src: ['plugin.json', 'README.md', 'img/*'],
+        dest: 'dist'
+      }
+    },
+  });
+
+  grunt.registerTask('default', [
+    'clean',
+    'copy:src_to_dist',
+    'copy:pluginDef',
+  ]);
+
+  grunt.registerTask('test', ['default']);
+};
