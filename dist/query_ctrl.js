@@ -52,7 +52,7 @@ function (angular, _, sdk) {
           metrics:
               [
                   {
-                    name:"PostQueuedKairosTableRepository_lighthouse_data_pointsQueue_value.odin.dde"
+                    name:this.target.metric
                   }
                   ],
           cache_time: 0,
