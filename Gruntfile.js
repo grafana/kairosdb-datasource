@@ -13,7 +13,7 @@ module.exports = function (grunt) {
       src_to_dist: {
         cwd: 'src',
         expand: true,
-        src: ['**/*', '*.js', 'css/*.css'],
+        src: ['*.js', 'partials/*.html', 'css/*.css'],
         dest: 'dist'
       },
       pluginDef: {
@@ -26,7 +26,7 @@ module.exports = function (grunt) {
     babel: {
       options: {
         sourceMap: true,
-        presets:  ["es2015"]
+        presets: ["es2015"]
       },
       dist: {
         options: {
@@ -35,9 +35,9 @@ module.exports = function (grunt) {
         files: [{
           cwd: 'src',
           expand: true,
-          src: ['**/*.js'],
+          src: ['**/*.ts'],
           dest: 'dist',
-          ext:'.js'
+          ext: '.js'
         }]
       },
     },
