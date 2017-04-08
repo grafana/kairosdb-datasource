@@ -22,12 +22,33 @@ module.exports = function (grunt) {
         dest: 'dist'
       }
     },
+
+    babel: {
+      options: {
+        sourceMap: true,
+        presets:  ["es2015"]
+      },
+      dist: {
+        options: {
+          plugins: ['transform-es2015-modules-systemjs', 'transform-es2015-for-of']
+        },
+        files: [{
+          cwd: 'src',
+          expand: true,
+          src: ['**/*.js'],
+          dest: 'dist',
+          ext:'.js'
+        }]
+      },
+    },
+
   });
 
   grunt.registerTask('default', [
     'clean',
     'copy:src_to_dist',
     'copy:pluginDef',
+    'babel'
   ]);
 
   grunt.registerTask('test', ['default']);

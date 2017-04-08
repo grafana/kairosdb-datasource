@@ -7,13 +7,12 @@ loadPluginCss({
     light: 'plugins/kairosdb-datasource/css/plugin.css'
 });
 
-class KairosDBConfigCtrl {
-  static templateUrl = "partials/config.html";
-}
+class KairosDBConfigCtrl {}
+KairosDBConfigCtrl.templateUrl = "partials/config.html";
 
-class KairosDBQueryOptionsCtrl {
-  static templateUrl = "partials/query.options.html";
-}
+
+class KairosDBQueryOptionsCtrl {}
+KairosDBQueryOptionsCtrl.templateUrl = "partials/query.options.html";
 
 export {
     KairosDBDatasource as Datasource,
