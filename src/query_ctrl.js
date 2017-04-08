@@ -11,10 +11,11 @@ function (angular, _, sdk) {
     var self;
 
     /** @ngInject */
-    function KairosDBQueryCtrl($scope, $injector, $timeout) {
+    function KairosDBQueryCtrl($scope, $injector, backendSrv, $timeout) {
       _super.call(this, $scope, $injector);
 
       this.$timeout = $timeout;
+      this.backendSrv = backendSrv;
       if (!this.target.downsampling) {
         this.target.downsampling = 'avg';
       }
@@ -42,8 +43,25 @@ function (angular, _, sdk) {
     KairosDBQueryCtrl.templateUrl = 'partials/query.editor.html';
 
     KairosDBQueryCtrl.prototype.targetBlur = function () {
+      //todo: from datasource
+      var options = {
+        method: 'POST',
+        withCredentials: true,
+        url: self.datasource.url + '/api/v1/datapoints/query/tags',
+        data: {
+          metrics:
+              [
+                  {
+                    name:"PostQueuedKairosTableRepository_lighthouse_data_pointsQueue_value.odin.dde"
+                  }
+                  ],
+          cache_time: 0,
+          start_absolute:0
+        }
+      };
 
-      this.updateTags()
+      debugger;
+      return this.backendSrv.datasourceRequest(options).then(this.updateTags);
 
       // todo: revert
       // this.target.errors = validateTarget(this.target);
@@ -56,8 +74,8 @@ function (angular, _, sdk) {
       // }
     };
 
-    KairosDBQueryCtrl.prototype.buildTagsOptions = function() {
-      var notEmptyTags = _.pick(this.tags, function(value) {
+    KairosDBQueryCtrl.prototype.buildTagsOptions = function(tags) {
+      var notEmptyTags = _.pick(tags, function(value) {
         return value.length;
       });
       this.tagsOptions = _.map(notEmptyTags, function (tagValues, tagName) {
@@ -76,20 +94,13 @@ function (angular, _, sdk) {
       });
     };
 
-    KairosDBQueryCtrl.prototype.updateTags = function() {
-      this.tags = {
-        tag1: ["val1", "val2", "val3", "val4"],
-        tag2: ["val5", "val10", "val11", "val16"],
-        tag3: ["val6", "val9", "val12", "val15"],
-        tag4: ["val7", "val8", "val13", "val14"],
-        tag5: ["single"],
-        tag6: [],
-        tag7: ["single two"]
-      };
-      this.buildTagsOptions();
+    KairosDBQueryCtrl.prototype.updateTags = function(response) {
+      var tags = response.data.queries[0].results[0].tags;
+      self.buildTagsOptions(tags);
     };
 
     KairosDBQueryCtrl.prototype.getTextValues = function (metricFindResult) {
+      debugger;
       return _.map(metricFindResult, function (value) {
         return value.text;
       });

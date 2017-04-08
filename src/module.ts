@@ -20,7 +20,3 @@ export {
     KairosDBConfigCtrl as ConfigCtrl,
     KairosDBQueryOptionsCtrl as QueryOptionsCtrl
 };
-
-//todo: only plugins
-//todo: import from /var/grafana/plugins/ dir
-//todo: seperate directory for dist
