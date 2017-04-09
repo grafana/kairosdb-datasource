@@ -37,6 +37,7 @@ function (angular, _, sdk) {
       self = this;
 
       var init = function() {
+        //todo: handle multiple initailization when editing
         self.datasource.initializeMetricNames();
       };
       init();
