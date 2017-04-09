@@ -2,7 +2,7 @@
     <div class="gf-form-inline">
         <div class="gf-form">
             <label class="gf-form-label">
-                Loading metric names <span class="fa fa-spinner fa-spin"></span>
+                Loading metric names... <span class="fa fa-spinner fa-spin"></span>
             </label>
         </div>
         <div class="gf-form gf-form--grow">
@@ -40,7 +40,7 @@
             </div>
             <div class="gf-form">
                 <label class="gf-form-label" ng-show="ctrl.tagsLoading">
-                    Loading tags <span class="fa fa-spinner fa-spin"></span>
+                    Loading tags... <span class="fa fa-spinner fa-spin"></span>
                 </label>
                 <label class="gf-form-label" ng-show="!ctrl.tagsLoading">
                     <b>{{ctrl.tagsOptions.length}} tags, {{ctrl.tagsCombinations}} combinations</b>
@@ -64,9 +64,10 @@
                     Tag
                 </label>
             </div>
-            <div ng-click="addGroupByTag(tagName)" class="gf-form" ng-repeat="tagName in ctrl.allowedGroupByTags">
-                <label class="gf-form-label" style="background-color: green">
-                    {{tagName}}
+            <div class="gf-form" ng-repeat="tagName in ctrl.allowedGroupByTags">
+                <label class="gf-form-label">
+                    <a ng-click="ctrl.toggleGroupByTag(tagName)"
+                       ng-class="ctrl.isActiveGroupByTag(tagName) ? 'activeTag' : 'inactiveTag'">{{tagName}}</a>
                 </label>
             </div>
             <div class="gf-form" ng-show="ctrl.allowedGroupByTags.length == 0">

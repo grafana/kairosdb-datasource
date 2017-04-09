@@ -31,6 +31,7 @@ function (angular, _, sdk) {
         this.target.alias = this.datasource.getDefaultAlias(this.target);
       }
       this.target.errors = validateTarget(this.target);
+      this.target.groupByTags = [];
 
       this.metricNamesPromise = null;
       this.lastSuggestedMetricName = null;
@@ -93,6 +94,19 @@ function (angular, _, sdk) {
       });
       self.tagsCombinations = _.reduce(_.map(notEmptyTags, values => values.length), (length1, length2) => length1 * length2);
       self.allowedGroupByTags = _.keys(_.pick(notEmptyTags, tagValues => tagValues.length > 1));
+    };
+
+    KairosDBQueryCtrl.prototype.toggleGroupByTag = function(tagName) {
+      if (self.isActiveGroupByTag(tagName)) {
+        self.target.groupByTags = _.without(self.target.groupByTags, tagName);
+      }
+      else {
+        self.target.groupByTags.push(tagName);
+      }
+    };
+
+    KairosDBQueryCtrl.prototype.isActiveGroupByTag = function (tagName) {
+      return _.contains(self.target.groupByTags, tagName);
     };
 
     KairosDBQueryCtrl.prototype.getTextValues = function (metricFindResult) {
