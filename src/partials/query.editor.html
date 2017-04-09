@@ -31,8 +31,6 @@
         </div>
     </div>
 
-    <!--todo: seperate directive for tag input-->
-
     <div class="gf-form-group">
         <div class="gf-form-inline">
             <div class="gf-form">
@@ -53,5 +51,42 @@
             </div>
         </div>
         <tags-select ng-repeat="tagOption in ctrl.tagsOptions"></tags-select>
+    </div>
+    <div ng-show="!ctrl.tagsLoading" class="gf-form-group">
+        <div class="gf-form-inline">
+            <div class="gf-form">
+                <label class="gf-form-label query-keyword width-8">
+                    Group by
+                </label>
+            </div>
+            <div class="gf-form">
+                <label class="gf-form-label query-keyword width-5">
+                    Tag
+                </label>
+            </div>
+            <div class="gf-form gf-form--grow">
+                <div class="gf-form-label gf-form-label--grow"></div>
+            </div>
+        </div>
+        <div class="gf-form-inline">
+            <div class="gf-form">
+                <label class="gf-form-label query-keyword offset-width-8 width-5">
+                    Value
+                </label>
+            </div>
+            <div class="gf-form gf-form--grow">
+                <div class="gf-form-label gf-form-label--grow"></div>
+            </div>
+        </div>
+        <div class="gf-form-inline">
+            <div class="gf-form">
+                <label class="gf-form-label query-keyword offset-width-8 width-5">
+                    Time
+                </label>
+            </div>
+            <div class="gf-form gf-form--grow">
+                <div class="gf-form-label gf-form-label--grow"></div>
+            </div>
+        </div>
     </div>
 </query-editor-row>
