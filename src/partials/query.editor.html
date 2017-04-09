@@ -52,7 +52,7 @@
         </div>
         <tags-select ng-repeat="tagOption in ctrl.tagsOptions"></tags-select>
     </div>
-    <div ng-show="!ctrl.tagsLoading" class="gf-form-group">
+    <div ng-if="!ctrl.tagsLoading && ctrl.allowedGroupByTags" class="gf-form-group">
         <div class="gf-form-inline">
             <div class="gf-form">
                 <label class="gf-form-label query-keyword width-8">
@@ -60,8 +60,17 @@
                 </label>
             </div>
             <div class="gf-form">
-                <label class="gf-form-label query-keyword width-5">
+                <label class="gf-form-label width-5">
                     Tag
+                </label>
+            </div>
+            <div class="gf-form" ng-show="ctrl.allowedGroupByTags.length > 0">
+                <button class="btn btn-inverse gf-form-btn" ng-repeat="tagName in ctrl.allowedGroupByTags">{{tagName}}</button>
+            </div>
+            <!--todo: else-->
+            <div class="gf-form" ng-show="ctrl.allowedGroupByTags.length == 0">
+                <label class="gf-form-label">
+                    No tags to group by
                 </label>
             </div>
             <div class="gf-form gf-form--grow">
@@ -70,7 +79,7 @@
         </div>
         <div class="gf-form-inline">
             <div class="gf-form">
-                <label class="gf-form-label query-keyword offset-width-8 width-5">
+                <label class="gf-form-label offset-width-8 width-5">
                     Value
                 </label>
             </div>
@@ -80,7 +89,7 @@
         </div>
         <div class="gf-form-inline">
             <div class="gf-form">
-                <label class="gf-form-label query-keyword offset-width-8 width-5">
+                <label class="gf-form-label offset-width-8 width-5">
                     Time
                 </label>
             </div>

@@ -71,25 +71,26 @@ function (angular, _, sdk) {
       // }
     };
 
-    KairosDBQueryCtrl.prototype.buildTagsOptions = function(tags) {
-      var notEmptyTags = _.pick(tags, function(value) {
+    KairosDBQueryCtrl.prototype.buildTagsOptions = function (tags) {
+      var notEmptyTags = _.pick(tags, function (value) {
         return value.length;
       });
       self.tagsOptions = _.map(notEmptyTags, function (tagValues, tagName) {
         return {
           label: tagName,
           name: tagName,
-          current: { value: null, text: "Choose values" },
+          current: {value: null, text: "Choose values"},
           multi: true,
-          options: _.map(tagValues, function(tagValue) {
-          return {
-            value: tagValue,
-            text: tagValue
-          }
-        })
+          options: _.map(tagValues, function (tagValue) {
+            return {
+              value: tagValue,
+              text: tagValue
+            }
+          })
         }
       });
-      self.tagsCombinations = _.reduce(_.map(notEmptyTags, values => values.length), (length1, length2) => length1*length2);
+      self.tagsCombinations = _.reduce(_.map(notEmptyTags, values => values.length), (length1, length2) => length1 * length2);
+      self.allowedGroupByTags = _.keys(_.pick(notEmptyTags, tagValues => tagValues.length > 1));
     };
 
     KairosDBQueryCtrl.prototype.getTextValues = function (metricFindResult) {
