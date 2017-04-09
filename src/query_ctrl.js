@@ -30,11 +30,17 @@ function (angular, _, sdk) {
       this.target.errors = validateTarget(this.target);
 
       this.metricNamesCallDelay = 1000;
-      this.metricNamesSuggestionsLimit = 100;
+      this.metricNamesSuggestionsLimit = 20;
       this.metricNamesPromise = null;
       this.lastSuggestedMetricName = null;
 
       self = this;
+
+      var init = function() {
+        //todo: put in local storage?
+        self.datasource.initializeMetricNames();
+      };
+      init();
     }
 
     KairosDBQueryCtrl.prototype = Object.create(_super.prototype);
@@ -60,7 +66,6 @@ function (angular, _, sdk) {
         }
       };
 
-      debugger;
       return this.backendSrv.datasourceRequest(options).then(this.updateTags);
 
       // todo: revert
@@ -100,27 +105,40 @@ function (angular, _, sdk) {
     };
 
     KairosDBQueryCtrl.prototype.getTextValues = function (metricFindResult) {
-      debugger;
       return _.map(metricFindResult, function (value) {
         return value.text;
       });
     };
 
     KairosDBQueryCtrl.prototype.suggestMetrics = function (query, callback) {
-      if (self.lastSuggestedMetricName === query) { return; }
-      self.lastSuggestedMetricName = query;
-      self.$timeout.cancel(self.metricNamesPromise);
-      self.metricNamesPromise = self.$timeout(
-          function() {
-            return self.datasource.metricFindQuery('metrics(' + query + ')')
-                .then(self.getTextValues)
-                .then(function(metricNames) {
-                  metricNames.splice(self.metricNamesSuggestionsLimit);
-                  return metricNames;
+      self.datasource.getMetricNames(query)
+          .then(function (metricNames) {
+            var metricNames = _.chain(metricNames)
+                .filter(function (metricName) { //todo: lambda
+                  return _.contains(metricName, query);
                 })
-                .then(callback);
-          }, self.metricNamesCallDelay);
+                .slice(0, self.metricNamesSuggestionsLimit)
+                .value();
+            return metricNames;
+          })
+          .then(callback);
     };
+    //
+    // KairosDBQueryCtrl.prototype.suggestMetrics = function (query, callback) {
+    //   if (self.lastSuggestedMetricName === query) { return; }
+    //   self.lastSuggestedMetricName = query;
+    //   self.$timeout.cancel(self.metricNamesPromise);
+    //   self.metricNamesPromise = self.$timeout(
+    //       function() {
+    //         return self.datasource.metricFindQuery('metrics(' + query + ')')
+    //             .then(self.getTextValues)
+    //             .then(function(metricNames) {
+    //               metricNames.splice(self.metricNamesSuggestionsLimit);
+    //               return metricNames;
+    //             })
+    //             .then(callback);
+    //       }, self.metricNamesCallDelay);
+    // };
 
     KairosDBQueryCtrl.prototype.suggestTagKeys = function (query, callback) {
       self.datasource.metricFindQuery('tag_names(' + self.target.metric + ')')

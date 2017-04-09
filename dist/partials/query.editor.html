@@ -1,4 +1,16 @@
-<query-editor-row query-ctrl="ctrl" can-collapse="false">
+<query-editor-row query-ctrl="ctrl" ng-if="!ctrl.datasource.metricNames">
+    <div class="gf-form-inline">
+        <div class="gf-form">
+            <label class="gf-form-label">
+                Loading metric names <span class="fa fa-spinner fa-spin"></span>
+            </label>
+        </div>
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+    </div>
+</query-editor-row>
+<query-editor-row query-ctrl="ctrl" can-collapse="false" ng-if="ctrl.datasource.metricNames">
     <div class="gf-form-inline">
         <div class="gf-form max-width-25">
             <label class="gf-form-label query-keyword width-8">
@@ -9,8 +21,8 @@
                 </label>
             </label>
             <input type="text" class="gf-form-input" ng-model="ctrl.target.metric"
-                   spellcheck='false' bs-typeahead="ctrl.suggestMetrics" placeholder="metric name" data-min-length=0
-                   data-items=100
+                   spellcheck='false' bs-typeahead="ctrl.suggestMetrics" placeholder="metric name" data-min-length=1
+                   data-items=20
                    ng-blur="ctrl.targetBlur()">
             </input>
         </div>

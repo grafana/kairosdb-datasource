@@ -21,11 +21,11 @@ function (angular, _, sdk, dateMath, kbn) {
     this.q = $q;
     this.backendSrv = backendSrv;
     this.templateSrv = templateSrv;
-
+    this.metricNames = null;
     self = this;
   }
 
-  // Function to check Datasource health
+    // Function to check Datasource health
   KairosDBDatasource.prototype.testDatasource = function() {
     return this.backendSrv.datasourceRequest({
       url: this.url + '/api/v1/health/check',
@@ -69,7 +69,22 @@ function (angular, _, sdk, dateMath, kbn) {
       .then(handleKairosDBQueryResponseAlias, handleQueryError);
   };
 
-  KairosDBDatasource.prototype.performTimeSeriesQuery = function (queries, start, end) {
+    KairosDBDatasource.prototype.initializeMetricNames = function () {
+      //todo: perform metricNamesQuery
+      //todo: move to seperate method
+      var options = {
+        url: this.url + '/api/v1/metricnames',
+        withCredentials: this.withCredentials,
+        method: 'GET',
+        requestId: self.panelId + ".metricnames"
+      };
+
+      return this.backendSrv.datasourceRequest(options).then(function (response) {
+        self.metricNames = response.data.results;
+      });
+    };
+
+    KairosDBDatasource.prototype.performTimeSeriesQuery = function (queries, start, end) {
     var reqBody = {
       metrics: queries,
       cache_time: 0
