@@ -112,9 +112,7 @@ function (angular, _, sdk) {
 
     KairosDBQueryCtrl.prototype.suggestMetrics = _.debounce(function(query, callback) {
       var metricNames = _.chain(self.datasource.metricNames)
-          .filter(function (metricName) { //todo: lambda
-            return _.contains(metricName, query);
-          })
+          .filter(metricName => _.contains(metricName, query))
           .slice(0, METRIC_NAMES_SUGGESTIONS_LIMIT)
           .value();
       callback(metricNames);

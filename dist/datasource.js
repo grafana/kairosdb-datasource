@@ -71,10 +71,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
     KairosDBDatasource.prototype.initializeMetricNames = function () {
       //todo: or from local storage
-      //todo: lambda
-      self.performMetricNamesQuery().then(function(metricNames) {
-        self.metricNames = metricNames;
-      });
+      self.performMetricNamesQuery().then(metricNames => {self.metricNames = metricNames})
     };
 
     KairosDBDatasource.prototype.performMetricNamesQuery = function() {
