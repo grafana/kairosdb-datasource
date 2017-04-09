@@ -71,6 +71,7 @@ function (angular, _, sdk) {
       // }
     };
 
+    //todo: all values for tags selection
     KairosDBQueryCtrl.prototype.buildTagsOptions = function (tags) {
       var notEmptyTags = _.pick(tags, function (value) {
         return value.length;
