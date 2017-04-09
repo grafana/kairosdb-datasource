@@ -12,22 +12,10 @@ define([
           restrict: 'E',
           scope: true,
           link: function (scope, elem, attr) {
-            var controllerScope = scope.ctrl.$scope,
-                controller = scope.ctrl;
+            var controllerScope = scope.ctrl.$scope;
 
-            scope.fieldName = "select " + attr.field;
             scope.inputVisible = false;
             scope.aVisible = true;
-            scope.style = {
-              "width": "86px",
-              "display": "block"
-            };
-
-            scope.$on('showAliasInput', function () {
-              if (attr.field === "alias") {
-                scope.showInput();
-              }
-            });
 
             scope.hideInput = function () {
               scope.inputVisible = false;
@@ -55,23 +43,6 @@ define([
               }
             };
 
-            scope.clearDetails = function () {
-              controller.target.source.row = !controllerScope.isSingleRow() ? "" : null;
-              controller.target.source.column = "";
-              controller.target.source.alias = "";
-              controller.target.source.consolidation = null;
-            };
-
-            scope.clearFields = function () {
-              controller.target.source.id = "";
-              scope.clearDetails();
-            };
-
-            scope.dataGroupInputChanged = function () {
-              scope.clearFields();
-            };
-
-            //todo
             scope.metricNameInputChanged = function (sourceType) {
               $timeout(function () {
                 scope.$apply();
