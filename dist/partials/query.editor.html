@@ -101,4 +101,22 @@
             </div>
         </div>
     </div>
+    <div class="gf-form-inline">
+        <div class="gf-form">
+            <div class="gf-form">
+                <label class="gf-form-label query-keyword width-8">
+                    Aggregators
+                </label>
+            </div>
+        </div>
+        <div class="gf-form">
+            <!--todo: ng-model-->
+            <select>
+                <option ng-repeat="aggregator in ctrl.aggregators" value="{{aggregator.name}}">{{aggregator.name}}</option>
+            </select>
+        </div>
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+    </div>
 </query-editor-row>

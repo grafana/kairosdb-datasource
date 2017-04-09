@@ -36,6 +36,83 @@ function (angular, _, sdk) {
       this.metricNamesPromise = null;
       this.lastSuggestedMetricName = null;
 
+
+
+
+      this.aggregators = [
+        {
+          name: "avg",
+          basicParameter: "every"
+        },
+        {
+          name: "dev",
+          basicParameter: "every"
+        },
+        {
+          name: "min",
+          basicParameter: "every"
+        },
+        {
+          name: "max",
+          basicParameter: "every"
+        },
+        {
+          name: "rate",
+          basicParameter: "every",
+          allowedValues: ["milisecond", "second", "minute", "hour", "day", "week", "month", "year"]
+        },
+        {
+          name: "sampler",
+          basicParameter: "every",
+          allowedValues: ["milisecond", "second", "minute", "hour", "day", "week", "month", "year"]
+        },
+        {
+          name: "count",
+          basicParameter: "every"
+        },
+        {
+          name: "sum",
+          basicParameter: "every"
+        },
+        {
+          name: "least_squares",
+          basicParameter: "every"
+        },
+        {
+          name: "percentile",
+          basicParameter: "every",
+          additionalParameter: "percentile"
+        },
+        {
+          name: "scale",
+          basicParameter: "by"
+        },
+        {
+          name: "div",
+          basicParameter: "by"
+        },
+        {
+          name: "first",
+          basicParameter: "every"
+        },
+        {
+          name: "gaps",
+          basicParameter: "every"
+        },
+        {
+          name: "last",
+          basicParameter: "every"
+        },
+        {
+          name: "diff"
+        },
+        {
+          name: "trim",
+          basicParameter: "by",
+          allowedValues: ["both","first","last"]
+        }
+      ];
+
       self = this;
 
       var init = function() {
