@@ -37,7 +37,6 @@ function (angular, _, sdk) {
       self = this;
 
       var init = function() {
-        //todo: put in local storage?
         self.datasource.initializeMetricNames();
       };
       init();
