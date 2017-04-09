@@ -49,26 +49,15 @@ function (angular, _, sdk) {
 
     KairosDBQueryCtrl.templateUrl = 'partials/query.editor.html';
 
-    KairosDBQueryCtrl.prototype.targetBlur = function () {
-      //todo: from datasource
-      var options = {
-        method: 'POST',
-        withCredentials: true,
-        url: self.datasource.url + '/api/v1/datapoints/query/tags',
-        data: {
-          metrics:
-              [
-                  {
-                    name:this.target.metric
-                  }
-                  ],
-          cache_time: 0,
-          start_absolute:0
-        }
-      };
+    KairosDBQueryCtrl.prototype.metricNameChanged = function () {
+      self.tagsLoading = true;
+      self.datasource.getTagsForMetric(self.target.metric)
+          .then(self.buildTagsOptions)
+          .then(() => {self.tagsLoading = false;});
+    };
 
-      self.metricNameInputVisible = false;
-      return this.backendSrv.datasourceRequest(options).then(this.updateTags);
+    KairosDBQueryCtrl.prototype.targetBlur = function () {
+
 
 
       // todo: revert
@@ -86,7 +75,7 @@ function (angular, _, sdk) {
       var notEmptyTags = _.pick(tags, function(value) {
         return value.length;
       });
-      this.tagsOptions = _.map(notEmptyTags, function (tagValues, tagName) {
+      self.tagsOptions = _.map(notEmptyTags, function (tagValues, tagName) {
         return {
           label: tagName,
           name: tagName,
@@ -100,11 +89,7 @@ function (angular, _, sdk) {
         })
         }
       });
-    };
-
-    KairosDBQueryCtrl.prototype.updateTags = function(response) {
-      var tags = response.data.queries[0].results[0].tags;
-      self.buildTagsOptions(tags);
+      self.tagsCombinations = _.reduce(_.map(notEmptyTags, values => values.length), (length1, length2) => length1*length2);
     };
 
     KairosDBQueryCtrl.prototype.getTextValues = function (metricFindResult) {

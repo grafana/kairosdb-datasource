@@ -41,8 +41,11 @@
                 </label>
             </div>
             <div class="gf-form">
-                <label class="gf-form-label">
-                    Some text for tags
+                <label class="gf-form-label" ng-show="ctrl.tagsLoading">
+                    Loading tags <span class="fa fa-spinner fa-spin"></span>
+                </label>
+                <label class="gf-form-label" ng-show="!ctrl.tagsLoading">
+                    <b>{{ctrl.tagsOptions.length}} tags, {{ctrl.tagsCombinations}} combinations</b>
                 </label>
             </div>
             <div class="gf-form gf-form--grow">

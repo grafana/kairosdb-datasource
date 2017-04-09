@@ -97,9 +97,31 @@ function (angular, _, sdk, dateMath, kbn) {
         requestId: self.panelId + ".metricnames"
       };
 
-      return this.backendSrv.datasourceRequest(options).then(function (response) {
-        return response.data.results;
-      });
+      return this.backendSrv.datasourceRequest(options).then(response => response.data.results);
+    };
+
+    KairosDBDatasource.prototype.getTagsForMetric = function(metricName) {
+      //todo: timing from panel, reload on time range changed
+      return self.performTagsForMetricQuery(metricName);
+    };
+
+    KairosDBDatasource.prototype.performTagsForMetricQuery = function(metricName) {
+      var options = {
+        method: 'POST',
+        withCredentials: true,
+        url: self.url + '/api/v1/datapoints/query/tags',
+        data: {
+          metrics: //todo: use new api
+              [
+                {
+                  name: metricName
+                }
+              ],
+          cache_time: 0,
+          start_absolute:0
+        }
+      };
+      return this.backendSrv.datasourceRequest(options).then(response => response.data.queries[0].results[0].tags);
     };
 
     KairosDBDatasource.prototype.performTimeSeriesQuery = function (queries, start, end) {

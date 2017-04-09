@@ -6,5 +6,5 @@
        ng-model="value" ng-change="metricNameInputChanged()"
        spellcheck='false' bs-typeahead="ctrl.suggestMetrics"
        placeholder="metric name" data-min-length=1
-       data-items=20 ng-blur="hideInput()">
+       data-items=20 ng-blur="hideInput(); ctrl.metricNameChanged()">
 </input>
