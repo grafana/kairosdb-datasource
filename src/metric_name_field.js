@@ -43,29 +43,10 @@ define([
               }
             };
 
-            scope.metricNameInputChanged = function (sourceType) {
+            scope.metricNameInputChanged = function () {
               $timeout(function () {
                 scope.$apply();
-
-
-                //
-                // var newId = parseInt(controller.target.source[sourceType], 10);
-                // if (!isNaN(newId) && newId !== controller.target.source.id) {
-                //   controller.target.source.id = newId;
-                //   switch (sourceType) {
-                //     case "query":
-                //       controllerScope.getQueryDetails();
-                //       break;
-                //     case "view":
-                //       controllerScope.setSingleRow(true);
-                //       controllerScope.suggestLabel();
-                //       break;
-                //     default:
-                //       return;
-                //   }
-                //   scope.clearDetails();
-                //   controllerScope.targetChanged();
-                // }
+                scope.ctrl.target.metric = scope.value;
               });
             };
           },

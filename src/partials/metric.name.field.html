@@ -3,7 +3,7 @@
 </label>
 <input ng-show="inputVisible" type="text"
        ng-keypress="keyHit($event)" class="gf-form-input width-30"
-       ng-model="ctrl.target.metric" ng-change="metricNameInputChanged()"
+       ng-model="value" ng-change="metricNameInputChanged()"
        spellcheck='false' bs-typeahead="ctrl.suggestMetrics"
        placeholder="metric name" data-min-length=1
        data-items=20 ng-blur="hideInput()">
