@@ -24,15 +24,7 @@
             </div>
         </div>
         <div class="gf-form">
-            <label ng-if="!ctrl.metricNameInputVisible" class="gf-form-label">
-                <a ng-click="ctrl.metricNameInputVisible = true"><b>{{ctrl.target.metric || "Choose metric"}}</b></a>
-            </label>
-            <input ng-if="ctrl.metricNameInputVisible" type="text" class="gf-form-input width-30"
-                   ng-model="ctrl.target.metric"
-                   spellcheck='false' bs-typeahead="ctrl.suggestMetrics" placeholder="metric name" data-min-length=1
-                   data-items=20
-                   ng-blur="ctrl.metricNameInputVisible = false; ctrl.targetBlur()">
-            </input>
+            <metric-name-field></metric-name-field>
         </div>
         <div class="gf-form gf-form--grow">
             <div class="gf-form-label gf-form-label--grow"></div>

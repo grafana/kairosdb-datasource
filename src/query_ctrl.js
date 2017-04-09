@@ -2,7 +2,8 @@ define([
   'angular',
   'lodash',
   'app/plugins/sdk',
-  './tags_select'
+  './tags_select',
+  './metric_name_field'
 ],
 function (angular, _, sdk) {
   'use strict';
@@ -66,7 +67,9 @@ function (angular, _, sdk) {
         }
       };
 
+      self.metricNameInputVisible = false;
       return this.backendSrv.datasourceRequest(options).then(this.updateTags);
+
 
       // todo: revert
       // this.target.errors = validateTarget(this.target);

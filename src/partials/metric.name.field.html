@@ -1,0 +1,10 @@
+<label ng-if="!ctrl.metricNameInputVisible" class="gf-form-label">
+    <a ng-click="showAndClearInput()"><b>{{ctrl.target.metric || "Choose metric"}}</b></a>
+</label>
+<input ng-if="ctrl.metricNameInputVisible" type="text"
+       ng-keypress="keyHit($event)" class="gf-form-input width-30"
+       ng-model="ctrl.target.metric" ng-change="metricNameInputChanged()"
+       spellcheck='false' bs-typeahead="ctrl.suggestMetrics"
+       placeholder="metric name" data-min-length=1
+       data-items=20 ng-blur="ctrl.targetBlur()">
+</input>
