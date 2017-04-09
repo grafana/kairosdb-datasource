@@ -10,9 +10,7 @@ function (angular, _, sdk, dateMath, kbn) {
   'use strict';
 
   var self,
-      METRIC_NAMES_LOCAL_STORAGE_KEY = "metric_names",
       METRIC_NAMES_LOCAL_STORAGE_TTL = 60*1000; //1 minute //todo
-  //todo: add url to key
 
   /** @ngInject */
   function KairosDBDatasource(instanceSettings, $q, backendSrv, templateSrv) {
@@ -25,6 +23,7 @@ function (angular, _, sdk, dateMath, kbn) {
     this.backendSrv = backendSrv;
     this.templateSrv = templateSrv;
     this.metricNames = null;
+    this.metricNamesLocalStorageKey = "metric_names_" + this.url;
     self = this;
   }
 
@@ -79,7 +78,7 @@ function (angular, _, sdk, dateMath, kbn) {
           timestamp: Date.now(),
           metricNames: metricNames
         };
-        localStorage.setItem(METRIC_NAMES_LOCAL_STORAGE_KEY, JSON.stringify(metricNamesWithTimestamp));
+        localStorage.setItem(self.metricNamesLocalStorageKey, JSON.stringify(metricNamesWithTimestamp));
       }
       catch (error) {
         console.log("Unable to put metric names in local storage");
@@ -88,7 +87,7 @@ function (angular, _, sdk, dateMath, kbn) {
     }
 
     KairosDBDatasource.prototype.initializeMetricNames = function () {
-      var metricNamesWithTimestamp = JSON.parse(localStorage.getItem(METRIC_NAMES_LOCAL_STORAGE_KEY));
+      var metricNamesWithTimestamp = JSON.parse(localStorage.getItem(self.metricNamesLocalStorageKey));
       if(!_.isNull(metricNamesWithTimestamp) && metricNamesWithTimestamp.timestamp-Date.now() < METRIC_NAMES_LOCAL_STORAGE_TTL) {
         self.metricNames = metricNamesWithTimestamp.metricNames;
       }
