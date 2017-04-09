@@ -79,17 +79,23 @@ function (angular, _, sdk) {
         return value.length;
       });
       self.tagsOptions = _.map(notEmptyTags, function (tagValues, tagName) {
+        var options = _.map(tagValues, function (tagValue) {
+          return {
+            value: tagValue,
+            text: tagValue
+          }
+        });
+        if (options.length > 1) {
+          options.unshift({text: 'All', value: "$__all"});
+        }
         return {
           label: tagName,
           name: tagName,
           current: {value: null, text: "Choose values"},
           multi: true,
-          options: _.map(tagValues, function (tagValue) {
-            return {
-              value: tagValue,
-              text: tagValue
-            }
-          })
+          includeAll: true,
+          allValue: "$__all",
+          options: options
         }
       });
       self.tagsCombinations = _.reduce(_.map(notEmptyTags, values => values.length), (length1, length2) => length1 * length2);
