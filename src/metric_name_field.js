@@ -36,7 +36,6 @@ define([
             };
 
             scope.showAndClearInput = function () {
-              debugger;
               elem[0].getElementsByTagName("input")[0].value = '';
               scope.showInput();
             };
@@ -74,26 +73,28 @@ define([
 
             //todo
             scope.metricNameInputChanged = function (sourceType) {
-              debugger;
               $timeout(function () {
                 scope.$apply();
-                var newId = parseInt(controller.target.source[sourceType], 10);
-                if (!isNaN(newId) && newId !== controller.target.source.id) {
-                  controller.target.source.id = newId;
-                  switch (sourceType) {
-                    case "query":
-                      controllerScope.getQueryDetails();
-                      break;
-                    case "view":
-                      controllerScope.setSingleRow(true);
-                      controllerScope.suggestLabel();
-                      break;
-                    default:
-                      return;
-                  }
-                  scope.clearDetails();
-                  controllerScope.targetChanged();
-                }
+
+
+                //
+                // var newId = parseInt(controller.target.source[sourceType], 10);
+                // if (!isNaN(newId) && newId !== controller.target.source.id) {
+                //   controller.target.source.id = newId;
+                //   switch (sourceType) {
+                //     case "query":
+                //       controllerScope.getQueryDetails();
+                //       break;
+                //     case "view":
+                //       controllerScope.setSingleRow(true);
+                //       controllerScope.suggestLabel();
+                //       break;
+                //     default:
+                //       return;
+                //   }
+                //   scope.clearDetails();
+                //   controllerScope.targetChanged();
+                // }
               });
             };
           },
