@@ -70,8 +70,14 @@ function (angular, _, sdk, dateMath, kbn) {
   };
 
     KairosDBDatasource.prototype.initializeMetricNames = function () {
-      //todo: perform metricNamesQuery
-      //todo: move to seperate method
+      //todo: or from local storage
+      //todo: lambda
+      self.performMetricNamesQuery().then(function(metricNames) {
+        self.metricNames = metricNames;
+      });
+    };
+
+    KairosDBDatasource.prototype.performMetricNamesQuery = function() {
       var options = {
         url: this.url + '/api/v1/metricnames',
         withCredentials: this.withCredentials,
@@ -80,7 +86,7 @@ function (angular, _, sdk, dateMath, kbn) {
       };
 
       return this.backendSrv.datasourceRequest(options).then(function (response) {
-        self.metricNames = response.data.results;
+        return response.data.results;
       });
     };
 
