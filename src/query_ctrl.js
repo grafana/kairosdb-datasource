@@ -8,7 +8,9 @@ function (angular, _, sdk) {
   'use strict';
 
   return (function (_super) {
-    var self;
+    var self,
+    METRIC_NAMES_CALL_DELAY = 250,
+    METRIC_NAMES_SUGGESTIONS_LIMIT = 20;
 
     /** @ngInject */
     function KairosDBQueryCtrl($scope, $injector, backendSrv, $timeout) {
@@ -29,8 +31,6 @@ function (angular, _, sdk) {
       }
       this.target.errors = validateTarget(this.target);
 
-      this.metricNamesCallDelay = 1000;
-      this.metricNamesSuggestionsLimit = 20;
       this.metricNamesPromise = null;
       this.lastSuggestedMetricName = null;
 
@@ -110,35 +110,15 @@ function (angular, _, sdk) {
       });
     };
 
-    KairosDBQueryCtrl.prototype.suggestMetrics = function (query, callback) {
-      self.datasource.getMetricNames(query)
-          .then(function (metricNames) {
-            var metricNames = _.chain(metricNames)
-                .filter(function (metricName) { //todo: lambda
-                  return _.contains(metricName, query);
-                })
-                .slice(0, self.metricNamesSuggestionsLimit)
-                .value();
-            return metricNames;
+    KairosDBQueryCtrl.prototype.suggestMetrics = _.debounce(function(query, callback) {
+      var metricNames = _.chain(self.datasource.metricNames)
+          .filter(function (metricName) { //todo: lambda
+            return _.contains(metricName, query);
           })
-          .then(callback);
-    };
-    //
-    // KairosDBQueryCtrl.prototype.suggestMetrics = function (query, callback) {
-    //   if (self.lastSuggestedMetricName === query) { return; }
-    //   self.lastSuggestedMetricName = query;
-    //   self.$timeout.cancel(self.metricNamesPromise);
-    //   self.metricNamesPromise = self.$timeout(
-    //       function() {
-    //         return self.datasource.metricFindQuery('metrics(' + query + ')')
-    //             .then(self.getTextValues)
-    //             .then(function(metricNames) {
-    //               metricNames.splice(self.metricNamesSuggestionsLimit);
-    //               return metricNames;
-    //             })
-    //             .then(callback);
-    //       }, self.metricNamesCallDelay);
-    // };
+          .slice(0, METRIC_NAMES_SUGGESTIONS_LIMIT)
+          .value();
+      callback(metricNames);
+    }, METRIC_NAMES_CALL_DELAY);
 
     KairosDBQueryCtrl.prototype.suggestTagKeys = function (query, callback) {
       self.datasource.metricFindQuery('tag_names(' + self.target.metric + ')')
