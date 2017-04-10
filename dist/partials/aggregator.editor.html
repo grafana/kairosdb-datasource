@@ -1,0 +1,37 @@
+<div class="gf-form-inline">
+    <div class="gf-form offset-width-8">
+        <select ng-model="ctrl.newAggregator.type">
+            <option value="" disabled selected>Select aggregator</option>
+            <option ng-repeat="(aggregatorType, aggregatorParameters) in ctrl.aggregators" value="{{aggregatorType}}">
+                {{aggregatorType}}
+            </option>
+        </select>
+    </div>
+
+    <div class="gf-form" ng-repeat="parameter in ctrl.aggregators[ctrl.newAggregator.type].parameters">
+        <div class="gf-form">
+            <label class="gf-form-label">
+                {{parameter.name}}
+            </label>
+        </div>
+        <div class="gf-form">
+            <input ng-if="!parameter.allowedValues"
+                   type="text" class="gf-form-input"
+                   ng-model="ctrl.newAggregator.parameters[parameter.name]"/>
+            <select ng-if="parameter.allowedValues"
+                    ng-model="ctrl.newAggregator.parameters[parameter.name]">
+                <option ng-repeat="value in parameter.allowedValues">{{value}}</option>
+            </select>
+        </div>
+
+    </div>
+    <div class="gf-form-label" ng-show="ctrl.newAggregator.type">
+        <a ng-click="ctrl.addAggregator()">
+            <i class="fa fa-plus"></i>
+        </a>
+    </div>
+
+    <div class="gf-form gf-form--grow">
+        <div class="gf-form-label gf-form-label--grow"></div>
+    </div>
+</div>

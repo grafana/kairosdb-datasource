@@ -16,5 +16,8 @@
         </div>
     </div>
 
-    <ng-include src="'public/plugins/kairosdb-datasource/partials/aggregator.html'"></ng-include>
+    <ng-include ng-repeat="aggregator in ctrl.target.aggregators" src="'public/plugins/kairosdb-datasource/partials/aggregator.html'"></ng-include>
+
+    <!--todo: as directive-->
+    <ng-include src="'public/plugins/kairosdb-datasource/partials/aggregator.editor.html'"></ng-include>
 </div>
