@@ -5,9 +5,9 @@
         </label>
     </label>
 </div>
-<div class="variable-value-dropdown multi" ng-show="dropdownVisible">
+<div class="variable-value-dropdown multi" ng-show="dropdownVisible" click-outside="dropdownVisible = false">
     <div class="variable-options-wrapper">
-        <div class="variable-options-column" ng-blur="dropdownVisible = false">
+        <div class="variable-options-column">
             <a class="variable-options-column-header" ng-class="{'many-selected': getSelectedValues().length > 1}" bs-tooltip="'Clear selections'" data-placement="top" ng-click="clearSelections()">
                 <span class="variable-option-icon"></span>
                 Selected ({{getSelectedValues().length}})

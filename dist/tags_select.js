@@ -8,6 +8,28 @@ define([
 
       angular
           .module('grafana.directives')
+          .directive('clickOutside', function ($document) {
+
+        return {
+          restrict: 'A',
+          scope: {
+            clickOutside: '&'
+          },
+          link: function (scope, el, attr) {
+
+            $document.on('click', function (e) {
+              if (el !== e.target && !el[0].contains(e.target)) {
+                scope.$apply(function () {
+                  scope.$eval(scope.clickOutside);
+                });
+              }
+            });
+          }
+        }
+      });
+
+      angular
+          .module('grafana.directives')
           .directive('tagsSelect', function () {
             return {
               restrict: 'E',
@@ -47,6 +69,7 @@ define([
                   option.selected = !option.selected;
                 };
 
+                //todo: cleanup
                 var currentValue = {
                   value: "value",
                   text: "Text"

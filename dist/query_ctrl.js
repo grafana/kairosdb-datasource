@@ -3,7 +3,7 @@ define([
   'lodash',
   'app/plugins/sdk',
   './tags_select',
-  './metric_name_field'
+  './metric_name_field',
 ],
 function (angular, _, sdk) {
   'use strict';
