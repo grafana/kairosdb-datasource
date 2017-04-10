@@ -75,6 +75,43 @@ function (angular, _, sdk) {
       var init = function() {
         //todo: handle multiple initailization when editing
         self.datasource.initializeMetricNames();
+
+
+        //todo
+        self.vm = {
+          variable: {
+            label: "tagname",
+            name: "tagname",
+            current: {value: null, text: "Choose values"},
+            multi: true,
+            includeAll: true,
+            allValue: "$__all",
+            options: [
+              {
+                value: "val1",
+                text: "text1"
+              },
+              {
+                value: "val2",
+                text: "val2"
+              }
+            ]
+          },
+          selectedValues: ["val1"],
+          search: {
+            options: [
+              {
+                value: "val1",
+                text: "text1"
+              },
+              {
+                value: "val2",
+                text: "val2"
+              }
+            ]
+          }
+        };
+
       };
       init();
     }
@@ -169,7 +206,7 @@ function (angular, _, sdk) {
     };
 
     KairosDBQueryCtrl.prototype.suggestTagValues = function (query, callback) {
-      self.datasource.metricFindQuery('tag_values(' + self.target.metric + ',' + self.target.currentTagKey + ')')
+      self.datasource.metricFindQuery('tag_values(' + se-lf.target.metric + ',' + self.target.currentTagKey + ')')
         .then(self.getTextValues)
         .then(callback);
     };

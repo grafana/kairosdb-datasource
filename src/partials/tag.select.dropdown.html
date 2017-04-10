@@ -1,0 +1,14 @@
+<div class="variable-value-dropdown multi">
+    <div class="variable-options-wrapper">
+        <div class="variable-options-column">
+            <a class="variable-options-column-header" ng-if="ctrl.vm.variable.multi" ng-class="{'many-selected': ctrl.vm.selectedValues.length > 1}" bs-tooltip="'Clear selections'" data-placement="top" ng-click="ctrl.vm.clearSelections()">
+                <span class="variable-option-icon"></span>
+                Selected ({{ctrl.vm.selectedValues.length}})
+            </a>
+            <a class="variable-option pointer" ng-repeat="option in ctrl.vm.search.options" ng-class="{'selected': option.selected, 'highlighted': $index === ctrl.vm.highlightIndex}" ng-click="ctrl.vm.selectValue(option, $event)">
+                <span class="variable-option-icon"></span>
+                <span>{{option.text}}</span>
+            </a>
+        </div>
+    </div>
+</div>
