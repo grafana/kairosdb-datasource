@@ -1,4 +1,4 @@
-<ng-include src="'public/plugins/kairosdb-datasource/partials/metric.loading.html'" ng-if="!ctrl.datasource.metricNames"></ng-include>
+<ng-include src="'public/plugins/kairosdb-datasource/partials/metric.names.loading.html'" ng-if="!ctrl.datasource.metricNames"></ng-include>
 <query-editor-row query-ctrl="ctrl" can-collapse="false" ng-if="ctrl.datasource.metricNames">
     <ng-include src="'public/plugins/kairosdb-datasource/partials/metric.name.row.html'"></ng-include>
     <ng-include src="'public/plugins/kairosdb-datasource/partials/tags.editor.html'"></ng-include>
