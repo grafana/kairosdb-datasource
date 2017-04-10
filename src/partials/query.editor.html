@@ -110,10 +110,28 @@
             </div>
         </div>
         <div class="gf-form">
-            <!--todo: ng-model-->
-            <select>
-                <option ng-repeat="aggregator in ctrl.aggregators" value="{{aggregator.name}}">{{aggregator.name}}</option>
+            <select ng-model="ctrl.newAggregator.type">
+                <option ng-repeat="(aggregatorType, aggregatorParameters) in ctrl.aggregators" value="{{aggregatorType}}">{{aggregatorType}}
+                </option>
             </select>
+            <div class="gf-form">
+                <label ng-if="ctrl.aggregators[ctrl.newAggregator.type].basicParameter" class="gf-form-label">
+                    {{ctrl.aggregators[ctrl.newAggregator.type].basicParameter}}
+                </label>
+                <div ng-if="ctrl.newAggregator.type">
+                    <input ng-if="!ctrl.aggregators[ctrl.newAggregator.type].allowedValues && ctrl.aggregators[ctrl.newAggregator.type].basicParameter"
+                           type="text" class="gf-form-input width-5"
+                           ng-model="ctrl.newAggregator.value">
+                    </input>
+                    <!--todo: else-->
+                    <select ng-if="ctrl.aggregators[ctrl.newAggregator.type].allowedValues"
+                            ng-model="ctrl.newAggregator.value">
+                        <option ng-repeat="value in ctrl.aggregators[ctrl.newAggregator.type].allowedValues">{{value}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
         </div>
         <div class="gf-form gf-form--grow">
             <div class="gf-form-label gf-form-label--grow"></div>

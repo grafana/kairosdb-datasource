@@ -36,82 +36,61 @@ function (angular, _, sdk) {
       this.metricNamesPromise = null;
       this.lastSuggestedMetricName = null;
 
-
-
-
-      this.aggregators = [
-        {
-          name: "avg",
+      this.aggregators = {
+        avg: {
           basicParameter: "every"
         },
-        {
-          name: "dev",
+        dev: {
           basicParameter: "every"
         },
-        {
-          name: "min",
+        min: {
           basicParameter: "every"
         },
-        {
-          name: "max",
+        max: {
           basicParameter: "every"
         },
-        {
-          name: "rate",
+        rate: {
           basicParameter: "every",
           allowedValues: ["milisecond", "second", "minute", "hour", "day", "week", "month", "year"]
         },
-        {
-          name: "sampler",
+        sampler: {
           basicParameter: "every",
           allowedValues: ["milisecond", "second", "minute", "hour", "day", "week", "month", "year"]
         },
-        {
-          name: "count",
+        count: {
           basicParameter: "every"
         },
-        {
-          name: "sum",
+        sum: {
           basicParameter: "every"
         },
-        {
-          name: "least_squares",
+        least_squares: {
           basicParameter: "every"
         },
-        {
-          name: "percentile",
+        percentile: {
           basicParameter: "every",
           additionalParameter: "percentile"
         },
-        {
-          name: "scale",
+        scale: {
           basicParameter: "by"
         },
-        {
-          name: "div",
+        div: {
           basicParameter: "by"
         },
-        {
-          name: "first",
+        first: {
           basicParameter: "every"
         },
-        {
-          name: "gaps",
+        gaps: {
           basicParameter: "every"
         },
-        {
-          name: "last",
+        last: {
           basicParameter: "every"
         },
-        {
-          name: "diff"
-        },
-        {
-          name: "trim",
+        diff: {},
+        trim: {
           basicParameter: "by",
-          allowedValues: ["both","first","last"]
+          allowedValues: ["both", "first", "last"]
         }
-      ];
+      };
 
       self = this;
 
