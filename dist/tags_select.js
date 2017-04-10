@@ -16,13 +16,20 @@ define([
                 var that = this,
                     SELECTED_VALUES_STRING_LIMIT = 100;
 
+                scope.getSelectedValues = function () {
+                  return _.filter(scope.variable.options, option => option.selected);
+                };
+
                 scope.getSelectedValuesString = function () {
-                  var selectedValues = _.filter(scope.variable.options, option => option.selected),
-                      fullString = _.chain(selectedValues)
-                          .map(option => option.value)
-                          .join(' + ')
-                          .value();
-                  return fullString.length < SELECTED_VALUES_STRING_LIMIT ? fullString : selectedValues.length + " tags selected";
+                  var fullString = _.chain(scope.getSelectedValues())
+                      .map(option => option.value)
+                      .join(' + ')
+                      .value();
+                  return fullString.length < SELECTED_VALUES_STRING_LIMIT ? fullString : getSelectedValues.length + " tags selected";
+                };
+
+                scope.clearSelections = function() {
+                  scope.variable.options.forEach(option => option.selected = false);
                 };
 
                 scope.getNewTags = function (value) {

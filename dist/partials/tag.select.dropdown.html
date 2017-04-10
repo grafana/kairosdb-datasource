@@ -7,11 +7,10 @@
 </div>
 <div class="variable-value-dropdown multi" ng-show="dropdownVisible">
     <div class="variable-options-wrapper">
-        <div class="variable-options-column">
-            <!--todo-->
-            <a class="variable-options-column-header" ng-class="{'many-selected': ctrl.vm.selectedValues.length > 1}" bs-tooltip="'Clear selections'" data-placement="top" ng-click="ctrl.vm.clearSelections()">
+        <div class="variable-options-column" ng-blur="dropdownVisible = false">
+            <a class="variable-options-column-header" ng-class="{'many-selected': getSelectedValues().length > 1}" bs-tooltip="'Clear selections'" data-placement="top" ng-click="clearSelections()">
                 <span class="variable-option-icon"></span>
-                Selected ({{ctrl.vm.selectedValues.length}})
+                Selected ({{getSelectedValues().length}})
             </a>
             <a class="variable-option pointer" ng-repeat="option in variable.options" ng-class="{'selected': option.selected}" ng-click="selectValue(option, $event)">
                 <span class="variable-option-icon"></span>
