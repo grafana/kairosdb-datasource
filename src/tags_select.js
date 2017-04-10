@@ -62,7 +62,10 @@ define([
                   debugger;
                 };
 
-                scope.dropdownVisible = false;
+                scope.hideDropdown = function() {
+                  debugger;
+                  scope.dropdownVisible = false;
+                };
 
                 scope.selectValue = function (option) {
                   //todo; handle all
