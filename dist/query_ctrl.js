@@ -179,6 +179,10 @@ function (angular, _, sdk) {
       this.newAggregator = {};
     };
 
+    KairosDBQueryCtrl.prototype.removeAggregator = function(aggregator) {
+      this.target.aggregators = _.without(this.target.aggregators, aggregator);
+    };
+
     // Filter metric by tag
     KairosDBQueryCtrl.prototype.addFilterTag = function () {
       if (!this.target.addFilterTagMode) {
