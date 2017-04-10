@@ -33,6 +33,7 @@ function (angular, _, sdk) {
       this.target.errors = validateTarget(this.target);
       this.target.groupByTags = [];
 
+      this.target.aggregators = [];
       this.metricNamesPromise = null;
       this.lastSuggestedMetricName = null;
 
@@ -171,6 +172,10 @@ function (angular, _, sdk) {
       self.datasource.metricFindQuery('tag_values(' + self.target.metric + ',' + self.target.currentTagKey + ')')
         .then(self.getTextValues)
         .then(callback);
+    };
+
+    KairosDBQueryCtrl.prototype.addAggregator = function() {
+      this.target.aggregators.push(this.newAggregator);
     };
 
     // Filter metric by tag
