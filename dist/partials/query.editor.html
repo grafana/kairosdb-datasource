@@ -111,30 +111,31 @@
         </div>
         <div class="gf-form">
             <select ng-model="ctrl.newAggregator.type">
-                <option ng-repeat="(aggregatorType, aggregatorParameters) in ctrl.aggregators" value="{{aggregatorType}}">{{aggregatorType}}
+                <option ng-repeat="(aggregatorType, aggregatorParameters) in ctrl.aggregators"
+                        value="{{aggregatorType}}">{{aggregatorType}}
                 </option>
             </select>
+        </div>
+        <div ng-repeat="parameter in ctrl.aggregators[ctrl.newAggregator.type].parameters">
             <div class="gf-form">
-                <label ng-if="ctrl.aggregators[ctrl.newAggregator.type].basicParameter" class="gf-form-label">
-                    {{ctrl.aggregators[ctrl.newAggregator.type].basicParameter}}
+                <label class="gf-form-label">
+                    {{parameter.name}}
                 </label>
-                <div ng-if="ctrl.newAggregator.type">
-                    <input ng-if="!ctrl.aggregators[ctrl.newAggregator.type].allowedValues && ctrl.aggregators[ctrl.newAggregator.type].basicParameter"
-                           type="text" class="gf-form-input width-5"
-                           ng-model="ctrl.newAggregator.value">
-                    </input>
-                    <!--todo: else-->
-                    <select ng-if="ctrl.aggregators[ctrl.newAggregator.type].allowedValues"
-                            ng-model="ctrl.newAggregator.value">
-                        <option ng-repeat="value in ctrl.aggregators[ctrl.newAggregator.type].allowedValues">{{value}}
-                        </option>
-                    </select>
-                </div>
             </div>
+            <div class="gf-form">
+                <input ng-if="!parameter.allowedValues"
+                       type="text" class="gf-form-input width-5"
+                       ng-model="ctrl.newAggregator.parameters[parameter]"/>
+                <select ng-if="parameter.allowedValues"
+                        ng-model="ctrl.newAggregator.parameters[parameter]">
+                    <option ng-repeat="value in parameter.allowedValues">{{value}}</option>
+                </select>
+            </div>
+        </div>
 
-        </div>
-        <div class="gf-form gf-form--grow">
-            <div class="gf-form-label gf-form-label--grow"></div>
-        </div>
+    </div>
+    <div class="gf-form gf-form--grow">
+        <div class="gf-form-label gf-form-label--grow"></div>
+    </div>
     </div>
 </query-editor-row>

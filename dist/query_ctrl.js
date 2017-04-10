@@ -36,61 +36,38 @@ function (angular, _, sdk) {
       this.metricNamesPromise = null;
       this.lastSuggestedMetricName = null;
 
-      this.aggregators = {
-        avg: {
-          basicParameter: "every"
-        },
-        dev: {
-          basicParameter: "every"
-        },
-        min: {
-          basicParameter: "every"
-        },
-        max: {
-          basicParameter: "every"
-        },
-        rate: {
-          basicParameter: "every",
-          allowedValues: ["milisecond", "second", "minute", "hour", "day", "week", "month", "year"]
-        },
-        sampler: {
-          basicParameter: "every",
-          allowedValues: ["milisecond", "second", "minute", "hour", "day", "week", "month", "year"]
-        },
-        count: {
-          basicParameter: "every"
-        },
-        sum: {
-          basicParameter: "every"
-        },
-        least_squares: {
-          basicParameter: "every"
-        },
-        percentile: {
-          basicParameter: "every",
-          additionalParameter: "percentile"
-        },
-        scale: {
-          basicParameter: "by"
-        },
-        div: {
-          basicParameter: "by"
-        },
-        first: {
-          basicParameter: "every"
-        },
-        gaps: {
-          basicParameter: "every"
-        },
-        last: {
-          basicParameter: "every"
-        },
-        diff: {},
-        trim: {
-          basicParameter: "by",
-          allowedValues: ["both", "first", "last"]
-        }
-      };
+      //todo: move to seperate file
+      function AggregatorParameter(name, allowedValues) {
+        this.name = name;
+        this.allowedValues = allowedValues;
+      }
+
+      function Aggregator(type, parameters) {
+        this.type = type;
+        this.parameters = parameters;
+      }
+
+      this.aggregators =
+          _.indexBy([
+            new Aggregator("avg", [new AggregatorParameter("every")]),
+            new Aggregator("dev", [new AggregatorParameter("every")]),
+            new Aggregator("min", [new AggregatorParameter("every")]),
+            new Aggregator("max", [new AggregatorParameter("every")]),
+            new Aggregator("rate", [new AggregatorParameter("every", ["milisecond", "second", "minute", "hour", "day", "week", "month", "year"])]),
+            new Aggregator("sampler", [new AggregatorParameter("every", ["milisecond", "second", "minute", "hour", "day", "week", "month", "year"])]),
+            new Aggregator("count", [new AggregatorParameter("every")]),
+            new Aggregator("sum", [new AggregatorParameter("every")]),
+            new Aggregator("least_squares", [new AggregatorParameter("every")]),
+            new Aggregator("percentile", [new AggregatorParameter("every"), new AggregatorParameter("percentile")]),
+            new Aggregator("scale", [new AggregatorParameter("by")]),
+            new Aggregator("div", [new AggregatorParameter("by")]),
+            new Aggregator("first", [new AggregatorParameter("every")]),
+            new Aggregator("gaps", [new AggregatorParameter("every")]),
+            new Aggregator("last", [new AggregatorParameter("every")]),
+            new Aggregator("diff", []),
+            new Aggregator("trim", [new AggregatorParameter("by", ["both", "first", "last"])]),
+          ], 'type');
+
 
       self = this;
 
