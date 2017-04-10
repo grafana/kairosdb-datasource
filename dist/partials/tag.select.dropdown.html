@@ -1,10 +1,9 @@
 <div class="gf-form">
-    <label class="gf-form">
-        <label class="gf-form-label">
-            <a ng-click="dropdownVisible = true">{{getSelectedValuesString() || "Select tags"}}</a>
-        </label>
+    <label class="gf-form-label">
+        <a ng-click="dropdownVisible = true">{{getSelectedValuesString() || "Select tags"}}</a>
     </label>
 </div>
+<!--todo: check-->
 <div class="variable-value-dropdown multi" ng-show="dropdownVisible" click-outside="hideDropdown()">
     <div class="variable-options-wrapper">
         <div class="variable-options-column">
