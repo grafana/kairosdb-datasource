@@ -1,7 +1,12 @@
-<label class="gf-form-label">
-    <a ng-click="showDropdown()">{{getSelectedValuesString() || "Select tags"}}</a>
+<label ng-show="!inputVisible" class="gf-form-label">
+    <a ng-show="!inputVisible" ng-click="showInput()">{{getSelectedValuesString() || "Select tags"}}</a>
 </label>
-<div class="variable-value-dropdown multi" ng-show="dropdownVisible">
+
+<input type="text" ng-model="newCustomValue" ng-change="setCustomValue(newCustomValue)"
+       ng-if="inputVisible" class="gf-form-input width-10" placeholder="Custom value"
+       ng-blur="hideInput()"/>
+
+<div class="variable-value-dropdown multi" ng-show="inputVisible">
     <div class="variable-options-wrapper">
         <div class="variable-options-column">
             <a class="variable-options-column-header" ng-class="{'many-selected': getSelectedValues().length > 1}"
@@ -17,4 +22,3 @@
         </div>
     </div>
 </div>
-<!--todo: templating values-->

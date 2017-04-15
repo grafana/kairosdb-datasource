@@ -22,6 +22,9 @@ define([
                 };
 
                 scope.getSelectedValuesString = function () {
+                  if (scope.customValue) {
+                    return scope.customValue;
+                  }
                   var fullString = _.chain(scope.getSelectedValues())
                       .map(option => option.value)
                       .join(' + ')
@@ -41,18 +44,28 @@ define([
                   debugger;
                 };
 
+                scope.setCustomValue = function(value) {
+                  scope.customValue = value;
+                  //todo: templating validation
+                };
+
                 function bodyOnClick (e) {
                   if (elem.has(e.target).length === 0) {
                     scope.$apply(function() {
-                      scope.dropdownVisible = false;
+                      scope.hideInput();
                       bodyEl.off('click', bodyOnClick);
                     });
                   }
                 }
 
-                scope.showDropdown = function() {
+                scope.showInput = function() {
                   $timeout(function() { bodyEl.on('click', bodyOnClick); }, 0, false);
-                  scope.dropdownVisible = true;
+                  scope.customValue = "";
+                  scope.inputVisible = true;
+                };
+
+                scope.hideInput = function() {
+                  scope.inputVisible = false;
                 };
 
                 scope.selectValue = function (option) {
