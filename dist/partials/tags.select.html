@@ -1,17 +1,17 @@
 <div class="gf-form-inline">
     <div class="gf-form">
-        <label class="gf-form-label offset-width-8 width-10">
+        <label class="gf-form-label offset-width-8 width-10" ng-class="{'inactiveTag': tagOption.options.length === 1}">
             {{tagOption.name}}
         </label>
     </div>
-    <div ng-if="tagOption.options.length > 1" class="gf-form"">
+    <div ng-if="tagOption.options.length > 1" class="gf-form">
         <ng-include src="'public/plugins/kairosdb-datasource/partials/tag.select.dropdown.html'"></ng-include>
         <!--todo: long inputs-->
         <!--todo: directive-->
     </div>
 
     <div ng-if="tagOption.options.length === 1">
-        <label class="gf-form-label ">
+        <label class="gf-form-label inactiveTag">
             {{tagOption.options[0].value}}
         </label>
     </div>
