@@ -31,16 +31,13 @@ define([
                 };
 
                 scope.addCustomGroupByValue = function () {
-                  if (!scope.groupByTagValueInputVisible) {
-                    scope.groupByTagValueInputVisible = true;
-                  }
-                  else {
+                  scope.groupByTagValueInputVisible = !scope.groupByTagValueInputVisible;
+                  if (scope.newCustomGroupByValue) {
                     scope.ctrl.target.customGroupByTags = scope.ctrl.target.customGroupByTags || []; //todo: move to init
                     scope.ctrl.target.customGroupByTags.push(scope.newCustomGroupByValue);
                     scope.newCustomGroupByValue = "";
-                    scope.groupByTagValueInputVisible = false;
                   }
-                };
+                }
               }
             };
           });
