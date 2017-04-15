@@ -8,11 +8,11 @@ define([
 
       angular
           .module('grafana.directives')
-          .directive('groupByTags', function () {
+          .directive('groupByValue', function () {
             return {
               restrict: 'E',
               scope: false,
-              templateUrl: 'public/plugins/kairosdb-datasource/partials/group.by.tags.html',
+              templateUrl: 'public/plugins/kairosdb-datasource/partials/group.by.value.html',
               link: function (scope, elem, ctrl) {
                 debugger;
                 //todo: put methods here

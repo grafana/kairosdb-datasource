@@ -15,6 +15,7 @@ define([
               templateUrl: 'public/plugins/kairosdb-datasource/partials/group.by.tags.html',
               link: function (scope, elem, ctrl) {
                 debugger;
+                //todo: put methods here
               }
             };
           });

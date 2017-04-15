@@ -1,33 +1,7 @@
 <div class="gf-form-group">
     <group-by-tags></group-by-tags>
+    <group-by-value></group-by-value>
 
-    <div class="gf-form-inline">
-        <div class="gf-form">
-            <label class="gf-form-label offset-width-8 width-5">
-                Value
-            </label>
-        </div>
-        <div class="gf-form">
-            <input ng-show="ctrl.groupByValueInputVisible" ng-model="ctrl.groupByValueRanges" class="gf-form-input"
-                   bs-tooltip="'List of groups sizes (comma-seperated)'" placeholder="value"/>
-            <label ng-if="!ctrl.groupByValueRanges || ctrl.groupByValueInputVisible" class="gf-form-label">
-                <a ng-click="ctrl.toggleGroupByValueInput()">
-                    <i class="fa fa-plus"></i>
-                </a>
-            </label>
-
-            <label ng-if="ctrl.groupByValueRanges && !ctrl.groupByValueInputVisible" class="gf-form-label">
-                {{ctrl.groupByValueRanges}}
-                <a ng-click="ctrl.groupByValueRanges = null">
-                    <i class="fa fa-times"></i>
-                </a>
-                <!--todo: validation-->
-            </label>
-        </div>
-        <div class="gf-form gf-form--grow">
-            <div class="gf-form-label gf-form-label--grow"></div>
-        </div>
-    </div>
     <div class="gf-form-inline">
         <div class="gf-form">
             <label class="gf-form-label offset-width-8 width-5">
