@@ -8,35 +8,14 @@ define([
 
       angular
           .module('grafana.directives')
-          .directive('clickOutside', function ($document) {
-
-        return {
-          restrict: 'A',
-          scope: {
-            clickOutside: '&'
-          },
-          link: function (scope, el, attr) {
-
-            $document.on('click', function (e) {
-              if (el !== e.target && !el[0].contains(e.target)) {
-                scope.$apply(function () {
-                  scope.$eval(scope.clickOutside);
-                });
-              }
-            });
-          }
-        }
-      });
-
-      angular
-          .module('grafana.directives')
-          .directive('tagsSelect', function () {
+          .directive('tagsSelect', function ($timeout, $window) {
             return {
               restrict: 'E',
               templateUrl: 'public/plugins/kairosdb-datasource/partials/tags.select.html',
-              link: function (scope) {
+              link: function (scope, elem) {
                 var that = this,
-                    SELECTED_VALUES_STRING_LIMIT = 100;
+                    SELECTED_VALUES_STRING_LIMIT = 100,
+                    bodyEl = angular.element($window.document.body);
 
                 scope.getSelectedValues = function () {
                   return _.filter(scope.variable.options, option => option.selected);
@@ -62,9 +41,18 @@ define([
                   debugger;
                 };
 
-                scope.hideDropdown = function() {
-                  debugger;
-                  scope.dropdownVisible = false;
+                function bodyOnClick (e) {
+                  if (elem.has(e.target).length === 0) {
+                    scope.$apply(function() {
+                      scope.dropdownVisible = false;
+                      bodyEl.off('click', bodyOnClick);
+                    });
+                  }
+                }
+
+                scope.showDropdown = function() {
+                  $timeout(function() { bodyEl.on('click', bodyOnClick); }, 0, false);
+                  scope.dropdownVisible = true;
                 };
 
                 scope.selectValue = function (option) {
