@@ -15,8 +15,8 @@ define([
               link: function (scope, elem, ctrl) {
                 scope.newGroupByTime = {};
                 scope.addGroupByTime = function () {
-                  debugger;
                   if(scope.newGroupByTime) {
+                    scope.ctrl.target.groupByTimes = scope.ctrl.target.groupByTimes || []; //todo: move to init
                     scope.ctrl.target.groupByTimes.push(scope.newGroupByTime);
                     scope.newGroupByTime = {};
                   }
