@@ -14,9 +14,11 @@ define([
               scope: false,
               templateUrl: 'public/plugins/kairosdb-datasource/partials/group.by.value.html',
               link: function (scope, elem, ctrl) {
-                debugger;
-                //todo: put methods here
+                scope.toggleGroupByValueInput = function () {
+                  scope.groupByValueInputVisible = !scope.groupByValueInputVisible;
+                };
               }
             };
           });
     });
+//todo: validation of input

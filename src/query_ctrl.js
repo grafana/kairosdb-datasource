@@ -140,36 +140,6 @@ function (angular, _, sdk) {
       self.allowedGroupByTags = _.keys(_.pick(notEmptyTags, tagValues => tagValues.length > 1));
     };
 
-    KairosDBQueryCtrl.prototype.addCustomGroupByValue = function() {
-      //todo: to seperate directive
-      if (!self.groupByTagValueInputVisible) {
-        self.groupByTagValueInputVisible = true;
-      }
-      else {
-        self.target.customGroupByTags = self.target.customGroupByTags || []; //todo: move to init
-        self.target.customGroupByTags.push(self.newCustomGroupByValue);
-        self.newCustomGroupByValue = "";
-        self.groupByTagValueInputVisible = false;
-      }
-    };
-
-    KairosDBQueryCtrl.prototype.removeCustomGroupByValue = function(value) {
-      self.target.customGroupByTags = _.without(self.target.customGroupByTags, value);
-    };
-
-    KairosDBQueryCtrl.prototype.toggleGroupByTag = function(tagName) {
-      if (self.isActiveGroupByTag(tagName)) {
-        self.target.groupByTags = _.without(self.target.groupByTags, tagName);
-      }
-      else {
-        self.target.groupByTags.push(tagName);
-      }
-    };
-
-    KairosDBQueryCtrl.prototype.isActiveGroupByTag = function (tagName) {
-      return _.contains(self.target.groupByTags, tagName);
-    };
-
     KairosDBQueryCtrl.prototype.getTextValues = function (metricFindResult) {
       return _.map(metricFindResult, function (value) {
         return value.text;
@@ -203,10 +173,6 @@ function (angular, _, sdk) {
 
     KairosDBQueryCtrl.prototype.removeAggregator = function(aggregator) {
       this.target.aggregators = _.without(this.target.aggregators, aggregator);
-    };
-
-    KairosDBQueryCtrl.prototype.toggleGroupByValueInput = function() {
-      self.groupByValueInputVisible = !self.groupByValueInputVisible;
     };
 
     // Filter metric by tag
