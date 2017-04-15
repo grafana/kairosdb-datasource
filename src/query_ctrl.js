@@ -135,6 +135,10 @@ function (angular, _, sdk) {
       self.allowedGroupByTags = _.keys(_.pick(notEmptyTags, tagValues => tagValues.length > 1));
     };
 
+    KairosDBQueryCtrl.prototype.addCustomGroupByValue = function(customValue) {
+      debugger;
+    };
+
     KairosDBQueryCtrl.prototype.toggleGroupByTag = function(tagName) {
       if (self.isActiveGroupByTag(tagName)) {
         self.target.groupByTags = _.without(self.target.groupByTags, tagName);

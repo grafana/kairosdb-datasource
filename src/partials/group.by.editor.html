@@ -23,7 +23,19 @@
                 </a>
             </label>
         </div>
-        {{ctrl.customGroupByInputOpen}}
+
+        <div ng-if="ctrl.customGroupByInputOpen">
+            <input type="text" ng-model="ctrl.newCustomGroupByValue"
+                   class="gf-form-input width-10" placeholder="Custom value"/>
+            <div class="gf-form">
+                <label class="gf-form-label">
+                    <a ng-click="ctrl.addCustomGroupByValue(newCustomGroupByValue)">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </label>
+            </div>
+        </div>
+
         <div class="gf-form" ng-show="ctrl.allowedGroupByTags.length == 0">
             <label class="gf-form-label">
                 No tags to group by
