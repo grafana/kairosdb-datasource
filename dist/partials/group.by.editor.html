@@ -16,24 +16,29 @@
                    ng-class="ctrl.isActiveGroupByTag(tagName) ? 'activeTag' : 'inactiveTag'">{{tagName}}</a>
             </label>
         </div>
+
+        <div ng-if="ctrl.target.customGroupByTags.length" class="gf-form">
+            <label class="gf-form-label">
+                custom:
+            </label>
+            <label class="gf-form-label" ng-repeat="value in ctrl.target.customGroupByTags">
+                {{value}}
+            </label>
+        </div>
+        <!--todo: removing-->
+
+        <!--todo: to seperate directive-->
+        <div ng-if="ctrl.groupByTagValueInputVisible">
+            <input type="text" ng-model="ctrl.newCustomGroupByValue"
+                   class="gf-form-input width-10" placeholder="Custom value"/>
+        </div>
+
         <div class="gf-form">
             <label class="gf-form-label">
-                <a ng-click="ctrl.customGroupByInputOpen = true">
+                <a ng-click="ctrl.addCustomGroupByValue()">
                     <i class="fa fa-plus"></i>
                 </a>
             </label>
-        </div>
-
-        <div ng-if="ctrl.customGroupByInputOpen">
-            <input type="text" ng-model="ctrl.newCustomGroupByValue"
-                   class="gf-form-input width-10" placeholder="Custom value"/>
-            <div class="gf-form">
-                <label class="gf-form-label">
-                    <a ng-click="ctrl.addCustomGroupByValue(newCustomGroupByValue)">
-                        <i class="fa fa-plus"></i>
-                    </a>
-                </label>
-            </div>
         </div>
 
         <div class="gf-form" ng-show="ctrl.allowedGroupByTags.length == 0">
