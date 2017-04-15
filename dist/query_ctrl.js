@@ -94,7 +94,9 @@ function (angular, _, sdk) {
       self.tagsLoading = true;
       self.datasource.getTagsForMetric(self.target.metric)
           .then(self.buildTagsOptions)
-          .then(() => {self.tagsLoading = false;});
+          .finally(() => {
+            self.tagsLoading = false;
+          });
     };
 
     KairosDBQueryCtrl.prototype.targetBlur = function () {

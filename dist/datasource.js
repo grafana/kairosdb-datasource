@@ -79,13 +79,23 @@ function (angular, _, sdk, dateMath, kbn) {
       };
     }
 
+    function handleMetricNamesLoadingError(error) {
+      self.metricNamesLoadingError = error;
+    }
+
     KairosDBDatasource.prototype.initializeMetricNames = function () {
+      self.metricNamesLoading = true;
       var cachedMetricNames = window[self.metricNamesStorageKey];
       if(!_.isUndefined(cachedMetricNames) && cachedMetricNames.timestamp-Date.now() < METRIC_NAMES_LOCAL_STORAGE_TTL) {
         self.metricNames = cachedMetricNames.metricNames;
+        self.metricNamesLoading = false;
       }
       else {
-        self.performMetricNamesQuery().then(storeMetricNames);
+        self.performMetricNamesQuery()
+            .then(storeMetricNames, handleMetricNamesLoadingError)
+            .finally(() => {
+              self.metricNamesLoading = false;
+            });
       }
     };
 
