@@ -151,6 +151,10 @@ function (angular, _, sdk) {
       }
     };
 
+    KairosDBQueryCtrl.prototype.removeCustomGroupByValue = function(value) {
+      self.target.customGroupByTags = _.without(self.target.customGroupByTags, value);
+    };
+
     KairosDBQueryCtrl.prototype.toggleGroupByTag = function(tagName) {
       if (self.isActiveGroupByTag(tagName)) {
         self.target.groupByTags = _.without(self.target.groupByTags, tagName);

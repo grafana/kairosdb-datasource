@@ -23,6 +23,9 @@
             </label>
             <label class="gf-form-label" ng-repeat="value in ctrl.target.customGroupByTags">
                 {{value}}
+                <a ng-click="ctrl.removeCustomGroupByValue(value)">
+                    <i class="fa fa-times"></i>
+                </a>
             </label>
         </div>
         <!--todo: removing-->
