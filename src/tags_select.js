@@ -18,7 +18,7 @@ define([
                     bodyEl = angular.element($window.document.body);
 
                 scope.getSelectedValues = function () {
-                  return _.filter(scope.variable.options, option => option.selected);
+                  return _.filter(scope.tagOption.options, option => option.selected);
                 };
 
                 scope.getSelectedValuesString = function () {
@@ -33,7 +33,7 @@ define([
                 };
 
                 scope.clearSelections = function() {
-                  scope.variable.options.forEach(option => option.selected = false);
+                  scope.tagOption.options.forEach(option => option.selected = false);
                 };
 
                 scope.getNewTags = function (value) {
@@ -71,32 +71,6 @@ define([
                 scope.selectValue = function (option) {
                   //todo; handle all
                   option.selected = !option.selected;
-                };
-
-                //todo: cleanup
-                var currentValue = {
-                  value: "value",
-                  text: "Text"
-                };
-
-                scope.variable = {
-                  label: "label",
-                  name: "name",
-                  options: [
-                    {
-                      value: "value1",
-                      text: "text1"
-                    },
-                    {
-                      value: "value2",
-                      text: "text2"
-                    },
-                    {
-                      value: "value2",
-                      text: "text2"
-                    }],
-                  current: currentValue,
-                  multi: true
                 };
               }
             };
