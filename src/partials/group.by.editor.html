@@ -48,8 +48,24 @@
     <div class="gf-form-inline">
         <div class="gf-form">
             <label class="gf-form-label offset-width-8 width-5">
-                <!--todo: mulitple values?-->
                 Value
+            </label>
+        </div>
+        <div class="gf-form">
+            <!--todo: single plus for both here and in tags-->
+            <label class="gf-form-label">
+                <a>
+                    <i class="fa fa-plus"></i>
+                </a>
+            </label>
+            <input ng-model="ctrl.groupByValueRanges" class="gf-form-input"
+                   bs-tooltip="'List of groups sizes (comma-seperated)'" />
+            <label class="gf-form-label">
+                {{ctrl.groupByValueRanges}}
+                <a ng-click="ctrl.clearGroupByValueRanges()">
+                    <i class="fa fa-times"></i>
+                </a>
+                <!--todo: validation-->
             </label>
         </div>
         <div class="gf-form gf-form--grow">
