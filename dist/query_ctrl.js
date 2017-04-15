@@ -75,6 +75,9 @@ function (angular, _, sdk) {
       var init = function() {
         //todo: handle multiple initailization when editing
         self.datasource.initializeMetricNames();
+        if (self.target.metric) {
+          self.metricNameChanged();
+        }
         };
       init();
     }
