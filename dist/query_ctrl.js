@@ -190,6 +190,10 @@ function (angular, _, sdk) {
       this.target.aggregators = _.without(this.target.aggregators, aggregator);
     };
 
+    KairosDBQueryCtrl.prototype.toggleGroupByValueInput = function() {
+      self.groupByValueInputVisible = !self.groupByValueInputVisible;
+    };
+
     // Filter metric by tag
     KairosDBQueryCtrl.prototype.addFilterTag = function () {
       if (!this.target.addFilterTagMode) {
