@@ -4,6 +4,7 @@ define([
   'app/plugins/sdk',
   './tags_select',
   './metric_name_field',
+  './group_by_tags'
 ],
 function (angular, _, sdk) {
   'use strict';
