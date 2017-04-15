@@ -1,21 +1,20 @@
-<div class="gf-form">
-    <!--todo: fix style-->
-    <label class="gf-form-label">
-        <a ng-click="showDropdown()">{{getSelectedValuesString() || "Select tags"}}</a>
-    </label>
-</div>
-<!--todo: check-->
+<label class="gf-form-label">
+    <a ng-click="showDropdown()">{{getSelectedValuesString() || "Select tags"}}</a>
+</label>
 <div class="variable-value-dropdown multi" ng-show="dropdownVisible">
     <div class="variable-options-wrapper">
         <div class="variable-options-column">
-            <a class="variable-options-column-header" ng-class="{'many-selected': getSelectedValues().length > 1}" bs-tooltip="'Clear selections'" data-placement="top" ng-click="clearSelections()">
+            <a class="variable-options-column-header" ng-class="{'many-selected': getSelectedValues().length > 1}"
+               bs-tooltip="'Clear selections'" data-placement="top" ng-click="clearSelections()">
                 <span class="variable-option-icon"></span>
                 Selected ({{getSelectedValues().length}})
             </a>
-            <a class="variable-option pointer" ng-repeat="option in variable.options" ng-class="{'selected': option.selected}" ng-click="selectValue(option, $event)">
+            <a class="variable-option pointer" ng-repeat="option in variable.options"
+               ng-class="{'selected': option.selected}" ng-click="selectValue(option, $event)">
                 <span class="variable-option-icon"></span>
                 <span>{{option.text}}</span>
             </a>
         </div>
     </div>
 </div>
+<!--todo: templating values-->
