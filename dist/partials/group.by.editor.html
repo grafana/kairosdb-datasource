@@ -16,11 +16,13 @@
                    ng-class="ctrl.isActiveGroupByTag(tagName) ? 'activeTag' : 'inactiveTag'">{{tagName}}</a>
             </label>
         </div>
-        <label class="gf-form-label">
-            <a ng-click="ctrl.customGroupByInputOpen">
-                <i class="fa fa-plus"></i>
-            </a>
-        </label>
+        <div class="gf-form">
+            <label class="gf-form-label">
+                <a ng-click="ctrl.customGroupByInputOpen = true">
+                    <i class="fa fa-plus"></i>
+                </a>
+            </label>
+        </div>
         {{ctrl.customGroupByInputOpen}}
         <div class="gf-form" ng-show="ctrl.allowedGroupByTags.length == 0">
             <label class="gf-form-label">
