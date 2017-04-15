@@ -5,7 +5,8 @@ define([
   './tags_select',
   './metric_name_field',
   './group_by_tags',
-  './group_by_value'
+  './group_by_value',
+  './group_by_time'
 ],
 function (angular, _, sdk) {
   'use strict';
