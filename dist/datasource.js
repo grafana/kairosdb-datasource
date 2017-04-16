@@ -4,9 +4,9 @@ define([
   'app/plugins/sdk',
   'app/core/utils/datemath',
   'app/core/utils/kbn',
-  './query_ctrl'
+  './kairosdb_query_builder'
 ],
-function (angular, _, sdk, dateMath, kbn) {
+function (angular, _, sdk, dateMath, kbn, KairosDBQueryBuilder) {
   'use strict';
 
   var self,
@@ -24,6 +24,7 @@ function (angular, _, sdk, dateMath, kbn) {
     this.templateSrv = templateSrv;
     this.metricNames = null;
     this.metricNamesStorageKey = "metric_names_" + this.url;
+    this.queryBuilder = new KairosDBQueryBuilder();
     self = this;
   }
 
@@ -39,9 +40,9 @@ function (angular, _, sdk, dateMath, kbn) {
     });
   };
 
-  // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function (options) {
     debugger;
+    this.queryBuilder.build();
     self.panelId = options.panelId;
     var start = options.rangeRaw.from;
     var end = options.rangeRaw.to;
