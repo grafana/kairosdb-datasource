@@ -42,19 +42,18 @@ define([
                   //todo: templating validation
                 };
 
-                //todo: rename
-                function bodyOnClick (event) {
+                function handleBodyClick (event) {
                   var dropdownItem = elem[0].querySelector("#optionsDropdown");
                   if ($(dropdownItem).has(event.target).length === 0) {
                     scope.$apply(function() {
                       scope.hideInput();
-                      bodyEl.off('click', bodyOnClick);
+                      bodyEl.off('click', handleBodyClick);
                     });
                   }
                 }
 
                 scope.showInput = function() {
-                  $timeout(function() { bodyEl.on('click', bodyOnClick); }, 0, false);
+                  $timeout(function() { bodyEl.on('click', handleBodyClick); }, 0, false);
                   scope.customValue = "";
                   scope.inputVisible = true;
                 };
