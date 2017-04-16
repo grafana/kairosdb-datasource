@@ -63,7 +63,15 @@ define([
                 };
 
                 scope.selectValue = function (option) {
-                  //todo; handle all
+                  //todo: move to const
+                  var allOption = _.find(scope.tagOption.options, option => option.value === "$__all");
+                  if (option === allOption) {
+                    scope.tagOption.options.forEach(option => {
+                      option.selected = false;
+                    });
+                  } else {
+                    allOption.selected = false;
+                  }
                   option.selected = !option.selected;
                 };
               }
