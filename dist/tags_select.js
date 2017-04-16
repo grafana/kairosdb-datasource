@@ -42,28 +42,23 @@ define([
                   //todo: templating validation
                 };
 
-                //todo: rename
-                function bodyOnClick (event) {
+                function handleBodyClick (event) {
                   var dropdownItem = elem[0].querySelector("#optionsDropdown");
                   if ($(dropdownItem).has(event.target).length === 0) {
                     scope.$apply(function() {
-                      console.log("inside body on click, disabling click");
                       scope.hideInput();
-                      bodyEl.off('click', bodyOnClick);
+                      bodyEl.off('click', handleBodyClick);
                     });
                   }
                 }
 
                 scope.showInput = function() {
-                  //todo: div is not body, thus it doesn't call? nope, grow div is inside the looking aera, must be outside!?
-                  console.log("shhow input, setting click");
-                  $timeout(function() { bodyEl.on('click', bodyOnClick); }, 0, false);
+                  $timeout(function() { bodyEl.on('click', handleBodyClick); }, 0, false);
                   scope.customValue = "";
                   scope.inputVisible = true;
                 };
 
                 scope.hideInput = function() {
-                  console.log("hide input");
                   scope.inputVisible = false;
                 };
 
