@@ -81,6 +81,11 @@ function (angular, _, sdk) {
         if (self.target.metric) {
           self.metricNameChanged();
         }
+
+        $scope.$watch('ctrl.target', function (newTarget, oldTarget) {
+          console.log(newTarget);
+        }, true);
+
         };
       init();
     }
@@ -164,7 +169,7 @@ function (angular, _, sdk) {
     };
 
     KairosDBQueryCtrl.prototype.suggestTagValues = function (query, callback) {
-      self.datasource.metricFindQuery('tag_values(' + se-lf.target.metric + ',' + self.target.currentTagKey + ')')
+      self.datasource.metricFindQuery('tag_values(' + self.target.metric + ',' + self.target.currentTagKey + ')')
         .then(self.getTextValues)
         .then(callback);
     };
