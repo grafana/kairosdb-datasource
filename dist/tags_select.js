@@ -25,23 +25,16 @@ define([
                   if (scope.customValue) {
                     return scope.customValue;
                   }
-                  var fullString = _.chain(scope.getSelectedValues())
+                  var selectedValues = scope.getSelectedValues();
+                  var fullString = _.chain(selectedValues)
                       .map(option => option.value)
                       .join(' + ')
                       .value();
-                  return fullString.length < SELECTED_VALUES_STRING_LIMIT ? fullString : getSelectedValues.length + " tags selected";
+                  return fullString.length < SELECTED_VALUES_STRING_LIMIT ? fullString : selectedValues.length + " tags selected";
                 };
 
                 scope.clearSelections = function() {
                   scope.tagOption.options.forEach(option => option.selected = false);
-                };
-
-                scope.getNewTags = function (value) {
-                  return that.tags.tag1;
-                };
-
-                scope.addNewTag = function (tagName, tagVlue) {
-                  debugger;
                 };
 
                 scope.setCustomValue = function(value) {
