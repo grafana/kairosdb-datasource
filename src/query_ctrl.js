@@ -485,3 +485,5 @@ function (angular, _, sdk) {
 
   })(sdk.QueryCtrl);
 });
+
+//todo: custom templating for tags filtering
