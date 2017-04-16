@@ -42,8 +42,10 @@ define([
                   //todo: templating validation
                 };
 
-                function bodyOnClick (e) {
-                  if (elem.has(e.target).length === 0) {
+                //todo: rename
+                function bodyOnClick (event) {
+                  var dropdownItem = elem[0].querySelector("#optionsDropdown");
+                  if ($(dropdownItem).has(event.target).length === 0) {
                     scope.$apply(function() {
                       scope.hideInput();
                       bodyEl.off('click', bodyOnClick);

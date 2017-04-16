@@ -4,9 +4,8 @@
             {{tagOption.name}}
         </label>
     </div>
-    <div ng-if="tagOption.options.length > 1" class="gf-form">
+    <div id="optionsDropdown" ng-if="tagOption.options.length > 1" class="gf-form">
         <ng-include src="'public/plugins/kairosdb-datasource/partials/tag.select.dropdown.html'"></ng-include>
-        <!--todo: long inputs-->
         <!--todo: directive-->
     </div>
 
