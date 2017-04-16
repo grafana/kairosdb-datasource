@@ -41,6 +41,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
   // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function (options) {
+    debugger;
     self.panelId = options.panelId;
     var start = options.rangeRaw.from;
     var end = options.rangeRaw.to;

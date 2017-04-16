@@ -83,7 +83,9 @@ function (angular, _, sdk) {
         }
 
         $scope.$watch('ctrl.target', function (newTarget, oldTarget) {
-          console.log(newTarget);
+          //todo: if is valid
+          debugger;
+          self.panelCtrl.refresh();
         }, true);
 
         };
