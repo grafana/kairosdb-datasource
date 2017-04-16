@@ -4,6 +4,12 @@
             Time
         </label>
     </div>
+    <div class="gf-form" ng-repeat="groupByTime in ctrl.target.groupByTimes">
+        <label class="gf-form-label">
+            Interval: {{groupByTime.interval}} Count: {{groupByTime.count}}
+        </label>
+    </div>
+    <!--todo: removeing-->
     <div ng-show="groupByTimeInputVisible" class="gf-form">
         <input type="text" ng-model="newGroupByTime.interval"
                bs-tooltip="'Duration of time groups'"
