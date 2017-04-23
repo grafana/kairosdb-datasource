@@ -28,8 +28,12 @@ function (angular, _, sdk) {
       this.target.errors = validateTarget(this.target);
 
       this.metricNamesCallDelay = 1000;
+      this.tagNamesDelay = 1000;
+      this.tagValueDelay = 1000;
       this.metricNamesSuggestionsLimit = 100;
       this.metricNamesPromise = null;
+      this.tagNamesPromise = null;
+      this.tagValuesPromise = null;
       this.lastSuggestedMetricName = null;
 
       self = this;
@@ -70,19 +74,27 @@ function (angular, _, sdk) {
                   return metricNames;
                 })
                 .then(callback);
-          }, self.metricNamesCallDelay);
+          }, self.metricNamesCallDelay );
     };
 
     KairosDBQueryCtrl.prototype.suggestTagKeys = function (query, callback) {
-      self.datasource.metricFindQuery('tag_names(' + self.target.metric + ')')
-        .then(self.getTextValues)
-        .then(callback);
+      self.$timeout.cancel(self.tagNamesPromise);
+      self.tagNamesPromise = self.$timeout(
+          function() {
+            self.datasource.metricFindQuery('tag_names(' + self.target.metric + ')')
+              .then(self.getTextValues)
+              .then(callback);
+          }, self.tagNamesDelay );
     };
 
     KairosDBQueryCtrl.prototype.suggestTagValues = function (query, callback) {
-      self.datasource.metricFindQuery('tag_values(' + self.target.metric + ',' + self.target.currentTagKey + ')')
-        .then(self.getTextValues)
-        .then(callback);
+      self.$timeout.cancel(self.tagValuesPromise);
+      self.tagValuesPromise = self.$timeout(
+        function () {
+          self.datasource.metricFindQuery('tag_values(' + self.target.metric + ',' + self.target.currentTagKey + ')')
+            .then(self.getTextValues)
+            .then(callback);
+        }, self.tagValueDelay );
     };
 
     // Filter metric by tag
