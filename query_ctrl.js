@@ -294,6 +294,9 @@ function (angular, _, sdk) {
         if (this.target.hasTrim) {
           aggregator.trim = this.target.horAggregator.trim;
         }
+        if (this.target.hasSize) {
+          aggregator.size = this.target.horAggregator.size;
+        }
         this.target.horizontalAggregators.push(aggregator);
         this.targetBlur();
       }
@@ -305,6 +308,7 @@ function (angular, _, sdk) {
       this.target.hasNothing = false;
       this.target.hasPercentile = false;
       this.target.hasTrim = false;
+      this.target.hasSize = false;
     };
 
     KairosDBQueryCtrl.prototype.removeHorizontalAggregator = function (index) {
@@ -326,6 +330,7 @@ function (angular, _, sdk) {
       this.target.hasNothing = _.includes(['diff'], this.target.currentHorizontalAggregatorName);
       this.target.hasPercentile = 'percentile' === this.target.currentHorizontalAggregatorName;
       this.target.hasTrim = _.includes(['trim'], this.target.currentHorizontalAggregatorName);
+      this.target.hasSize = _.includes(['sma'], this.target.currentHorizontalAggregatorName);
       this.validateHorizontalAggregator();
     };
 
@@ -369,6 +374,17 @@ function (angular, _, sdk) {
           this.target.horAggregator.trim !== 'first' &&
           this.target.horAggregator.trim !== 'last')) {
           errors.trim = 'Trim must be of value both, first, or last';
+          this.target.isAggregatorValid = false;
+        }
+      }
+
+      if (this.target.hasSize) {
+        if (!this.target.horAggregator.size) {
+          errors.size = 'You must supply a numeric value for this aggregator';
+          this.target.isAggregatorValid = false;
+        }
+        else if (parseInt(this.target.horAggregator.size) <= 0) {
+          errors.size = 'Value should be larger than 0';
           this.target.isAggregatorValid = false;
         }
       }

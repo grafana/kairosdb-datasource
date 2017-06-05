@@ -223,7 +223,7 @@
         <select class="input-medium gf-form-input"
           ng-change="ctrl.changeHorAggregationInput()"
           ng-model="ctrl.target.currentHorizontalAggregatorName"
-          ng-options="f for f in ['avg','dev','max','min','rate','sampler','count','sum','least_squares','percentile','scale','div', 'first', 'gaps', 'last', 'diff', 'trim']"></select>
+          ng-options="f for f in ['avg','dev','max','min','rate','sampler','count','sum','least_squares','percentile','scale','div', 'first', 'gaps', 'last', 'diff', 'trim', 'sma']"></select>
       </span>
 
       <!-- Different parameters -->
@@ -298,6 +298,20 @@
           ng-model="ctrl.target.horAggregator.trim"
           ng-init="ctrl.target.horAggregator.trim='both'"
           ng-options="f for f in ['both','first','last']"></select>
+      </span>
+
+      <span ng-show="ctrl.target.hasSize">
+        <input type="text"
+        class="input-mini gf-form-input"
+        ng-model="ctrl.target.horAggregator.size"
+        ng-init="ctrl.target.horAggregator.size='10'"
+        spellcheck='false'
+        ng-change="ctrl.validateHorizontalAggregator()" >
+        <a bs-tooltip="ctrl.target.errors.horAggregator.size"
+          style="color: rgb(229, 189, 28)"
+          ng-show="ctrl.target.errors.horAggregator.size">
+          <i class="fa fa-warning"></i>
+        </a>
       </span>
 
       <label class="gf-form-label width-2.5" ng-show="ctrl.target.addHorizontalAggregatorMode">
