@@ -158,7 +158,7 @@ function (angular, _, sdk, dateMath, kbn) {
     var metricsOptions = { name: metric };
     if (otherTags) {
       var tags = {};
-      var kvps = otherTags.match(/\w+\s*=\s*(?:[^,{}]+|\{[^,{}]+(?:,\s*[^,{}]+)*\})/g);
+      var kvps = otherTags.match(/[A-Za-z0-9_-]+\s*=\s*(?:[^,{}]+|\{[^,{}]+(?:,\s*[^,{}]+)*\})/g);
       kvps.forEach(function(pair) {
         var kv = pair.split("=");
         var k = kv[0] ? kv[0].trim() : "";
@@ -240,7 +240,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
     var metrics_regex = /metrics\((.*)\)/;
     var tag_names_regex = /tag_names\((.*)\)/;
-    var tag_values_regex = /tag_values\(([^,]*),\s*([^,]*)(?:,\s*)?(\w+\s*=.*)?\)/;
+    var tag_values_regex = /tag_values\(([^,]*),\s*([^,]*)(?:,\s*)?([A-Za-z0-9_-]+\s*=.*)?\)/;
 
     var metrics_query = interpolated.match(metrics_regex);
     if (metrics_query) {
