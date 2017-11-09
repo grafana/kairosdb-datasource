@@ -322,7 +322,8 @@ function (angular, _, sdk, dateMath, kbn) {
         });
 
         // Target here refers to the alias string
-        while (target.indexOf('$') != -1) {
+        // use replaceCount to prevent unpredict infinite loop
+        for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++){
           target = templateSrv.replace(target, groupAliases);
         }
 
