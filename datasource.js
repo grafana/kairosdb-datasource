@@ -47,9 +47,10 @@ function (angular, _, sdk, dateMath, kbn) {
     var queries = _.compact(_.map(targets, _.partial(convertTargetToQuery, options)));
     var plotParams = _.compact(_.map(targets, function(target) {
       var alias = target.alias || self.getDefaultAlias(target);
+      var aliasMode = target.aliasMode || 'default';
 
       if (!target.hide) {
-        return { alias: alias, exouter: target.exOuter };
+        return { alias: alias, exouter: target.exOuter, aliasMode: aliasMode };
       }
       else {
         return null;
@@ -286,7 +287,7 @@ function (angular, _, sdk, dateMath, kbn) {
     var index = 0;
     _.each(results.data.queries, function (series) {
       _.each(series.results, function (result) {
-        var details = "";
+        var details = " ( ";
         var target = plotParams[index].alias;
         var groupAliases = {};
         var valueGroup = 1;
@@ -310,6 +311,18 @@ function (angular, _, sdk, dateMath, kbn) {
                 details += key + "=" + value + " ";
               }
             });
+	    
+	    var includesReservedWord = false;
+	    var reservedWords = ['$group_by(','_tag_group_','_value_group_','_time_group_'];
+	    _.each(reservedWords, function(reservedWord) {
+		if (target.includes(reservedWord)) {
+		  includesReservedWord = true;
+		}
+	    });
+
+            if (!includesReservedWord && plotParams[index].aliasMode !== 'default') {
+	      target += details + ')';
+            }
           }
           else if (element.name === "value") {
             groupAliases["_value_group_" + valueGroup] = { value : element.group.group_number.toString() };
