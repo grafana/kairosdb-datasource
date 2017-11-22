@@ -19,7 +19,7 @@ function (angular, _, sdk, dateMath, kbn) {
     console.log('backendSrv.datasourceRequest', backendSrv.datasourceRequest);
     console.log('templateSrv', templateSrv);
     console.log('templateSrv.variables', templateSrv.variables);
-    console.log(templateSrv.distributeVariable(1,2))
+    console.log(templateSrv.distributeVariable(1,2));
 
     this.type = instanceSettings.type;  // "datasoruce"
     this.url = instanceSettings.url.replace(/\/+$/, ""); // Datasource Url
@@ -29,20 +29,43 @@ function (angular, _, sdk, dateMath, kbn) {
     this.q = $q; // Javascript Promise by Angular : https://toddmotto.com/promises-angular-q
     this.backendSrv = backendSrv;
     this.templateSrv = templateSrv;
+    this.multi = instanceSettings.jsonData.multi;
+    this.urls = [this.url].concat(instanceSettings.jsonData.urls); // All urls include main
 
     self = this;
   }
 
   // Function to check Datasource health
   KairosDBDatasource.prototype.testDatasource = function() {
-    return this.backendSrv.datasourceRequest({
-      url: this.url + '/api/v1/health/check',
-      method: 'GET'
-    }).then(function(response) {
-      if (response.status === 204) {
-        return { status: "success", message: "Data source is working", title: "Success" };
-      }
-    });
+    if (!this.multi) {
+      return this.backendSrv.datasourceRequest({
+        url: this.url + '/api/v1/health/check',
+        method: 'GET'
+      }).then(function(response) {
+        if (response.status === 204) {
+          return { status: "success", message: "Data source is working", title: "Success" };
+        }
+      });
+    } else {
+      console.log('this.urls', this.urls)
+      let promises = this.urls.map( o => {
+        return new Promise((resolve, reject) => {
+          this.backendSrv.datasourceRequest({ url: o + '/api/v1/health/check', method: 'GET' })
+              .then((response) => {
+                if (response.status === 204) resolve()
+                else reject(o + 'fails')
+              }).catch((err) => {
+                reject('URL:' + o + ' fails')
+              });
+        })
+      });
+      return this.q.all(promises)
+                 .then((value) => {
+                   return { status: "success", message: "All Data sources are working", title: "Success" };
+                 }).catch((err) => {
+                   return { status: "error", message: err, title: "Error" }
+                 })
+    }
   };
 
   // Called once per panel (graph)

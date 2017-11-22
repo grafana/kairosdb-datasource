@@ -14,7 +14,7 @@
   </div>
 </gf-form-switch>
 
-<div ng-show='ctrl.current.jsonData.multi' ng-init="ctrl.current.jsonData.urls=[]; newUrl = ''">
+<div ng-show='ctrl.current.jsonData.multi' ng-init="ctrl.current.jsonData.urls = ctrl.current.jsonData.urls ? ctrl.current.jsonData.urls : []; newUrl = ''">
   <div class="gf-form-group">
     <div class="gf-form max-width-30">
       <span class="gf-form-label">
@@ -29,7 +29,7 @@
       {{url}}
     </span>
     <span class="gf-form-label">
-      <button type="submit" class="btn btn-outline-dange btn-mini" ng-click="ctrl.current.jsonData.urls.splice($index, 1)">Remove</button>
+      <button type="submit" class="btn btn-outline-danger btn-mini" ng-click="ctrl.current.jsonData.urls.splice($index, 1)">Remove</button>
     </span>
   </div>
 </div>
