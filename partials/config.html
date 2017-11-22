@@ -14,20 +14,6 @@
   </div>
 </gf-form-switch>
 
-<!-- <div class="gf-form max-width-30">
-  <span class="gf-form-label width-7">Type</span>
-  <div class="gf-form-select-wrapper gf-form-select-wrapper--has-help-icon max-width-24">
-    <select class="gf-form-input ng-pristine ng-valid ng-not-empty ng-touched" ng-model="ctrl.current.jsonData.multi" ng-options="f for f in ['single', 'multi']" required>
-      <option label="single" value="string:single" ng-selected="single">single</option>
-      <option label="multi" value="string:multi">multi</option>
-    </select>
-    <info-popover mode="right-absolute" class="gf-form-help-icon gf-form-help-icon--right-absolute drop-help drop-hide-out-of-bounds drop-target">
-      <i class="fa fa-info-circle">This is the test URL part for multi cluster supporting stuff</i>
-    </info-popover>
-  </div>
-</div> -->
-
-<!-- <button type="submit" class="btn btn-outline-primary" ng-click="crtl.current.multi.count += 1"></button> -->
 <div ng-show='ctrl.current.jsonData.multi' ng-init="ctrl.current.jsonData.urls=[]; newUrl = ''">
   <div class="gf-form-group">
     <div class="gf-form max-width-30">
@@ -43,7 +29,7 @@
       {{url}}
     </span>
     <span class="gf-form-label">
-      <button type="submit" class="btn btn-outline-danger btn-mini" ng-click="ctrl.current.jsonData.urls.splice($index, 1)">Remove</button>
+      <button type="submit" class="btn btn-outline-dange btn-mini" ng-click="ctrl.current.jsonData.urls.splice($index, 1)">Remove</button>
     </span>
   </div>
 </div>
