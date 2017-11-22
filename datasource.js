@@ -13,12 +13,20 @@ function (angular, _, sdk, dateMath, kbn) {
 
   /** @ngInject */
   function KairosDBDatasource(instanceSettings, $q, backendSrv, templateSrv) {
-    this.type = instanceSettings.type;
-    this.url = instanceSettings.url.replace(/\/+$/, "");
-    this.name = instanceSettings.name;
-    this.withCredentials = instanceSettings.withCredentials;
+    console.log('instanceSettings', instanceSettings);
+    console.log('$q', $q);
+    console.log('backendSrv', backendSrv);
+    console.log('backendSrv.datasourceRequest', backendSrv.datasourceRequest);
+    console.log('templateSrv', templateSrv);
+    console.log('templateSrv.variables', templateSrv.variables);
+    console.log(templateSrv.distributeVariable(1,2))
+
+    this.type = instanceSettings.type;  // "datasoruce"
+    this.url = instanceSettings.url.replace(/\/+$/, ""); // Datasource Url
+    this.name = instanceSettings.name; // "KairosDB"
+    this.withCredentials = instanceSettings.withCredentials; // if has cred, here undefined
     this.supportMetrics = true;
-    this.q = $q;
+    this.q = $q; // Javascript Promise by Angular : https://toddmotto.com/promises-angular-q
     this.backendSrv = backendSrv;
     this.templateSrv = templateSrv;
 
@@ -39,6 +47,9 @@ function (angular, _, sdk, dateMath, kbn) {
 
   // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function (options) {
+    console.log('options', options); // I think options are passed from grafana directly
+    // Lots of useful variables here. Maybe coming from query_ctrl
+
     self.panelId = options.panelId;
     var start = options.rangeRaw.from;
     var end = options.rangeRaw.to;
@@ -65,9 +76,32 @@ function (angular, _, sdk, dateMath, kbn) {
       return d.promise;
     }
 
+    // return this.performMultiTimeSeriesQuery(queries, start, end)
+    //   .then(handleKairosDBQueryResponseAlias, handleQueryError);
     return this.performTimeSeriesQuery(queries, start, end)
       .then(handleKairosDBQueryResponseAlias, handleQueryError);
   };
+
+  KairosDBDatasource.prototype.performMultiTimeSeriesQuery = function (queries, start, end) {
+    var reqBody = {
+      metrics: queries,
+      cache_time: 0
+    };
+
+    convertToKairosTime(start, reqBody, 'start');
+    convertToKairosTime(end, reqBody, 'end');
+
+    var options = {
+      method: 'POST',
+      withCredentials: this.withCredentials,
+      url: this.url + '/api/v1/datapoints/query',
+      data: reqBody
+    };
+
+    let promises = [this.backendSrv.datasourceRequest(options), this.backendSrv.datasourceRequest(options)]
+
+    return this.q.all(promises)
+  }
 
   KairosDBDatasource.prototype.performTimeSeriesQuery = function (queries, start, end) {
     var reqBody = {
@@ -282,66 +316,70 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   function handleKairosDBQueryResponse(plotParams, templateSrv, results) {
+    // console.log('resultsList', resultsList)
+    console.log('results', results)
     var output = [];
     var index = 0;
-    _.each(results.data.queries, function (series) {
-      _.each(series.results, function (result) {
-        var details = "";
-        var target = plotParams[index].alias;
-        var groupAliases = {};
-        var valueGroup = 1;
-        var timeGroup = 1;
+    // _.each(resultsList, function (results) {
+      _.each(results.data.queries, function (series) {
+        _.each(series.results, function (result) {
+          var details = "";
+          var target = plotParams[index].alias;
+          var groupAliases = {};
+          var valueGroup = 1;
+          var timeGroup = 1;
 
-        // collect values for group aliases, then use them as scopedVars for templating
-        _.each(result.group_by, function(element) {
-          if (element.name === "tag") {
-            _.each(element.group, function(value, key) {
-              groupAliases["_tag_group_" + key] = { value : value };
+          // collect values for group aliases, then use them as scopedVars for templating
+          _.each(result.group_by, function(element) {
+            if (element.name === "tag") {
+              _.each(element.group, function(value, key) {
+                groupAliases["_tag_group_" + key] = { value : value };
 
-              // If the Alias name starts with $group_by, then use that
-              // as the label
-              if (target.startsWith('$group_by(')) {
-                var aliasname = target.split('$group_by(')[1].slice(0, -1);
-                if (aliasname === key) {
-                  target = value;
+                // If the Alias name starts with $group_by, then use that
+                // as the label
+                if (target.startsWith('$group_by(')) {
+                  var aliasname = target.split('$group_by(')[1].slice(0, -1);
+                  if (aliasname === key) {
+                    target = value;
+                  }
                 }
-              }
-              else {
-                details += key + "=" + value + " ";
-              }
-            });
+                else {
+                  details += key + "=" + value + " ";
+                }
+              });
+            }
+            else if (element.name === "value") {
+              groupAliases["_value_group_" + valueGroup] = { value : element.group.group_number.toString() };
+              valueGroup ++;
+            }
+            else if (element.name === "time") {
+              groupAliases["_time_group_" + timeGroup] = { value : element.group.group_number.toString() };
+              timeGroup ++;
+            }
+          });
+
+          // Target here refers to the alias string
+          // use replaceCount to prevent unpredict infinite loop
+          for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++){
+            target = templateSrv.replace(target, groupAliases);
           }
-          else if (element.name === "value") {
-            groupAliases["_value_group_" + valueGroup] = { value : element.group.group_number.toString() };
-            valueGroup ++;
+
+          var datapoints = [];
+
+          for (var i = 0; i < result.values.length; i++) {
+            var t = Math.floor(result.values[i][0]);
+            var v = result.values[i][1];
+            datapoints[i] = [v, t];
           }
-          else if (element.name === "time") {
-            groupAliases["_time_group_" + timeGroup] = { value : element.group.group_number.toString() };
-            timeGroup ++;
+          if (plotParams[index].exouter) {
+            datapoints = new PeakFilter(datapoints, 10);
           }
+          output.push({ target: target, datapoints: datapoints });
         });
 
-        // Target here refers to the alias string
-        // use replaceCount to prevent unpredict infinite loop
-        for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++){
-          target = templateSrv.replace(target, groupAliases);
-        }
-
-        var datapoints = [];
-
-        for (var i = 0; i < result.values.length; i++) {
-          var t = Math.floor(result.values[i][0]);
-          var v = result.values[i][1];
-          datapoints[i] = [v, t];
-        }
-        if (plotParams[index].exouter) {
-          datapoints = new PeakFilter(datapoints, 10);
-        }
-        output.push({ target: target, datapoints: datapoints });
+        index++;
       });
-
-      index++;
-    });
+    // });
 
     return { data: _.flatten(output) };
   }
