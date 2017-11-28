@@ -13,22 +13,28 @@
     <label for="check-414" data-on="Yes" data-off="No"></label>
   </div>
 </gf-form-switch>
-<div ng-show='ctrl.current.jsonData.multi' ng-init="ctrl.current.jsonData.urls = ctrl.current.jsonData.urls ? ctrl.current.jsonData.urls : []; newUrl = ''">
+ALL DATA SOURCE
+{{ctrl.current.jsonData.allDataSources}}
+<br>
+<br>
+JUST KAIROS
+{{ctrl.current.jsonData.allKairosDataSources}}
+<div ng-show='ctrl.current.jsonData.multi' ng-init="newUrl = ''">
   <div class="gf-form-group">
     <div class="gf-form max-width-30">
       <span class="gf-form-label">
-        <button type="submit" class="btn btn-outline-primary btn-mini" ng-click="ctrl.current.jsonData.urls.push(newUrl); newUrl=''">Add Url</button>
+        <button type="submit" class="btn btn-outline-primary btn-mini" ng-click="ctrl.current.jsonData.selectedDataSources.push(newUrl); newUrl=''">Add Url</button>
       </span>
-      <input type="text" class="gf-form-input" ng-model="newUrl" spellcheck='false'></input>
+      <input type="text" class="gf-form-input" ng-model="newUrl" spellcheck="false"></input>
       <info-popover mode="right-absolute">This is the test URL part for multi cluster supporting stuff</info-popover>
     </div>
   </div>
-  <div class="gf-form max-width-30" ng-repeat="url in ctrl.current.jsonData.urls track by $index">
+  <div class="gf-form max-width-30" ng-repeat="url in ctrl.current.jsonData.selectedDataSources track by $index">
     <span class="gf-form-label">
       {{url}}
     </span>
     <span class="gf-form-label">
-      <button type="submit" class="btn btn-outline-danger btn-mini" ng-click="ctrl.current.jsonData.urls.splice($index, 1)">Remove</button>
+      <button type="submit" class="btn btn-outline-danger btn-mini" ng-click="ctrl.current.jsonData.selectedDataSources.splice($index, 1)">Remove</button>
     </span>
   </div>
 </div>

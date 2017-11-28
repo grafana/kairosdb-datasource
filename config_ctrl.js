@@ -4,27 +4,22 @@ define(["require", "exports"], function (require, exports) {
         function KairosDBConfigCtrl($scope, datasourceSrv) {
             this.datasourceSrv = datasourceSrv;
             this.current.jsonData = this.current.jsonData || {};
-            this.getAllKairosDataSource();
+            if (Object.keys(this.current.jsonData).length === 0)
+                this.current.jsonData.selectedDataSources = [];
+            this.getAllDataSources();
+            this.getAllKairosDataSources();
         }
-        KairosDBConfigCtrl.prototype.getAllKairosDataSource = function () {
-            var _this = this;
-            this.datasourceSrv.loadDatasource(this.current.name)
-                .then(function (ds) {
-                return ds.backendSrv.$http;
-            }).then(function ($http) {
-                $http({
-                    method: 'GET',
-                    url: '/api/datasources'
-                }).then(function (response) {
-                    var kairosDatasourceList = [];
-                    for (var _i = 0, _a = response.data; _i < _a.length; _i++) {
-                        var source = _a[_i];
-                        if (source.type == 'grafana-kairosdb-datasource')
-                            kairosDatasourceList.push(source);
-                    }
-                    _this.current.jsonData.allKairosDataSource = kairosDatasourceList;
-                });
-            });
+        KairosDBConfigCtrl.prototype.getAllDataSources = function () {
+            this.current.jsonData.allDataSources = this.datasourceSrv.getAll();
+        };
+        KairosDBConfigCtrl.prototype.getAllKairosDataSources = function () {
+            this.current.jsonData.allKairosDataSources = [];
+            for (var _i = 0, _a = Object.keys(this.current.jsonData.allDataSources); _i < _a.length; _i++) {
+                var key = _a[_i];
+                if (this.current.jsonData.allDataSources[key].type == 'grafana-kairosdb-datasource') {
+                    this.current.jsonData.allKairosDataSources.push(this.current.jsonData.allDataSources[key]);
+                }
+            }
         };
         KairosDBConfigCtrl.templateUrl = 'partials/config.html';
         return KairosDBConfigCtrl;
