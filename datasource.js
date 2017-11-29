@@ -253,9 +253,11 @@ function (angular, _, sdk, dateMath, kbn) {
 
     return this.backendSrv.datasourceRequest(options).then(function (result) {
       if (!result.data) {
-        return this.q.when([]);
+        return self.q.when([]);
       }
       return result.data.queries[0].results[0].tags[key];
+    }).catch(function (error) {
+      return self.q.when([]);
     });
   };
 
