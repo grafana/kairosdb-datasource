@@ -34,6 +34,12 @@ export class KairosDBConfigCtrl {
     if (ds) this.current.jsonData.selectedDataSources.push(ds)
   }
 
-
-
+  isSelected() {
+    return (ds) => {
+      for (let el of this.current.jsonData.selectedDataSources) {
+        if (ds.id == el.id) return false
+      }
+      return true
+    }
+  }
 }

@@ -28,6 +28,17 @@ define(["require", "exports"], function (require, exports) {
             if (ds)
                 this.current.jsonData.selectedDataSources.push(ds);
         };
+        KairosDBConfigCtrl.prototype.isSelected = function () {
+            var _this = this;
+            return function (ds) {
+                for (var _i = 0, _a = _this.current.jsonData.selectedDataSources; _i < _a.length; _i++) {
+                    var el = _a[_i];
+                    if (ds.id == el.id)
+                        return false;
+                }
+                return true;
+            };
+        };
         KairosDBConfigCtrl.templateUrl = 'partials/config.html';
         return KairosDBConfigCtrl;
     })();
