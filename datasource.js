@@ -30,7 +30,7 @@ function (angular, _, sdk, dateMath, kbn) {
     this.backendSrv = backendSrv;
     this.templateSrv = templateSrv;
     this.multi = instanceSettings.jsonData.multi;
-    this.urls = [this.url].concat(instanceSettings.jsonData.urls); // All urls include main
+    this.selectedDS = instanceSettings.jsonData.selectedDataSources;
 
     self = this;
   }
@@ -47,15 +47,14 @@ function (angular, _, sdk, dateMath, kbn) {
         }
       });
     } else {
-      console.log('this.urls', this.urls)
-      let promises = this.urls.map( o => {
+      let promises = this.selectedDS.map( o => {
         return new Promise((resolve, reject) => {
-          this.backendSrv.datasourceRequest({ url: o + '/api/v1/health/check', method: 'GET' })
+          this.backendSrv.datasourceRequest({ url: o.url + '/api/v1/health/check', method: 'GET' })
               .then((response) => {
                 if (response.status === 204) resolve()
                 else reject(o + 'fails')
               }).catch((err) => {
-                reject('URL:' + o + ' fails')
+                reject('Datasource:' + o.name + ' fails')
               });
         })
       });

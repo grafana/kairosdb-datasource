@@ -10,7 +10,6 @@ export class KairosDBConfigCtrl {
     if (Object.keys(this.current.jsonData).length === 0) this.current.jsonData.selectedDataSources = []
 
     this.getAllDataSources()
-    console.log(this.current.jsonData.allDataSources)
     this.getAllKairosDataSources()
   }
 
