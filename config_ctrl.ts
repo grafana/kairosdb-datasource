@@ -7,7 +7,10 @@ export class KairosDBConfigCtrl {
   constructor($scope, datasourceSrv) {
     this.datasourceSrv = datasourceSrv;
     this.current.jsonData = this.current.jsonData || {};
-    if (Object.keys(this.current.jsonData).length === 0) this.current.jsonData.selectedDataSources = []
+    if (Object.keys(this.current.jsonData).length === 0) {
+      this.current.jsonData.selectedDataSources = []
+      this.current.jsonData.multi = false
+    }
 
     this.getAllDataSources()
     this.getAllKairosDataSources()
@@ -20,8 +23,9 @@ export class KairosDBConfigCtrl {
   getAllKairosDataSources() {
     this.current.jsonData.allKairosDataSources = []
     for (let key of Object.keys(this.current.jsonData.allDataSources)) {
-      if (this.current.jsonData.allDataSources[key].type == 'grafana-kairosdb-datasource') {
-        this.current.jsonData.allKairosDataSources.push(this.current.jsonData.allDataSources[key])
+      const ds = this.current.jsonData.allDataSources[key]
+      if (ds.type == 'grafana-kairosdb-datasource' && !ds.jsonData.multi) {
+        this.current.jsonData.allKairosDataSources.push(ds)
       }
     }
   }
@@ -29,5 +33,7 @@ export class KairosDBConfigCtrl {
   selectDataSource(ds) {
     if (ds) this.current.jsonData.selectedDataSources.push(ds)
   }
+
+
 
 }

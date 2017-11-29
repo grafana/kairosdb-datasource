@@ -4,8 +4,10 @@ define(["require", "exports"], function (require, exports) {
         function KairosDBConfigCtrl($scope, datasourceSrv) {
             this.datasourceSrv = datasourceSrv;
             this.current.jsonData = this.current.jsonData || {};
-            if (Object.keys(this.current.jsonData).length === 0)
+            if (Object.keys(this.current.jsonData).length === 0) {
                 this.current.jsonData.selectedDataSources = [];
+                this.current.jsonData.multi = false;
+            }
             this.getAllDataSources();
             this.getAllKairosDataSources();
         }
@@ -16,8 +18,9 @@ define(["require", "exports"], function (require, exports) {
             this.current.jsonData.allKairosDataSources = [];
             for (var _i = 0, _a = Object.keys(this.current.jsonData.allDataSources); _i < _a.length; _i++) {
                 var key = _a[_i];
-                if (this.current.jsonData.allDataSources[key].type == 'grafana-kairosdb-datasource') {
-                    this.current.jsonData.allKairosDataSources.push(this.current.jsonData.allDataSources[key]);
+                var ds = this.current.jsonData.allDataSources[key];
+                if (ds.type == 'grafana-kairosdb-datasource' && !ds.jsonData.multi) {
+                    this.current.jsonData.allKairosDataSources.push(ds);
                 }
             }
         };
