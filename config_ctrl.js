@@ -7,6 +7,7 @@ define(["require", "exports"], function (require, exports) {
             if (Object.keys(this.current.jsonData).length === 0)
                 this.current.jsonData.selectedDataSources = [];
             this.getAllDataSources();
+            console.log(this.current.jsonData.allDataSources);
             this.getAllKairosDataSources();
         }
         KairosDBConfigCtrl.prototype.getAllDataSources = function () {
@@ -20,6 +21,10 @@ define(["require", "exports"], function (require, exports) {
                     this.current.jsonData.allKairosDataSources.push(this.current.jsonData.allDataSources[key]);
                 }
             }
+        };
+        KairosDBConfigCtrl.prototype.selectDataSource = function (ds) {
+            if (ds)
+                this.current.jsonData.selectedDataSources.push(ds);
         };
         KairosDBConfigCtrl.templateUrl = 'partials/config.html';
         return KairosDBConfigCtrl;

@@ -10,6 +10,7 @@ export class KairosDBConfigCtrl {
     if (Object.keys(this.current.jsonData).length === 0) this.current.jsonData.selectedDataSources = []
 
     this.getAllDataSources()
+    console.log(this.current.jsonData.allDataSources)
     this.getAllKairosDataSources()
   }
 
@@ -24,6 +25,10 @@ export class KairosDBConfigCtrl {
         this.current.jsonData.allKairosDataSources.push(this.current.jsonData.allDataSources[key])
       }
     }
+  }
+
+  selectDataSource(ds) {
+    if (ds) this.current.jsonData.selectedDataSources.push(ds)
   }
 
 }
