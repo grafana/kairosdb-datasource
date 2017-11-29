@@ -13,6 +13,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
   /** @ngInject */
   function KairosDBDatasource(instanceSettings, $q, backendSrv, templateSrv) {
+    console.log('CONSTRUCTOR START');
     console.log('instanceSettings', instanceSettings);
     console.log('$q', $q);
     console.log('backendSrv', backendSrv);
@@ -33,10 +34,12 @@ function (angular, _, sdk, dateMath, kbn) {
     this.selectedDS = instanceSettings.jsonData.selectedDataSources;
 
     self = this;
+    console.log('CONSTRUCTOR END');
   }
 
   // Function to check Datasource health
   KairosDBDatasource.prototype.testDatasource = function() {
+    console.log('TEST DATASOURCE');
     if (!this.multi) {
       return this.backendSrv.datasourceRequest({
         url: this.url + '/api/v1/health/check',
@@ -69,6 +72,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
   // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function (options) {
+    console.log('QUERY START');
     console.log('options', options); // I think options are passed from grafana directly
     // Lots of useful variables here. Maybe coming from query_ctrl
 
@@ -126,6 +130,7 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   KairosDBDatasource.prototype.performTimeSeriesQuery = function (queries, start, end) {
+    console.log('TIMESERIES QUERY START');
     var reqBody = {
       metrics: queries,
       cache_time: 0
@@ -140,6 +145,7 @@ function (angular, _, sdk, dateMath, kbn) {
       url: this.url + '/api/v1/datapoints/query',
       data: reqBody
     };
+    console.log('TIMESERIES QUERY END');
 
     return this.backendSrv.datasourceRequest(options);
   };
@@ -150,6 +156,7 @@ function (angular, _, sdk, dateMath, kbn) {
    */
   KairosDBDatasource.prototype._performMetricSuggestQuery = function (metric) {
     //Requires a KairosDB version supporting server-side metric names filtering
+    console.log('_performMetricSuggestQuery ');
     var options = {
       url: this.url + '/api/v1/metricnames?containing=' + metric,
       withCredentials: this.withCredentials,
@@ -172,6 +179,7 @@ function (angular, _, sdk, dateMath, kbn) {
   };
 
   KairosDBDatasource.prototype._performMetricKeyLookup = function (metric) {
+    console.log('_performMetricKeyLookup');
     if (!metric) {
       return this.q.when([]);
     }
@@ -205,6 +213,7 @@ function (angular, _, sdk, dateMath, kbn) {
   };
 
   KairosDBDatasource.prototype._performMetricKeyValueLookup = function(metric, key, otherTags) {
+    console.log('_performMetricKeyValueLookup');
     metric = metric.trim();
     key = key.trim();
     if (!metric || !key) {
@@ -251,6 +260,7 @@ function (angular, _, sdk, dateMath, kbn) {
   };
 
   KairosDBDatasource.prototype.performTagSuggestQuery = function (metric) {
+    console.log('performTagSuggestQuery');
     var options = {
       url: this.url + '/api/v1/datapoints/query/tags',
       method: 'POST',
@@ -276,6 +286,7 @@ function (angular, _, sdk, dateMath, kbn) {
   };
 
   KairosDBDatasource.prototype.metricFindQuery = function (query) {
+    console.log('metricFindQuery');
     if (!query) {
       return this.q.when([]);
     }
@@ -325,7 +336,8 @@ function (angular, _, sdk, dateMath, kbn) {
    * @param results
    * @returns {*}
    */
-  function handleQueryError(results) {
+  function handleQueryError(results) {;
+    console.log('handleQueryError')
     if (results.data.errors && !_.isEmpty(results.data.errors)) {
       var errors = {
         message: results.data.errors[0]
@@ -338,6 +350,7 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   function handleKairosDBQueryResponse(plotParams, templateSrv, results) {
+    console.log('HANDLE RESPONSE START');
     // console.log('resultsList', resultsList)
     console.log('results', results)
     var output = [];
@@ -403,6 +416,7 @@ function (angular, _, sdk, dateMath, kbn) {
       });
     // });
 
+    console.log('HANDLE RESPONSE END');
     return { data: _.flatten(output) };
   }
 
@@ -438,6 +452,7 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   function convertTargetToQuery(options, target) {
+    console.log('convertTargetToQuery');
     if (!target.metric || target.hide) {
       return null;
     }
@@ -556,6 +571,7 @@ function (angular, _, sdk, dateMath, kbn) {
   //////////////////////////////////////////////////////////////////////
 
   KairosDBDatasource.prototype.convertToKairosInterval = function (intervalString) {
+    console.log('convertToKairosInterval');
     intervalString = self.templateSrv.replace(intervalString);
 
     var interval_regex = /(\d+(?:\.\d+)?)([Mwdhmsy])/;
@@ -619,6 +635,7 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   function convertToKairosDBTimeUnit(unit) {
+    console.log('convertToKairosDBTimeUnit');
     switch (unit) {
       case 'ms':
         return 'milliseconds';
@@ -643,6 +660,7 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   function PeakFilter(dataIn, limit) {
+    console.log('PeakFilter');
     var datapoints = dataIn;
     var arrLength = datapoints.length;
     if (arrLength <= 3) {
@@ -676,6 +694,7 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   function expandTargets(options) {
+    console.log('expandTargets');
     return _.flatten(_.map(
       options.targets,
       function(target) {
