@@ -22,11 +22,7 @@ export class KairosDBConfigCtrl {
       if (ds.type == 'grafana-kairosdb-datasource' && !ds.jsonData.multi) {
         this.allKairosDataSources.push({
           id: ds.id,
-          name: ds.name,
-          url: ds.url,
-          type: ds.type,
-          basicAuth: ds.basicAuth,
-          withCredentials: ds.withCredentials
+          name: ds.name
         })
       }
     }
