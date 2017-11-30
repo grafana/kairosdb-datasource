@@ -18,7 +18,7 @@
   <div class="gf-form-group">
     <div class="gf-form max-width-30">
       <div class="gf-form-select-wrapper gf-form-select-wrapper--has-help-icon max-width-24">
-        <select class="gf-form-input ng-pristine ng-valid ng-not-empty ng-touched" ng-model="addDatasource" ng-options="f.name for f in ctrl.current.jsonData.allKairosDataSources | filter:ctrl.isSelected()">
+        <select class="gf-form-input ng-pristine ng-valid ng-not-empty ng-touched" ng-model="addDatasource" ng-options="ds.name for ds in ctrl.allKairosDataSources | filter:ctrl.isSelected()">
           <option value="">- Choose A Datasource-</option>
         </select>
         <info-popover mode="right-absolute" class="gf-form-help-icon gf-form-help-icon--right-absolute drop-help drop-hide-out-of-bounds drop-target">

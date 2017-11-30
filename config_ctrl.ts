@@ -12,20 +12,22 @@ export class KairosDBConfigCtrl {
       this.current.jsonData.multi = false
     }
 
-    this.getAllDataSources()
     this.getAllKairosDataSources()
   }
 
-  getAllDataSources() {
-    this.current.jsonData.allDataSources = this.datasourceSrv.getAll()
-  }
-
   getAllKairosDataSources() {
-    this.current.jsonData.allKairosDataSources = []
-    for (let key of Object.keys(this.current.jsonData.allDataSources)) {
-      const ds = this.current.jsonData.allDataSources[key]
+    const allDataSources = this.datasourceSrv.getAll()
+    for (let key of Object.keys(allDataSources)) {
+      const ds = allDataSources[key]
       if (ds.type == 'grafana-kairosdb-datasource' && !ds.jsonData.multi) {
-        this.current.jsonData.allKairosDataSources.push(ds)
+        this.allKairosDataSources.push({
+          id: ds.id,
+          name: ds.name,
+          url: ds.url,
+          type: ds.type,
+          basicAuth: ds.basicAuth,
+          withCredentials: ds.withCredentials
+        })
       }
     }
   }
@@ -42,4 +44,6 @@ export class KairosDBConfigCtrl {
       return true
     }
   }
+
+  allKairosDataSources = []
 }
