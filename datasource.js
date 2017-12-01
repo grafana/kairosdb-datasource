@@ -209,12 +209,6 @@ function (angular, _, sdk, dateMath, kbn) {
             });
       })
     });
-    // promises.unshift(
-    //   new Promise((resolve, reject) => {
-    //     self.backendSrv.$http
-    //   })
-    // )
-    console.log(data)
     console.log(`There are ${promises.length} request in _performMetricSuggestQuery promises`)
     return this.q.all(promises)
                .then((value) => {
@@ -343,30 +337,42 @@ function (angular, _, sdk, dateMath, kbn) {
 
   KairosDBDatasource.prototype.performTagSuggestQuery = function (metric) {
     console.log('START performTagSuggestQuery');
-    var options = {
-      url: this.url + '/api/v1/datapoints/query/tags',
-      method: 'POST',
-      withCredentials: this.withCredentials,
-      requestId: 'tagSuggestQuery' + o.id,
-      data: {
-        metrics: [
-          { name: metric }
-        ],
-        cache_time: 0,
-        start_absolute: 0
-      }
-    };
 
-    return this.backendSrv.datasourceRequest(options).then(function (response) {
-      console.log('RETURN performTagSuggestQuery');
-      if (!response.data) {
-        console.log('performTagSuggestQuery return empty array');
-        return [];
-      } else {
-        console.log('performTagSuggestQuery: returned data', response.data.queries[0].results[0]);
-        return response.data.queries[0].results[0];
-      }
-    });
+    let promises = this.selectedDS.map( o => {
+      return new Promise((resolve, reject) => {
+        console.log('START performTagSuggestQuery');
+        console.log(o.url + '/api/v1/datapoints/query/tags');
+        this.backendSrv.datasourceRequest({
+              url: o.url + '/api/v1/datapoints/query/tags',
+              method: 'POST',
+              withCredentials: o.withCredentials,
+              requestId: 'tagSuggestQuery' + o.id,
+              data: {
+                metrics: [ { name: metric } ],
+                cache_time: 0,
+                start_absolute: 0
+              }
+            }).then((result) => {
+              console.log('RETURN performTagSuggestQuery');
+              if (!result.data) resolve([]);
+              console.log('performTagSuggestQuery: keys -' + o.name, result.data.queries[0].results[0].tags[key]);
+              resolve(result.data.queries[0].results[0]); // array type
+            }).catch((err) => {
+              console.log('ERROR performTagSuggestQuery');
+              resolve([]) // show partials success even if one of more fails
+            });
+        })
+      });
+      console.log(`There are ${promises.length} request in promises`)
+      return this.q.all(promises)
+                 .then((value) => {
+                   let allKeys = []
+                   for (let list of value) { allKeys = allKeys.concat(list) }
+                   console.log('RETURN multi performTagSuggestQuery: allKeys', allKeys);
+                   return allKeys
+                 }).catch((err) => {
+                   return self.q.when([]);
+                 })
   };
 
   KairosDBDatasource.prototype.metricFindQuery = function (query) {
