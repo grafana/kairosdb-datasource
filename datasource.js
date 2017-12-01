@@ -190,7 +190,7 @@ function (angular, _, sdk, dateMath, kbn) {
               url: o.url + '/api/v1/metricnames?containing=' + metric,
               method: 'GET',
               withCredentials: o.withCredentials,
-              requestId: self.panelId + ".metricnames"
+              requestId: self.panelId + '.metricnames' +  + o.id
             })
             .then((result) => {
               console.log('RETURN _performMetricSuggestQuery: ' + o.name);
@@ -209,12 +209,20 @@ function (angular, _, sdk, dateMath, kbn) {
             });
       })
     });
+    // promises.unshift(
+    //   new Promise((resolve, reject) => {
+    //     self.backendSrv.$http
+    //   })
+    // )
+    console.log(data)
     console.log(`There are ${promises.length} request in _performMetricSuggestQuery promises`)
     return this.q.all(promises)
                .then((value) => {
                  console.log('value', value)
                  let allMetrics = []
-                 for (let list of value) { allMetrics = allMetrics.concat(list) }
+                 for (let list of value) {
+                   allMetrics = allMetrics.concat(list)
+                 }
                  console.log('RETURN multi _performMetricSuggestQuery: allMetrics', allMetrics);
                  return allMetrics
                }).catch((err) => {
@@ -234,7 +242,7 @@ function (angular, _, sdk, dateMath, kbn) {
               url: o.url + '/api/v1/datapoints/query/tags',
               method: 'POST',
               withCredentials: o.withCredentials,
-              requestId: 'metricKeyLookup',
+              requestId: 'metricKeyLookup' + o.id,
               data: {
                 metrics: [{ name: metric }],
                 cache_time: 0,
@@ -303,7 +311,7 @@ function (angular, _, sdk, dateMath, kbn) {
               url: o.url + '/api/v1/datapoints/query/tags',
               method: 'POST',
               withCredentials: o.withCredentials,
-              requestId: self.panelId + "." + metric + "." + key + "." + "metricKeyValueLookup",
+              requestId: self.panelId + '.' + metric + '.' + key + '.' + 'metricKeyValueLookup' + o.id,
               data: {
                 metrics: [metricsOptions],
                 cache_time: 0,
@@ -339,7 +347,7 @@ function (angular, _, sdk, dateMath, kbn) {
       url: this.url + '/api/v1/datapoints/query/tags',
       method: 'POST',
       withCredentials: this.withCredentials,
-      requestId: "tagSuggestQuery",
+      requestId: 'tagSuggestQuery' + o.id,
       data: {
         metrics: [
           { name: metric }
