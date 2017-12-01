@@ -13,6 +13,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
   /** @ngInject */
   function KairosDBDatasource(instanceSettings, $q, backendSrv, templateSrv, datasourceSrv) {
+    console.log('==============================================');
     console.log('CONSTRUCTOR START');
     console.log('instanceSettings', instanceSettings);
     console.log('backendSrv', backendSrv);
@@ -29,7 +30,12 @@ function (angular, _, sdk, dateMath, kbn) {
     this.templateSrv = templateSrv;
     this.datasourceSrv = datasourceSrv;
     this.multi = instanceSettings.jsonData.multi;
-    this.selectedDS = this.getLatestSelectedDS(instanceSettings.jsonData.selectedDataSources);
+    if (this.multi) {
+      this.selectedDS = this.getLatestSelectedDS(instanceSettings.jsonData.selectedDataSources);
+    } else {
+      this.selectedDS = [instanceSettings]
+    }
+    console.log('this.selectedDS', this.selectedDS)
     self = this;
     console.log('CONSTRUCTOR END');
   }
@@ -175,72 +181,100 @@ function (angular, _, sdk, dateMath, kbn) {
   KairosDBDatasource.prototype._performMetricSuggestQuery = function (metric) {
     //Requires a KairosDB version supporting server-side metric names filtering
     console.log('START _performMetricSuggestQuery');
-    var options = {
-      url: this.url + '/api/v1/metricnames?containing=' + metric,
-      withCredentials: this.withCredentials,
-      method: 'GET',
-      requestId: self.panelId + ".metricnames"
-    };
-
-    return this.backendSrv.datasourceRequest(options).then(function (response) {
-      console.log('RETURN _performMetricSuggestQuery');
-      if (!response.data) {
-        return this.q.when([]);
-      }
-      var metrics = [];
-      _.each(response.data.results, function (r) {
-        if (r.indexOf(metric) >= 0) {
-          metrics.push(r);
-        }
-      });
-      console.log('_performMetricSuggestQuery: metrics', metrics);
-      return metrics;
+    console.log(' MULTI ');
+    let promises = this.selectedDS.map( o => {
+      return new Promise((resolve, reject) => {
+        console.log('START _performMetricSuggestQuery: ' + o.name);
+        console.log(o.url + '/api/v1/metricnames?containing=' + metric);
+        this.backendSrv.datasourceRequest({
+              url: o.url + '/api/v1/metricnames?containing=' + metric,
+              method: 'GET',
+              withCredentials: o.withCredentials,
+              requestId: self.panelId + ".metricnames"
+            })
+            .then((result) => {
+              console.log('RETURN _performMetricSuggestQuery: ' + o.name);
+              if (!result.data) resolve([]);
+              var metrics = [];
+              _.each(result.data.results, function (r) {
+                if (r.indexOf(metric) >= 0) {
+                  metrics.push(r);
+                }
+              });
+              console.log('_performMetricSuggestQuery: metrics -' + metrics);
+              resolve(metrics); // array type
+            }).catch((err) => {
+              console.log('ERROR _performMetricSuggestQuery: ' + o.name);
+              resolve([]) // show partials success even if one of more fails
+            });
+      })
     });
+    console.log(`There are ${promises.length} request in _performMetricSuggestQuery promises`)
+    return this.q.all(promises)
+               .then((value) => {
+                 console.log('value', value)
+                 let allMetrics = []
+                 for (let list of value) { allMetrics = allMetrics.concat(list) }
+                 console.log('RETURN multi _performMetricSuggestQuery: allMetrics', allMetrics);
+                 return allMetrics
+               }).catch((err) => {
+                 console.log('ERROR multi _performMetricSuggestQuery: allMetrics', err);
+                 return self.q.when([]);
+               })
   };
 
   KairosDBDatasource.prototype._performMetricKeyLookup = function (metric) {
     console.log('START _performMetricKeyLookup');
-    if (!metric) {
-      return this.q.when([]);
-    }
-
-    var options = {
-      method: 'POST',
-      url: this.url + '/api/v1/datapoints/query/tags',
-      withCredentials: this.withCredentials,
-      requestId: "metricKeyLookup",
-      data: {
-        metrics: [
-          { name: metric }
-        ],
-        cache_time: 0,
-        start_absolute: 0
-      }
-    };
-
-    return this.backendSrv.datasourceRequest(options).then(function (result) {
-      console.log('RETURN _performMetricKeyLookup');
-      if (!result.data) {
-        return this.q.when([]);
-      }
-      var tagks = [];
-      _.each(result.data.queries[0].results[0].tags, function (tagv, tagk) {
-        if (tagks.indexOf(tagk) === -1) {
-          tagks.push(tagk);
-        }
-      });
-      console.log('_performMetricKeyLookup: tagks', tagks);
-      return tagks;
+    if (!metric) return this.q.when([]);
+    let promises = this.selectedDS.map( o => {
+      return new Promise((resolve, reject) => {
+        console.log('START _performMetricKeyLookup: ' + o.name);
+        console.log(o.url + '/api/v1/datapoints/query/tags');
+        this.backendSrv.datasourceRequest({
+              url: o.url + '/api/v1/datapoints/query/tags',
+              method: 'POST',
+              withCredentials: o.withCredentials,
+              requestId: 'metricKeyLookup',
+              data: {
+                metrics: [{ name: metric }],
+                cache_time: 0,
+                start_absolute: 0
+              }
+            }).then((result) => {
+              console.log('RETURN _performMetricKeyLookup: ' + o.name);
+              if (!result.data) resolve([]);
+              var tagks = [];
+              _.each(result.data.queries[0].results[0].tags, function (tagv, tagk) {
+                if (tagks.indexOf(tagk) === -1) {
+                  tagks.push(tagk);
+                }
+              });
+              console.log('_performMetricKeyLookup: tagks', tagks);
+              resolve(tagks); // array type
+            }).catch((err) => {
+              console.log('ERROR _performMetricKeyLookup: ' + o.name);
+              resolve([]) // show partials success even if one of more fails
+            });
+      })
     });
+    console.log(`There are ${promises.length} request in _performMetricKeyLookup promises`)
+    return this.q.all(promises)
+               .then((value) => {
+                 console.log('value', value)
+                 let allTagks = []
+                 for (let list of value) { allTagks = allTagks.concat(list) }
+                 console.log('RETURN multi _performMetricKeyLookup: allKeys', allTagks);
+                 return allTagks
+               }).catch((err) => {
+                 return self.q.when([]);
+               })
   };
 
   KairosDBDatasource.prototype._performMetricKeyValueLookup = function(metric, key, otherTags) {
     console.log('START _performMetricKeyValueLookup');
     metric = metric.trim();
     key = key.trim();
-    if (!metric || !key) {
-      return this.q.when([]);
-    }
+    if (!metric || !key) return this.q.when([]);
 
     var metricsOptions = { name: metric };
     if (otherTags) {
@@ -261,66 +295,42 @@ function (angular, _, sdk, dateMath, kbn) {
       metricsOptions["tags"] = tags;
     }
 
-    if (!this.multi) {
-      var options = {
-        method: 'POST',
-        withCredentials: this.withCredentials,
-        url: this.url + '/api/v1/datapoints/query/tags',
-        requestId: self.panelId + "." + metric + "." + key + "." + "metricKeyValueLookup",
-        data: {
-          metrics: [metricsOptions],
-          cache_time: 0,
-          start_absolute: 0
-        }
-      };
-      console.log(options.url);
-
-      return this.backendSrv.datasourceRequest(options).then(function (result) {
-        console.log('RETURN _performMetricKeyValueLookup');
-        if (!result.data) return self.q.when([]);
-        console.log('_performMetricKeyValueLookup: all return keys', result.data.queries[0].results[0].tags[key]);
-        return result.data.queries[0].results[0].tags[key]; // array type
-      }).catch(function (error) {
-        return self.q.when([]);
-      });
-    } else {
-      let promises = this.selectedDS.map( o => {
-        return new Promise((resolve, reject) => {
-          console.log('START _performMetricKeyValueLookup');
-          console.log(o.url + '/api/v1/datapoints/query/tags');
-          this.backendSrv.datasourceRequest({
-                url: o.url + '/api/v1/datapoints/query/tags',
-                method: 'POST',
-                withCredentials: o.withCredentials,
-                requestId: self.panelId + "." + metric + "." + key + "." + "metricKeyValueLookup",
-                data: {
-                  metrics: [metricsOptions],
-                  cache_time: 0,
-                  start_absolute: 0
-                }
-              })
-              .then((result) => {
-                console.log('RETURN _performMetricKeyValueLookup');
-                if (!result.data) resolve([]);
-                console.log('_performMetricKeyValueLookup: keys -' + o.name, result.data.queries[0].results[0].tags[key]);
-                resolve(result.data.queries[0].results[0].tags[key]); // array type
-              }).catch((err) => {
-                console.log('ERROR _performMetricKeyValueLookup');
-                resolve([]) // show partials success even if one of more fails
-              });
+    let promises = this.selectedDS.map( o => {
+      return new Promise((resolve, reject) => {
+        console.log('START _performMetricKeyValueLookup');
+        console.log(o.url + '/api/v1/datapoints/query/tags');
+        this.backendSrv.datasourceRequest({
+              url: o.url + '/api/v1/datapoints/query/tags',
+              method: 'POST',
+              withCredentials: o.withCredentials,
+              requestId: self.panelId + "." + metric + "." + key + "." + "metricKeyValueLookup",
+              data: {
+                metrics: [metricsOptions],
+                cache_time: 0,
+                start_absolute: 0
+              }
+            })
+            .then((result) => {
+              console.log('RETURN _performMetricKeyValueLookup');
+              if (!result.data) resolve([]);
+              console.log('_performMetricKeyValueLookup: keys -' + o.name, result.data.queries[0].results[0].tags[key]);
+              resolve(result.data.queries[0].results[0].tags[key]); // array type
+            }).catch((err) => {
+              console.log('ERROR _performMetricKeyValueLookup');
+              resolve([]) // show partials success even if one of more fails
+            });
         })
       });
       console.log(`There are ${promises.length} request in promises`)
       return this.q.all(promises)
                  .then((value) => {
                    let allKeys = []
-                   for (let list of value) { allKeys.concat(list) }
+                   for (let list of value) { allKeys = allKeys.concat(list) }
                    console.log('RETURN multi _performMetricKeyValueLookup: allKeys', allKeys);
                    return allKeys
                  }).catch((err) => {
                    return self.q.when([]);
                  })
-    }
   };
 
   KairosDBDatasource.prototype.performTagSuggestQuery = function (metric) {
@@ -352,7 +362,8 @@ function (angular, _, sdk, dateMath, kbn) {
   };
 
   KairosDBDatasource.prototype.metricFindQuery = function (query) {
-    console.log('METRICFINDQUERY');
+    console.log('==============================================');
+    console.log('query', query)
     if (!query) {
       return this.q.when([]);
     }
@@ -377,16 +388,19 @@ function (angular, _, sdk, dateMath, kbn) {
 
     var metrics_query = interpolated.match(metrics_regex);
     if (metrics_query) {
+      console.log('metrics_query', metrics_query);
       return this._performMetricSuggestQuery(metrics_query[1]).then(responseTransform);
     }
 
     var tag_names_query = interpolated.match(tag_names_regex);
     if (tag_names_query) {
+      console.log('tag_names_query', tag_names_query);
       return this._performMetricKeyLookup(tag_names_query[1]).then(responseTransform);
     }
 
     var tag_values_query = interpolated.match(tag_values_regex);
     if (tag_values_query) {
+      console.log('tag_values_query', tag_values_query);
       return this._performMetricKeyValueLookup(tag_values_query[1], tag_values_query[2], tag_values_query[3]).then(responseTransform);
     }
 
