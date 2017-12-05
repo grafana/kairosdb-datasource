@@ -13,19 +13,12 @@ define([
 
   /** @ngInject */
   function KairosDBDatasource(instanceSettings, $q, backendSrv, templateSrv, datasourceSrv) {
-    // console.log('==============================================')
-    // console.log('CONSTRUCTOR START')
-    // console.log('instanceSettings', instanceSettings)
-    // console.log('backendSrv', backendSrv)
-    // console.log('backendSrv.datasourceRequest', backendSrv.datasourceRequest)
-    // console.log('datasourceSrv', datasourceSrv)
-
-    this.type = instanceSettings.type  // "datasoruce"
-    this.url = instanceSettings.url.replace(/\/+$/, '') // Datasource Url
-    this.name = instanceSettings.name // "KairosDB"
-    this.withCredentials = instanceSettings.withCredentials // if has cred, here undefined
+    this.type = instanceSettings.type
+    this.url = instanceSettings.url.replace(/\/+$/, '')
+    this.name = instanceSettings.name
+    this.withCredentials = instanceSettings.withCredentials
     this.supportMetrics = true
-    this.q = $q // Javascript Promise by Angular : https://toddmotto.com/promises-angular-q
+    this.q = $q
     this.backendSrv = backendSrv
     this.templateSrv = templateSrv
     this.datasourceSrv = datasourceSrv
@@ -34,8 +27,6 @@ define([
     else this.selectedDS = [instanceSettings]
 
     self = this
-    // console.log('this.selectedDS', this.selectedDS)
-    // console.log('CONSTRUCTOR END')
   }
 
   KairosDBDatasource.prototype.getLatestSelectedDS = function (selectedDS) {
@@ -61,7 +52,6 @@ define([
 
   // Function to check Datasource health
   KairosDBDatasource.prototype.testDatasource = function() {
-    // console.log('TEST DATASOURCE')
     const successText = this.multi ? 'All Data sources are working' : 'Data source is working'
     let promises = this.selectedDS.map(o => {
       return new Promise((resolve, reject) => {
@@ -81,9 +71,6 @@ define([
 
   // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function (options) {
-    // console.log('QUERY START')
-    // console.log('options', options)
-
     this.panelId = options.panelId
     const start = options.rangeRaw.from
     const end = options.rangeRaw.to
@@ -111,7 +98,6 @@ define([
   }
 
   KairosDBDatasource.prototype.performTimeSeriesQuery = function (queries, start, end) {
-    // console.log('TIMESERIES QUERY START')
     let reqBody = {
       metrics: queries,
       cache_time: 0
@@ -120,7 +106,7 @@ define([
     convertToKairosTime(start, reqBody, 'start')
     convertToKairosTime(end, reqBody, 'end')
 
-    let promises = this.selectedDS.map( o => {
+    let promises = this.selectedDS.map(o => {
       return new Promise((resolve, reject) => {
         this.backendSrv.datasourceRequest({
               url: o.url + '/api/v1/datapoints/query',
@@ -132,8 +118,6 @@ define([
             .catch(err => reject(err))
       })
     })
-    // console.log('There are ' + promises.length + ' queries')
-    // console.log('TIMESERIES QUERY SEND')
     return this.q.all(promises)
   }
 
@@ -143,12 +127,8 @@ define([
    */
   KairosDBDatasource.prototype._performMetricSuggestQuery = function (metric) {
     //Requires a KairosDB version supporting server-side metric names filtering
-    // console.log('START _performMetricSuggestQuery')
-    // console.log(' MULTI ')
     let promises = this.selectedDS.map(o => {
       return new Promise((resolve, reject) => {
-        // console.log('START _performMetricSuggestQuery: ' + o.name)
-        // console.log(o.url + '/api/v1/metricnames?containing=' + metric)
         this.backendSrv.datasourceRequest({
               url: o.url + '/api/v1/metricnames?containing=' + metric,
               method: 'GET',
@@ -156,41 +136,27 @@ define([
               requestId: this.panelId + '.metricnames' +  + o.id
             })
             .then(result => {
-              // console.log('RETURN _performMetricSuggestQuery: ' + o.name)
               if (!result.data) resolve([])
               let metrics = []
               _.each(result.data.results, r => {
                 if (r.indexOf(metric) >= 0) metrics.push(r)
               })
-              // console.log('_performMetricSuggestQuery: metrics -' + metrics)
-              resolve(metrics) // array type
-            }).catch(err => {
-              // console.log('ERROR _performMetricSuggestQuery: ' + o.name)
-              resolve([]) // show partials success even if one of more fails
-            })
+              resolve(metrics)
+            }).catch(err => resolve([])) // show partials success even if one of more fails
       })
     })
-    // console.log(`There are ${promises.length} request in _performMetricSuggestQuery promises`)
     return this.q.all(promises)
                .then(value => {
-                //  console.log('value', value)
                  let allMetrics = []
                  for (let list of value) { allMetrics = allMetrics.concat(list) }
-                //  console.log('RETURN multi _performMetricSuggestQuery: allMetrics', allMetrics)
                  return allMetrics
-               }).catch(err => {
-                //  console.log('ERROR multi _performMetricSuggestQuery: allMetrics', err)
-                 return this.q.when([])
-               })
+               }).catch(err => this.q.when([]))
   }
 
   KairosDBDatasource.prototype._performMetricKeyLookup = function (metric) {
-    // console.log('START _performMetricKeyLookup')
     if (!metric) return this.q.when([])
     let promises = this.selectedDS.map(o => {
       return new Promise((resolve, reject) => {
-        // console.log('START _performMetricKeyLookup: ' + o.name)
-        // console.log(o.url + '/api/v1/datapoints/query/tags')
         this.backendSrv.datasourceRequest({
               url: o.url + '/api/v1/datapoints/query/tags',
               method: 'POST',
@@ -202,35 +168,24 @@ define([
                 start_absolute: 0
               }
             }).then(result => {
-              // console.log('RETURN _performMetricKeyLookup: ' + o.name)
               if (!result.data) resolve([])
               let tagks = []
               _.each(result.data.queries[0].results[0].tags, (tagv, tagk) => {
                 if (tagks.indexOf(tagk) === -1) tagks.push(tagk)
               })
-              // console.log('_performMetricKeyLookup: tagks', tagks)
-              resolve(tagks) // array type
-            }).catch(err => {
-              // console.log('ERROR _performMetricKeyLookup: ' + o.name)
-              resolve([]) // show partials success even if one of more fails
-            })
+              resolve(tagks)
+            }).catch(err => resolve([])) // show partials success even if one of more fails
       })
     })
-    // console.log(`There are ${promises.length} request in _performMetricKeyLookup promises`)
     return this.q.all(promises)
                .then(value => {
-                //  console.log('value', value)
                  let allTagks = []
                  for (let list of value) { allTagks = allTagks.concat(list) }
-                //  console.log('RETURN multi _performMetricKeyLookup: allKeys', allTagks)
                  return allTagks
-               }).catch(err => {
-                 return this.q.when([])
-               })
+               }).catch(err => this.q.when([]))
   }
 
   KairosDBDatasource.prototype._performMetricKeyValueLookup = function(metric, key, otherTags) {
-    // console.log('START _performMetricKeyValueLookup')
     metric = metric.trim()
     key = key.trim()
     if (!metric || !key) return this.q.when([])
@@ -252,8 +207,6 @@ define([
 
     let promises = this.selectedDS.map(o => {
       return new Promise((resolve, reject) => {
-        // console.log('START _performMetricKeyValueLookup')
-        // console.log(o.url + '/api/v1/datapoints/query/tags')
         this.backendSrv.datasourceRequest({
               url: o.url + '/api/v1/datapoints/query/tags',
               method: 'POST',
@@ -266,34 +219,22 @@ define([
               }
             })
             .then(result => {
-              // console.log('RETURN _performMetricKeyValueLookup')
               if (!result.data) resolve([])
-              // console.log('_performMetricKeyValueLookup: keys -' + o.name, result.data.queries[0].results[0].tags[key])
-              resolve(result.data.queries[0].results[0].tags[key]) // array type
-            }).catch(err => {
-              // console.log('ERROR _performMetricKeyValueLookup')
-              resolve([]) // show partials success even if one of more fails
-            })
+              resolve(result.data.queries[0].results[0].tags[key])
+            }).catch(err => resolve([])) // show partials success even if one of more fails
         })
       })
-      // console.log(`There are ${promises.length} request in promises`)
       return this.q.all(promises)
                  .then(value => {
                    let allKeys = []
                    for (let list of value) { allKeys = allKeys.concat(list) }
-                  //  console.log('RETURN multi _performMetricKeyValueLookup: allKeys', allKeys)
                    return allKeys
-                 }).catch(err => {
-                   return this.q.when([])
-                 })
+                 }).catch(err => this.q.when([]))
   }
 
   KairosDBDatasource.prototype.performTagSuggestQuery = function (metric) {
-    // console.log('START performTagSuggestQuery')
     let promises = this.selectedDS.map(o => {
       return new Promise((resolve, reject) => {
-        // console.log('START performTagSuggestQuery')
-        // console.log(o.url + '/api/v1/datapoints/query/tags')
         this.backendSrv.datasourceRequest({
               url: o.url + '/api/v1/datapoints/query/tags',
               method: 'POST',
@@ -305,29 +246,20 @@ define([
                 start_absolute: 0
               }
             }).then(result => {
-              // console.log('RETURN performTagSuggestQuery')
               if (!result.data) resolve([])
-              // console.log('performTagSuggestQuery: keys -' + o.name, result.data.queries[0].results[0].tags[key])
-              resolve(result.data.queries[0].results[0]) // array type
-            }).catch(err => {
-              // console.log('ERROR performTagSuggestQuery')
-              resolve([]) // show partials success even if one of more fails
-            })
+              resolve(result.data.queries[0].results[0])
+            }).catch(err => resolve([])) // show partials success even if one of more fails
         })
       })
-      // console.log(`There are ${promises.length} request in promises`)
       return this.q.all(promises)
                  .then(value => {
                    let allKeys = []
                    for (let list of value) { allKeys = allKeys.concat(list) }
-                  //  console.log('RETURN multi performTagSuggestQuery: allKeys', allKeys)
                    return allKeys
                  }).catch(err => this.q.when([]))
   }
 
   KairosDBDatasource.prototype.metricFindQuery = function (query) {
-    // console.log('==============================================')
-    // console.log('query', query)
     if (!query) return this.q.when([])
 
     let interpolated
@@ -341,22 +273,16 @@ define([
     const tag_values_regex = /tag_values\(([^,]*),\s*([^,]*)(?:,\s*)?(\w+\s*=.*)?\)/
 
     const metrics_query = interpolated.match(metrics_regex)
-    if (metrics_query) {
-      // console.log('metrics_query', metrics_query)
+    if (metrics_query)
       return this._performMetricSuggestQuery(metrics_query[1]).then(responseTransform)
-    }
 
     const tag_names_query = interpolated.match(tag_names_regex)
-    if (tag_names_query) {
-      // console.log('tag_names_query', tag_names_query)
+    if (tag_names_query)
       return this._performMetricKeyLookup(tag_names_query[1]).then(responseTransform)
-    }
 
     const tag_values_query = interpolated.match(tag_values_regex)
-    if (tag_values_query) {
-      // console.log('tag_values_query', tag_values_query)
+    if (tag_values_query)
       return this._performMetricKeyValueLookup(tag_values_query[1], tag_values_query[2], tag_values_query[3]).then(responseTransform)
-    }
 
     return this.q.when([])
   }
@@ -371,19 +297,13 @@ define([
    * @returns {*}
    */
   function handleQueryError(results) {
-    // console.log('HANDLEQUERYERROR')
-    if (results.data.errors && !_.isEmpty(results.data.errors)) {
-      const errors = { message: results.data.errors[0] }
-      return this.q.reject(errors)
-    } else {
-      return this.q.reject(results)
-    }
+    if (results.data.errors && !_.isEmpty(results.data.errors))
+      return self.q.reject({ message: results.data.errors[0] })
+    else
+      return self.q.reject(results)
   }
 
   function handleKairosDBQueryResponse(plotParams, templateSrv, allResults) {
-    // console.log('HANDLE RESPONSE START')
-    // console.log('resultsList', resultsList)
-    // console.log('allResults', allResults)
     let outputList = []
     for (let results of allResults) {
       let output = []
@@ -402,8 +322,7 @@ define([
               _.each(element.group, (value, key) => {
                 groupAliases['_tag_group_' + key] = { value : value }
 
-                // If the Alias name starts with $group_by, then use that
-                // as the label
+                // If the Alias name starts with $group_by, then use that as the label
                 if (target.startsWith('$group_by(')) {
                   let aliasname = target.split('$group_by(')[1].slice(0, -1)
                   if (aliasname === key) target = value
@@ -420,7 +339,7 @@ define([
 
           // Target here refers to the alias string
           // use replaceCount to prevent unpredict infinite loop
-          for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++){
+          for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++) {
             target = templateSrv.replace(target, groupAliases)
           }
 
@@ -431,25 +350,22 @@ define([
             const v = result.values[i][1]
             datapoints[i] = [v, t]
           }
-          if (plotParams[index].exouter) {
+
+          if (plotParams[index].exouter)
             datapoints = new PeakFilter(datapoints, 10)
-          }
+
           output.push({ target: target, datapoints: datapoints })
         })
 
         index++
       })
-      // console.log('Result after parse : ', _.flatten(output))
       outputList = outputList.concat(_.flatten(output))
     }
 
-    // console.log('HANDLE RESPONSE END')
-    // console.log('outputList after parse : ', outputList)
     return { data: outputList }
   }
 
   function currentTemplateValue(value, templateSrv, scopedVars) {
-    // console.log('CURRENTTEMPLATEVALUE')
     let replacedValue
     // Make sure there is a variable in the value
     if (templateSrv.variableExists(value)) {
@@ -481,7 +397,6 @@ define([
   }
 
   const convertTargetToQuery = (options, target) => {
-    // console.log('CONVERTTARGETTOQUERY')
     if (!target.metric || target.hide) return null
 
     const metricName = currentTemplateValue(target.metric, self.templateSrv, options.scopedVars)
@@ -503,11 +418,10 @@ define([
         if (chosenAggregator.unit)
           returnedAggregator.unit = chosenAggregator.unit + 's'
 
-        if (chosenAggregator.factor && chosenAggregator.name === 'div') {
+        if (chosenAggregator.factor && chosenAggregator.name === 'div')
           returnedAggregator.divisor = chosenAggregator.factor
-        } else if (chosenAggregator.factor && chosenAggregator.name === 'scale') {
+        else if (chosenAggregator.factor && chosenAggregator.name === 'scale')
           returnedAggregator.factor = chosenAggregator.factor
-        }
 
         if (chosenAggregator.percentile)
           returnedAggregator.percentile = chosenAggregator.percentile
@@ -551,7 +465,6 @@ define([
   }
 
   KairosDBDatasource.prototype.getDefaultAlias = function(target) {
-    // console.log('GETDEFAULTALIAS')
     if (!target.metric)
       return ''
 
@@ -585,7 +498,6 @@ define([
   //////////////////////////////////////////////////////////////////////
 
   KairosDBDatasource.prototype.convertToKairosInterval = function (intervalString) {
-    // console.log('CONVERTTOKAIROSINTERVAL')
     intervalString = this.templateSrv.replace(intervalString)
 
     const interval_regex = /(\d+(?:\.\d+)?)([Mwdhmsy])/
@@ -612,7 +524,6 @@ define([
   }
 
   function convertToKairosTime(date, response_obj, start_stop_name) {
-    // console.log('CONVERTTOKAIROSTIME')
     let name
 
     if (_.isString(date)) {
@@ -633,7 +544,6 @@ define([
           }
           return
         }
-        // console.log("Unparseable date", date)
         return
       }
 
@@ -645,7 +555,6 @@ define([
   }
 
   function convertToKairosDBTimeUnit(unit) {
-    // console.log('CONVERTTOKAIROSDBTIMEUNIT')
     switch (unit) {
       case 'ms':
         return 'milliseconds'
@@ -670,7 +579,6 @@ define([
   }
 
   function PeakFilter(dataIn, limit) {
-    // console.log('PEAKFILTER')
     let datapoints = dataIn
     const arrLength = datapoints.length
     if (arrLength <= 3)
@@ -701,7 +609,6 @@ define([
   }
 
   function expandTargets(options) {
-    // console.log('EXPANDTARGETS')
     return _.flatten(_.map(
       options.targets,
       target => _.map(currentTemplateValue(target.metric, self.templateSrv, options.scopedVars),
