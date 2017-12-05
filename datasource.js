@@ -169,9 +169,10 @@ function (angular, _, sdk, dateMath, kbn) {
       url: this.url + '/api/v1/datapoints/query',
       data: reqBody
     };
-    console.log('TIMESERIES QUERY END');
+    console.log('TIMESERIES QUERY SEND');
 
-    return this.backendSrv.datasourceRequest(options);
+    return this.backendSrv.datasourceRequest(options)
+                          .then(res => {return [res]})
   };
 
   /**
@@ -443,75 +444,80 @@ function (angular, _, sdk, dateMath, kbn) {
     }
   }
 
-  function handleKairosDBQueryResponse(plotParams, templateSrv, results) {
+  function handleKairosDBQueryResponse(plotParams, templateSrv, allResults) {
     console.log('HANDLE RESPONSE START');
     // console.log('resultsList', resultsList)
-    console.log('results', results)
-    var output = [];
-    var index = 0;
-    // _.each(resultsList, function (results) {
-      _.each(results.data.queries, function (series) {
-        _.each(series.results, function (result) {
-          var details = "";
-          var target = plotParams[index].alias;
-          var groupAliases = {};
-          var valueGroup = 1;
-          var timeGroup = 1;
+    console.log('allResults', allResults)
+    let outputList = []
+    for (let results of allResults) {
+      let output = [];
+      let index = 0;
+      // _.each(resultsList, function (results) {
+        _.each(results.data.queries, function (series) {
+          _.each(series.results, function (result) {
+            let details = "";
+            let target = plotParams[index].alias;
+            let groupAliases = {};
+            let valueGroup = 1;
+            let timeGroup = 1;
 
-          // collect values for group aliases, then use them as scopedVars for templating
-          _.each(result.group_by, function(element) {
-            if (element.name === "tag") {
-              _.each(element.group, function(value, key) {
-                groupAliases["_tag_group_" + key] = { value : value };
+            // collect values for group aliases, then use them as scopedVars for templating
+            _.each(result.group_by, function(element) {
+              if (element.name === "tag") {
+                _.each(element.group, function(value, key) {
+                  groupAliases["_tag_group_" + key] = { value : value };
 
-                // If the Alias name starts with $group_by, then use that
-                // as the label
-                if (target.startsWith('$group_by(')) {
-                  var aliasname = target.split('$group_by(')[1].slice(0, -1);
-                  if (aliasname === key) {
-                    target = value;
+                  // If the Alias name starts with $group_by, then use that
+                  // as the label
+                  if (target.startsWith('$group_by(')) {
+                    let aliasname = target.split('$group_by(')[1].slice(0, -1);
+                    if (aliasname === key) {
+                      target = value;
+                    }
                   }
-                }
-                else {
-                  details += key + "=" + value + " ";
-                }
-              });
+                  else {
+                    details += key + "=" + value + " ";
+                  }
+                });
+              }
+              else if (element.name === "value") {
+                groupAliases["_value_group_" + valueGroup] = { value : element.group.group_number.toString() };
+                valueGroup ++;
+              }
+              else if (element.name === "time") {
+                groupAliases["_time_group_" + timeGroup] = { value : element.group.group_number.toString() };
+                timeGroup ++;
+              }
+            });
+
+            // Target here refers to the alias string
+            // use replaceCount to prevent unpredict infinite loop
+            for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++){
+              target = templateSrv.replace(target, groupAliases);
             }
-            else if (element.name === "value") {
-              groupAliases["_value_group_" + valueGroup] = { value : element.group.group_number.toString() };
-              valueGroup ++;
+
+            let datapoints = [];
+
+            for (let i = 0; i < result.values.length; i++) {
+              let t = Math.floor(result.values[i][0]);
+              let v = result.values[i][1];
+              datapoints[i] = [v, t];
             }
-            else if (element.name === "time") {
-              groupAliases["_time_group_" + timeGroup] = { value : element.group.group_number.toString() };
-              timeGroup ++;
+            if (plotParams[index].exouter) {
+              datapoints = new PeakFilter(datapoints, 10);
             }
+            output.push({ target: target, datapoints: datapoints });
           });
 
-          // Target here refers to the alias string
-          // use replaceCount to prevent unpredict infinite loop
-          for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++){
-            target = templateSrv.replace(target, groupAliases);
-          }
-
-          var datapoints = [];
-
-          for (var i = 0; i < result.values.length; i++) {
-            var t = Math.floor(result.values[i][0]);
-            var v = result.values[i][1];
-            datapoints[i] = [v, t];
-          }
-          if (plotParams[index].exouter) {
-            datapoints = new PeakFilter(datapoints, 10);
-          }
-          output.push({ target: target, datapoints: datapoints });
+          index++;
         });
-
-        index++;
-      });
-    // });
+        console.log('Result after parse : ', _.flatten(output))
+        outputList = outputList.concat(_.flatten(output))
+    }
 
     console.log('HANDLE RESPONSE END');
-    return { data: _.flatten(output) };
+    console.log('outputList after parse : ', outputList)
+    return { data: outputList };
   }
 
   function currentTemplateValue(value, templateSrv, scopedVars) {
