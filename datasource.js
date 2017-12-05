@@ -63,7 +63,7 @@ define([
   KairosDBDatasource.prototype.testDatasource = function() {
     // console.log('TEST DATASOURCE')
     const successText = this.multi ? 'All Data sources are working' : 'Data source is working'
-    let promises = this.selectedDS.map( o => {
+    let promises = this.selectedDS.map(o => {
       return new Promise((resolve, reject) => {
         this.backendSrv.datasourceRequest({ url: o.url + '/api/v1/health/check', method: 'GET' })
             .then(res => {
@@ -90,7 +90,7 @@ define([
 
     const targets = expandTargets(options)
     const queries = _.compact(_.map(targets, _.partial(convertTargetToQuery, options)))
-    const plotParams = _.compact(_.map(targets, function(target) {
+    const plotParams = _.compact(_.map(targets, target => {
       const alias = target.alias || this.getDefaultAlias(target)
 
       if (!target.hide) return { alias: alias, exouter: target.exOuter }
@@ -155,18 +155,16 @@ define([
               withCredentials: o.withCredentials,
               requestId: this.panelId + '.metricnames' +  + o.id
             })
-            .then((result) => {
+            .then(result => {
               // console.log('RETURN _performMetricSuggestQuery: ' + o.name)
               if (!result.data) resolve([])
               let metrics = []
-              _.each(result.data.results, function (r) {
-                if (r.indexOf(metric) >= 0) {
-                  metrics.push(r)
-                }
+              _.each(result.data.results, r => {
+                if (r.indexOf(metric) >= 0) metrics.push(r)
               })
               // console.log('_performMetricSuggestQuery: metrics -' + metrics)
               resolve(metrics) // array type
-            }).catch((err) => {
+            }).catch(err => {
               // console.log('ERROR _performMetricSuggestQuery: ' + o.name)
               resolve([]) // show partials success even if one of more fails
             })
@@ -174,13 +172,13 @@ define([
     })
     // console.log(`There are ${promises.length} request in _performMetricSuggestQuery promises`)
     return this.q.all(promises)
-               .then((value) => {
+               .then(value => {
                 //  console.log('value', value)
                  let allMetrics = []
                  for (let list of value) { allMetrics = allMetrics.concat(list) }
                 //  console.log('RETURN multi _performMetricSuggestQuery: allMetrics', allMetrics)
                  return allMetrics
-               }).catch((err) => {
+               }).catch(err => {
                 //  console.log('ERROR multi _performMetricSuggestQuery: allMetrics', err)
                  return this.q.when([])
                })
@@ -189,7 +187,7 @@ define([
   KairosDBDatasource.prototype._performMetricKeyLookup = function (metric) {
     // console.log('START _performMetricKeyLookup')
     if (!metric) return this.q.when([])
-    let promises = this.selectedDS.map( o => {
+    let promises = this.selectedDS.map(o => {
       return new Promise((resolve, reject) => {
         // console.log('START _performMetricKeyLookup: ' + o.name)
         // console.log(o.url + '/api/v1/datapoints/query/tags')
@@ -203,18 +201,16 @@ define([
                 cache_time: 0,
                 start_absolute: 0
               }
-            }).then((result) => {
+            }).then(result => {
               // console.log('RETURN _performMetricKeyLookup: ' + o.name)
               if (!result.data) resolve([])
               let tagks = []
-              _.each(result.data.queries[0].results[0].tags, function (tagv, tagk) {
-                if (tagks.indexOf(tagk) === -1) {
-                  tagks.push(tagk)
-                }
+              _.each(result.data.queries[0].results[0].tags, (tagv, tagk) => {
+                if (tagks.indexOf(tagk) === -1) tagks.push(tagk)
               })
               // console.log('_performMetricKeyLookup: tagks', tagks)
               resolve(tagks) // array type
-            }).catch((err) => {
+            }).catch(err => {
               // console.log('ERROR _performMetricKeyLookup: ' + o.name)
               resolve([]) // show partials success even if one of more fails
             })
@@ -222,13 +218,13 @@ define([
     })
     // console.log(`There are ${promises.length} request in _performMetricKeyLookup promises`)
     return this.q.all(promises)
-               .then((value) => {
+               .then(value => {
                 //  console.log('value', value)
                  let allTagks = []
                  for (let list of value) { allTagks = allTagks.concat(list) }
                 //  console.log('RETURN multi _performMetricKeyLookup: allKeys', allTagks)
                  return allTagks
-               }).catch((err) => {
+               }).catch(err => {
                  return this.q.when([])
                })
   }
@@ -243,7 +239,7 @@ define([
     if (otherTags) {
       let tags = {}
       const kvps = otherTags.match(/\w+\s*=\s*(?:[^,{}]+|\{[^,{}]+(?:,\s*[^,{}]+)*\})/g)
-      kvps.forEach(function(pair) {
+      kvps.forEach(pair => {
         const kv = pair.split('=')
         const k = kv[0] ? kv[0].trim() : ''
         let value = kv[1] ? kv[1].trim() : ''
@@ -254,7 +250,7 @@ define([
       metricsOptions['tags'] = tags
     }
 
-    let promises = this.selectedDS.map( o => {
+    let promises = this.selectedDS.map(o => {
       return new Promise((resolve, reject) => {
         // console.log('START _performMetricKeyValueLookup')
         // console.log(o.url + '/api/v1/datapoints/query/tags')
@@ -269,12 +265,12 @@ define([
                 start_absolute: 0
               }
             })
-            .then((result) => {
+            .then(result => {
               // console.log('RETURN _performMetricKeyValueLookup')
               if (!result.data) resolve([])
               // console.log('_performMetricKeyValueLookup: keys -' + o.name, result.data.queries[0].results[0].tags[key])
               resolve(result.data.queries[0].results[0].tags[key]) // array type
-            }).catch((err) => {
+            }).catch(err => {
               // console.log('ERROR _performMetricKeyValueLookup')
               resolve([]) // show partials success even if one of more fails
             })
@@ -282,19 +278,19 @@ define([
       })
       // console.log(`There are ${promises.length} request in promises`)
       return this.q.all(promises)
-                 .then((value) => {
+                 .then(value => {
                    let allKeys = []
                    for (let list of value) { allKeys = allKeys.concat(list) }
                   //  console.log('RETURN multi _performMetricKeyValueLookup: allKeys', allKeys)
                    return allKeys
-                 }).catch((err) => {
+                 }).catch(err => {
                    return this.q.when([])
                  })
   }
 
   KairosDBDatasource.prototype.performTagSuggestQuery = function (metric) {
     // console.log('START performTagSuggestQuery')
-    let promises = this.selectedDS.map( o => {
+    let promises = this.selectedDS.map(o => {
       return new Promise((resolve, reject) => {
         // console.log('START performTagSuggestQuery')
         // console.log(o.url + '/api/v1/datapoints/query/tags')
@@ -308,12 +304,12 @@ define([
                 cache_time: 0,
                 start_absolute: 0
               }
-            }).then((result) => {
+            }).then(result => {
               // console.log('RETURN performTagSuggestQuery')
               if (!result.data) resolve([])
               // console.log('performTagSuggestQuery: keys -' + o.name, result.data.queries[0].results[0].tags[key])
               resolve(result.data.queries[0].results[0]) // array type
-            }).catch((err) => {
+            }).catch(err => {
               // console.log('ERROR performTagSuggestQuery')
               resolve([]) // show partials success even if one of more fails
             })
@@ -321,14 +317,12 @@ define([
       })
       // console.log(`There are ${promises.length} request in promises`)
       return this.q.all(promises)
-                 .then((value) => {
+                 .then(value => {
                    let allKeys = []
                    for (let list of value) { allKeys = allKeys.concat(list) }
                   //  console.log('RETURN multi performTagSuggestQuery: allKeys', allKeys)
                    return allKeys
-                 }).catch((err) => {
-                   return this.q.when([])
-                 })
+                 }).catch(err => this.q.when([]))
   }
 
   KairosDBDatasource.prototype.metricFindQuery = function (query) {
@@ -340,9 +334,7 @@ define([
     try { interpolated = this.templateSrv.replace(query) }
     catch (err) { return this.q.reject(err) }
 
-    const responseTransform = function (result) {
-      return _.map(result, (value) => { return {text: value} })
-    }
+    const responseTransform = result => _.map(result, value => {text: value})
 
     const metrics_regex = /metrics\((.*)\)/
     const tag_names_regex = /tag_names\((.*)\)/
@@ -396,67 +388,59 @@ define([
     for (let results of allResults) {
       let output = []
       let index = 0
-      // _.each(resultsList, function (results) {
-        _.each(results.data.queries, function (series) {
-          _.each(series.results, function (result) {
-            let details = ''
-            let target = plotParams[index].alias
-            let groupAliases = {}
-            let valueGroup = 1
-            let timeGroup = 1
+      _.each(results.data.queries, series => {
+        _.each(series.results, result => {
+          let details = ''
+          let target = plotParams[index].alias
+          let groupAliases = {}
+          let valueGroup = 1
+          let timeGroup = 1
 
-            // collect values for group aliases, then use them as scopedVars for templating
-            _.each(result.group_by, function(element) {
-              if (element.name === 'tag') {
-                _.each(element.group, function(value, key) {
-                  groupAliases['_tag_group_' + key] = { value : value }
+          // collect values for group aliases, then use them as scopedVars for templating
+          _.each(result.group_by, element => {
+            if (element.name === 'tag') {
+              _.each(element.group, (value, key) => {
+                groupAliases['_tag_group_' + key] = { value : value }
 
-                  // If the Alias name starts with $group_by, then use that
-                  // as the label
-                  if (target.startsWith('$group_by(')) {
-                    let aliasname = target.split('$group_by(')[1].slice(0, -1)
-                    if (aliasname === key) {
-                      target = value
-                    }
-                  }
-                  else {
-                    details += key + '=' + value + ' '
-                  }
-                })
-              }
-              else if (element.name === 'value') {
-                groupAliases['_value_group_' + valueGroup] = { value : element.group.group_number.toString() }
-                valueGroup ++
-              }
-              else if (element.name === 'time') {
-                groupAliases['_time_group_' + timeGroup] = { value : element.group.group_number.toString() }
-                timeGroup ++
-              }
-            })
-
-            // Target here refers to the alias string
-            // use replaceCount to prevent unpredict infinite loop
-            for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++){
-              target = templateSrv.replace(target, groupAliases)
+                // If the Alias name starts with $group_by, then use that
+                // as the label
+                if (target.startsWith('$group_by(')) {
+                  let aliasname = target.split('$group_by(')[1].slice(0, -1)
+                  if (aliasname === key) target = value
+                } else details += key + '=' + value + ' '
+              })
+            } else if (element.name === 'value') {
+              groupAliases['_value_group_' + valueGroup] = { value : element.group.group_number.toString() }
+              valueGroup ++
+            } else if (element.name === 'time') {
+              groupAliases['_time_group_' + timeGroup] = { value : element.group.group_number.toString() }
+              timeGroup ++
             }
-
-            let datapoints = []
-
-            for (let i = 0; i < result.values.length; i++) {
-              const t = Math.floor(result.values[i][0])
-              const v = result.values[i][1]
-              datapoints[i] = [v, t]
-            }
-            if (plotParams[index].exouter) {
-              datapoints = new PeakFilter(datapoints, 10)
-            }
-            output.push({ target: target, datapoints: datapoints })
           })
 
-          index++
+          // Target here refers to the alias string
+          // use replaceCount to prevent unpredict infinite loop
+          for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++){
+            target = templateSrv.replace(target, groupAliases)
+          }
+
+          let datapoints = []
+
+          for (let i = 0; i < result.values.length; i++) {
+            const t = Math.floor(result.values[i][0])
+            const v = result.values[i][1]
+            datapoints[i] = [v, t]
+          }
+          if (plotParams[index].exouter) {
+            datapoints = new PeakFilter(datapoints, 10)
+          }
+          output.push({ target: target, datapoints: datapoints })
         })
-        // console.log('Result after parse : ', _.flatten(output))
-        outputList = outputList.concat(_.flatten(output))
+
+        index++
+      })
+      // console.log('Result after parse : ', _.flatten(output))
+      outputList = outputList.concat(_.flatten(output))
     }
 
     // console.log('HANDLE RESPONSE END')
@@ -477,10 +461,10 @@ define([
         if (scopedVars && scopedVars[variableName]) {
           replacedValue = scopedVars[variableName].value
         } else {
-          const variable = templateSrv.variables.find(function(v) { return v.name === variableName })
+          const variable = templateSrv.variables.find(v => v.name === variableName)
           if (variable.current.value[0] === "$__all") {
-            const filteredOptions = _.filter(variable.options, function(v) { return v.value !== "$__all" })
-            replacedValue = _.map(filteredOptions, function(opt) { return opt.value })
+            const filteredOptions = _.filter(variable.options, v => v.value !== '$__all')
+            replacedValue = _.map(filteredOptions, opt => opt.value)
           } else {
             replacedValue = variable.current.value
           }
@@ -540,7 +524,7 @@ define([
 
     if (target.tags) {
       query.tags = angular.copy(target.tags)
-      _.forOwn(query.tags, function (value, key) {
+      _.forOwn(query.tags, (value, key) => {
         query.tags[key] = currentTemplateValue(value, self.templateSrv, options.scopedVars)
       })
     }
@@ -550,14 +534,12 @@ define([
       if (target.groupByTags) {
         query.group_by.push({
           name: 'tag',
-          tags: _.map(angular.copy(target.groupByTags), function (tag) {
-            return self.templateSrv.replace(tag)
-          })
+          tags: _.map(angular.copy(target.groupByTags), tag => self.templateSrv.replace(tag))
         })
       }
 
       if (target.nonTagGroupBys) {
-        _.each(target.nonTagGroupBys, function (rawGroupBy) {
+        _.each(target.nonTagGroupBys, rawGroupBy => {
           let formattedGroupBy = angular.copy(rawGroupBy)
           if (formattedGroupBy.name === 'time')
             formattedGroupBy.range_size = self.convertToKairosInterval(formattedGroupBy.range_size)
@@ -577,10 +559,10 @@ define([
     let valueGroup = 1
     let timeGroup = 1
 
-    _.forEach(target.groupByTags, function(tag) {
+    _.forEach(target.groupByTags, tag => {
       groupAlias += tag + '=$_tag_group_' + tag + ', '
     })
-    _.forEach(target.nonTagGroupBys, function(group) {
+    _.forEach(target.nonTagGroupBys, group => {
       if (group.name === 'value') {
         groupAlias += 'value_group_' + valueGroup + '=$_value_group_' + valueGroup.toString() + ', '
         valueGroup ++
@@ -722,20 +704,15 @@ define([
     // console.log('EXPANDTARGETS')
     return _.flatten(_.map(
       options.targets,
-      function(target) {
-        return _.map(
-          currentTemplateValue(target.metric, self.templateSrv, options.scopedVars),
-          function(metric) {
-            let copy = angular.copy(target)
-            copy.metric = metric
-            return copy
-          }
+      target => _.map(currentTemplateValue(target.metric, self.templateSrv, options.scopedVars),
+                      metric => {
+                        let copy = angular.copy(target)
+                        copy.metric = metric
+                        return copy
+                      }
         )
-      }
     ))
   }
 
-  return {
-    KairosDBDatasource: KairosDBDatasource
-  }
+  return { KairosDBDatasource }
 })
