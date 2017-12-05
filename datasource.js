@@ -62,29 +62,21 @@ define([
   // Function to check Datasource health
   KairosDBDatasource.prototype.testDatasource = function() {
     // console.log('TEST DATASOURCE')
-    if (!this.multi) {
-      return this.backendSrv.datasourceRequest({
-        url: this.url + '/api/v1/health/check',
-        method: 'GET'
-      }).then(function(response) {
-        if (response.status === 204) return { status: 'success', message: 'Data source is working', title: 'Success' }
+    const successText = this.multi ? 'All Data sources are working' : 'Data source is working'
+    let promises = this.selectedDS.map( o => {
+      return new Promise((resolve, reject) => {
+        this.backendSrv.datasourceRequest({ url: o.url + '/api/v1/health/check', method: 'GET' })
+            .then(res => {
+              if (res.status === 204) resolve()
+              else reject(o + 'fails')
+            }).catch(err => {
+              reject('Datasource:' + o.name + ' fails')
+            })
       })
-    } else {
-      let promises = this.selectedDS.map( o => {
-        return new Promise((resolve, reject) => {
-          this.backendSrv.datasourceRequest({ url: o.url + '/api/v1/health/check', method: 'GET' })
-              .then((response) => {
-                if (response.status === 204) resolve()
-                else reject(o + 'fails')
-              }).catch((err) => {
-                reject('Datasource:' + o.name + ' fails')
-              })
-        })
-      })
-      return this.q.all(promises)
-                 .then((value) => { return { status: 'success', message: 'All Data sources are working', title: 'Success' } })
-                 .catch((err) => { return { status: 'error', message: err, title: 'Error' } })
-    }
+    })
+    return this.q.all(promises)
+               .then(value => { return { status: 'success', message: successText, title: 'Success' } })
+               .catch(err => { return { status: 'error', message: err, title: 'Error' } })
   }
 
   // Called once per panel (graph)
