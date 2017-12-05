@@ -6,7 +6,7 @@ define([
   'app/core/utils/kbn',
   './query_ctrl'
 ],
-function (angular, _, sdk, dateMath, kbn) {
+(angular, _, sdk, dateMath, kbn) => {
   'use strict'
 
   let self
@@ -32,6 +32,7 @@ function (angular, _, sdk, dateMath, kbn) {
     this.multi = instanceSettings.jsonData.multi
     if (this.multi) this.selectedDS = this.getLatestSelectedDS(instanceSettings.jsonData.selectedDataSources)
     else this.selectedDS = [instanceSettings]
+
     self = this
     // console.log('this.selectedDS', this.selectedDS)
     // console.log('CONSTRUCTOR END')
@@ -91,20 +92,20 @@ function (angular, _, sdk, dateMath, kbn) {
     // console.log('QUERY START')
     // console.log('options', options)
 
-    self.panelId = options.panelId
+    this.panelId = options.panelId
     const start = options.rangeRaw.from
     const end = options.rangeRaw.to
 
     const targets = expandTargets(options)
     const queries = _.compact(_.map(targets, _.partial(convertTargetToQuery, options)))
     const plotParams = _.compact(_.map(targets, function(target) {
-      const alias = target.alias || self.getDefaultAlias(target)
+      const alias = target.alias || this.getDefaultAlias(target)
 
       if (!target.hide) return { alias: alias, exouter: target.exOuter }
       else return null
     }))
 
-    const handleKairosDBQueryResponseAlias = _.partial(handleKairosDBQueryResponse, plotParams, self.templateSrv)
+    const handleKairosDBQueryResponseAlias = _.partial(handleKairosDBQueryResponse, plotParams, this.templateSrv)
 
     // No valid targets, return the empty result to save a round trip.
     if (_.isEmpty(queries)) {
@@ -152,7 +153,7 @@ function (angular, _, sdk, dateMath, kbn) {
     //Requires a KairosDB version supporting server-side metric names filtering
     // console.log('START _performMetricSuggestQuery')
     // console.log(' MULTI ')
-    let promises = this.selectedDS.map( o => {
+    let promises = this.selectedDS.map(o => {
       return new Promise((resolve, reject) => {
         // console.log('START _performMetricSuggestQuery: ' + o.name)
         // console.log(o.url + '/api/v1/metricnames?containing=' + metric)
@@ -160,7 +161,7 @@ function (angular, _, sdk, dateMath, kbn) {
               url: o.url + '/api/v1/metricnames?containing=' + metric,
               method: 'GET',
               withCredentials: o.withCredentials,
-              requestId: self.panelId + '.metricnames' +  + o.id
+              requestId: this.panelId + '.metricnames' +  + o.id
             })
             .then((result) => {
               // console.log('RETURN _performMetricSuggestQuery: ' + o.name)
@@ -179,7 +180,7 @@ function (angular, _, sdk, dateMath, kbn) {
             })
       })
     })
-    console.log(`There are ${promises.length} request in _performMetricSuggestQuery promises`)
+    // console.log(`There are ${promises.length} request in _performMetricSuggestQuery promises`)
     return this.q.all(promises)
                .then((value) => {
                 //  console.log('value', value)
@@ -189,7 +190,7 @@ function (angular, _, sdk, dateMath, kbn) {
                  return allMetrics
                }).catch((err) => {
                 //  console.log('ERROR multi _performMetricSuggestQuery: allMetrics', err)
-                 return self.q.when([])
+                 return this.q.when([])
                })
   }
 
@@ -236,7 +237,7 @@ function (angular, _, sdk, dateMath, kbn) {
                 //  console.log('RETURN multi _performMetricKeyLookup: allKeys', allTagks)
                  return allTagks
                }).catch((err) => {
-                 return self.q.when([])
+                 return this.q.when([])
                })
   }
 
@@ -269,7 +270,7 @@ function (angular, _, sdk, dateMath, kbn) {
               url: o.url + '/api/v1/datapoints/query/tags',
               method: 'POST',
               withCredentials: o.withCredentials,
-              requestId: self.panelId + '.' + metric + '.' + key + '.' + 'metricKeyValueLookup' + o.id,
+              requestId: this.panelId + '.' + metric + '.' + key + '.' + 'metricKeyValueLookup' + o.id,
               data: {
                 metrics: [metricsOptions],
                 cache_time: 0,
@@ -295,7 +296,7 @@ function (angular, _, sdk, dateMath, kbn) {
                   //  console.log('RETURN multi _performMetricKeyValueLookup: allKeys', allKeys)
                    return allKeys
                  }).catch((err) => {
-                   return self.q.when([])
+                   return this.q.when([])
                  })
   }
 
@@ -334,7 +335,7 @@ function (angular, _, sdk, dateMath, kbn) {
                   //  console.log('RETURN multi performTagSuggestQuery: allKeys', allKeys)
                    return allKeys
                  }).catch((err) => {
-                   return self.q.when([])
+                   return this.q.when([])
                  })
   }
 
@@ -503,7 +504,7 @@ function (angular, _, sdk, dateMath, kbn) {
     return _.flatten([replacedValue])
   }
 
-  function convertTargetToQuery(options, target) {
+  const convertTargetToQuery = (options, target) => {
     // console.log('CONVERTTARGETTOQUERY')
     if (!target.metric || target.hide) return null
 
@@ -611,7 +612,7 @@ function (angular, _, sdk, dateMath, kbn) {
 
   KairosDBDatasource.prototype.convertToKairosInterval = function (intervalString) {
     // console.log('CONVERTTOKAIROSINTERVAL')
-    intervalString = self.templateSrv.replace(intervalString)
+    intervalString = this.templateSrv.replace(intervalString)
 
     const interval_regex = /(\d+(?:\.\d+)?)([Mwdhmsy])/
     const interval_regex_ms = /(\d+(?:\.\d+)?)(ms)/
