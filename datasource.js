@@ -266,7 +266,7 @@ define([
     try { interpolated = this.templateSrv.replace(query) }
     catch (err) { return this.q.reject(err) }
 
-    const responseTransform = result => _.map(result, value => {text: value})
+    const responseTransform = result => _.map(result, (value) => { return {text: value} })
 
     const metrics_regex = /metrics\((.*)\)/
     const tag_names_regex = /tag_names\((.*)\)/
