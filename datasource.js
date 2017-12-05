@@ -163,16 +163,27 @@ function (angular, _, sdk, dateMath, kbn) {
     convertToKairosTime(start, reqBody, 'start');
     convertToKairosTime(end, reqBody, 'end');
 
-    var options = {
-      method: 'POST',
-      withCredentials: this.withCredentials,
-      url: this.url + '/api/v1/datapoints/query',
-      data: reqBody
-    };
+    let promises = this.selectedDS.map( o => {
+      return new Promise((resolve, reject) => {
+        this.backendSrv.datasourceRequest({
+              url: o.url + '/api/v1/datapoints/query',
+              method: 'POST',
+              withCredentials: o.withCredentials,
+              data: reqBody
+            })
+            .then(res => resolve(res))
+            .catch(err => reject(err))
+      })
+    })
+    console.log('There are ' + promises.length + ' queries');
     console.log('TIMESERIES QUERY SEND');
-
-    return this.backendSrv.datasourceRequest(options)
-                          .then(res => {return [res]})
+    return this.q.all(promises)
+    // .then(value => {
+    //   console.log('value', value)
+    //   return value
+    // }).catch(err => {
+    //   console.log('err', err)
+    // })
   };
 
   /**
