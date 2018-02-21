@@ -12,94 +12,33 @@ function (angular, _, sdk, dateMath, kbn) {
   var self;
 
   /** @ngInject */
-  function KairosDBDatasource(instanceSettings, $q, backendSrv, templateSrv, datasourceSrv) {
-    console.log('==============================================');
-    console.log('CONSTRUCTOR START');
-    console.log('instanceSettings', instanceSettings);
-    console.log('backendSrv', backendSrv);
-    console.log('backendSrv.datasourceRequest', backendSrv.datasourceRequest);
-    console.log('datasourceSrv', datasourceSrv);
-
-    this.type = instanceSettings.type;  // "datasoruce"
-    this.url = instanceSettings.url.replace(/\/+$/, ""); // Datasource Url
-    this.name = instanceSettings.name; // "KairosDB"
-    this.withCredentials = instanceSettings.withCredentials; // if has cred, here undefined
+  function KairosDBDatasource(instanceSettings, $q, backendSrv, templateSrv) {
+    this.type = instanceSettings.type;
+    this.url = instanceSettings.url.replace(/\/+$/, "");
+    this.name = instanceSettings.name;
+    this.withCredentials = instanceSettings.withCredentials;
     this.supportMetrics = true;
-    this.q = $q; // Javascript Promise by Angular : https://toddmotto.com/promises-angular-q
+    this.q = $q;
     this.backendSrv = backendSrv;
     this.templateSrv = templateSrv;
-    this.datasourceSrv = datasourceSrv;
-    this.multi = instanceSettings.jsonData.multi;
-    if (this.multi) {
-      this.selectedDS = this.getLatestSelectedDS(instanceSettings.jsonData.selectedDataSources);
-    } else {
-      this.selectedDS = [instanceSettings]
-    }
-    console.log('this.selectedDS', this.selectedDS)
-    self = this;
-    console.log('CONSTRUCTOR END');
-  }
 
-  KairosDBDatasource.prototype.getLatestSelectedDS = function (selectedDS) {
-    const allDataSources = this.datasourceSrv.getAll()
-    let latestSelectedDS = []
-    let foundLatest = []
-    for (let ds of selectedDS) {
-      for (let key of Object.keys(allDataSources)) {
-        if (ds.id == allDataSources[key].id) {
-          latestSelectedDS.push(allDataSources[key])
-          foundLatest.push(ds.id)
-        }
-      }
-    }
-    if (latestSelectedDS.length !== selectedDS.length) {
-      latestSelectedDS.map(o => {
-        if (o.id in foundLatest) return
-        else throw `${o.id}: ${o.name} is probably deleted, please remove that from multi-node-support datasource before futhur action.`
-      })
-    }
-    return latestSelectedDS
+    self = this;
   }
 
   // Function to check Datasource health
   KairosDBDatasource.prototype.testDatasource = function() {
-    console.log('TEST DATASOURCE');
-    if (!this.multi) {
-      return this.backendSrv.datasourceRequest({
-        url: this.url + '/api/v1/health/check',
-        method: 'GET'
-      }).then(function(response) {
-        if (response.status === 204) {
-          return { status: "success", message: "Data source is working", title: "Success" };
-        }
-      });
-    } else {
-      let promises = this.selectedDS.map( o => {
-        return new Promise((resolve, reject) => {
-          this.backendSrv.datasourceRequest({ url: o.url + '/api/v1/health/check', method: 'GET' })
-              .then((response) => {
-                if (response.status === 204) resolve()
-                else reject(o + 'fails')
-              }).catch((err) => {
-                reject('Datasource:' + o.name + ' fails')
-              });
-        })
-      });
-      return this.q.all(promises)
-                 .then((value) => {
-                   return { status: "success", message: "All Data sources are working", title: "Success" };
-                 }).catch((err) => {
-                   return { status: "error", message: err, title: "Error" }
-                 })
-    }
+    return this.backendSrv.datasourceRequest({
+      url: this.url + '/api/v1/health/check',
+      method: 'GET'
+    }).then(function(response) {
+      if (response.status === 204) {
+        return { status: "success", message: "Data source is working", title: "Success" };
+      }
+    });
   };
 
   // Called once per panel (graph)
   KairosDBDatasource.prototype.query = function (options) {
-    console.log('QUERY START');
-    console.log('options', options); // I think options are passed from grafana directly
-    // Lots of useful variables here. Maybe coming from query_ctrl
-
     self.panelId = options.panelId;
     var start = options.rangeRaw.from;
     var end = options.rangeRaw.to;
@@ -126,13 +65,11 @@ function (angular, _, sdk, dateMath, kbn) {
       return d.promise;
     }
 
-    // return this.performMultiTimeSeriesQuery(queries, start, end)
-    //   .then(handleKairosDBQueryResponseAlias, handleQueryError);
     return this.performTimeSeriesQuery(queries, start, end)
       .then(handleKairosDBQueryResponseAlias, handleQueryError);
   };
 
-  KairosDBDatasource.prototype.performMultiTimeSeriesQuery = function (queries, start, end) {
+  KairosDBDatasource.prototype.performTimeSeriesQuery = function (queries, start, end) {
     var reqBody = {
       metrics: queries,
       cache_time: 0
@@ -148,42 +85,7 @@ function (angular, _, sdk, dateMath, kbn) {
       data: reqBody
     };
 
-    let promises = [this.backendSrv.datasourceRequest(options), this.backendSrv.datasourceRequest(options)]
-
-    return this.q.all(promises)
-  }
-
-  KairosDBDatasource.prototype.performTimeSeriesQuery = function (queries, start, end) {
-    console.log('TIMESERIES QUERY START');
-    var reqBody = {
-      metrics: queries,
-      cache_time: 0
-    };
-
-    convertToKairosTime(start, reqBody, 'start');
-    convertToKairosTime(end, reqBody, 'end');
-
-    let promises = this.selectedDS.map( o => {
-      return new Promise((resolve, reject) => {
-        this.backendSrv.datasourceRequest({
-              url: o.url + '/api/v1/datapoints/query',
-              method: 'POST',
-              withCredentials: o.withCredentials,
-              data: reqBody
-            })
-            .then(res => resolve(res))
-            .catch(err => reject(err))
-      })
-    })
-    console.log('There are ' + promises.length + ' queries');
-    console.log('TIMESERIES QUERY SEND');
-    return this.q.all(promises)
-    // .then(value => {
-    //   console.log('value', value)
-    //   return value
-    // }).catch(err => {
-    //   console.log('err', err)
-    // })
+    return this.backendSrv.datasourceRequest(options);
   };
 
   /**
@@ -192,103 +94,66 @@ function (angular, _, sdk, dateMath, kbn) {
    */
   KairosDBDatasource.prototype._performMetricSuggestQuery = function (metric) {
     //Requires a KairosDB version supporting server-side metric names filtering
-    console.log('START _performMetricSuggestQuery');
-    console.log(' MULTI ');
-    let promises = this.selectedDS.map( o => {
-      return new Promise((resolve, reject) => {
-        console.log('START _performMetricSuggestQuery: ' + o.name);
-        console.log(o.url + '/api/v1/metricnames?containing=' + metric);
-        this.backendSrv.datasourceRequest({
-              url: o.url + '/api/v1/metricnames?containing=' + metric,
-              method: 'GET',
-              withCredentials: o.withCredentials,
-              requestId: self.panelId + '.metricnames' +  + o.id
-            })
-            .then((result) => {
-              console.log('RETURN _performMetricSuggestQuery: ' + o.name);
-              if (!result.data) resolve([]);
-              var metrics = [];
-              _.each(result.data.results, function (r) {
-                if (r.indexOf(metric) >= 0) {
-                  metrics.push(r);
-                }
-              });
-              console.log('_performMetricSuggestQuery: metrics -' + metrics);
-              resolve(metrics); // array type
-            }).catch((err) => {
-              console.log('ERROR _performMetricSuggestQuery: ' + o.name);
-              resolve([]) // show partials success even if one of more fails
-            });
-      })
+    var options = {
+      url: this.url + '/api/v1/metricnames?containing=' + metric,
+      withCredentials: this.withCredentials,
+      method: 'GET',
+      requestId: self.panelId + ".metricnames"
+    };
+
+    return this.backendSrv.datasourceRequest(options).then(function (response) {
+      if (!response.data) {
+        return this.q.when([]);
+      }
+      var metrics = [];
+      _.each(response.data.results, function (r) {
+        if (r.indexOf(metric) >= 0) {
+          metrics.push(r);
+        }
+      });
+      return metrics;
     });
-    console.log(`There are ${promises.length} request in _performMetricSuggestQuery promises`)
-    return this.q.all(promises)
-               .then((value) => {
-                 console.log('value', value)
-                 let allMetrics = []
-                 for (let list of value) {
-                   allMetrics = allMetrics.concat(list)
-                 }
-                 console.log('RETURN multi _performMetricSuggestQuery: allMetrics', allMetrics);
-                 return allMetrics
-               }).catch((err) => {
-                 console.log('ERROR multi _performMetricSuggestQuery: allMetrics', err);
-                 return self.q.when([]);
-               })
   };
 
   KairosDBDatasource.prototype._performMetricKeyLookup = function (metric) {
-    console.log('START _performMetricKeyLookup');
-    if (!metric) return this.q.when([]);
-    let promises = this.selectedDS.map( o => {
-      return new Promise((resolve, reject) => {
-        console.log('START _performMetricKeyLookup: ' + o.name);
-        console.log(o.url + '/api/v1/datapoints/query/tags');
-        this.backendSrv.datasourceRequest({
-              url: o.url + '/api/v1/datapoints/query/tags',
-              method: 'POST',
-              withCredentials: o.withCredentials,
-              requestId: 'metricKeyLookup' + o.id,
-              data: {
-                metrics: [{ name: metric }],
-                cache_time: 0,
-                start_absolute: 0
-              }
-            }).then((result) => {
-              console.log('RETURN _performMetricKeyLookup: ' + o.name);
-              if (!result.data) resolve([]);
-              var tagks = [];
-              _.each(result.data.queries[0].results[0].tags, function (tagv, tagk) {
-                if (tagks.indexOf(tagk) === -1) {
-                  tagks.push(tagk);
-                }
-              });
-              console.log('_performMetricKeyLookup: tagks', tagks);
-              resolve(tagks); // array type
-            }).catch((err) => {
-              console.log('ERROR _performMetricKeyLookup: ' + o.name);
-              resolve([]) // show partials success even if one of more fails
-            });
-      })
+    if (!metric) {
+      return this.q.when([]);
+    }
+
+    var options = {
+      method: 'POST',
+      url: this.url + '/api/v1/datapoints/query/tags',
+      withCredentials: this.withCredentials,
+      requestId: "metricKeyLookup",
+      data: {
+        metrics: [
+          { name: metric }
+        ],
+        cache_time: 0,
+        start_absolute: 0
+      }
+    };
+
+    return this.backendSrv.datasourceRequest(options).then(function (result) {
+      if (!result.data) {
+        return this.q.when([]);
+      }
+      var tagks = [];
+      _.each(result.data.queries[0].results[0].tags, function (tagv, tagk) {
+        if (tagks.indexOf(tagk) === -1) {
+          tagks.push(tagk);
+        }
+      });
+      return tagks;
     });
-    console.log(`There are ${promises.length} request in _performMetricKeyLookup promises`)
-    return this.q.all(promises)
-               .then((value) => {
-                 console.log('value', value)
-                 let allTagks = []
-                 for (let list of value) { allTagks = allTagks.concat(list) }
-                 console.log('RETURN multi _performMetricKeyLookup: allKeys', allTagks);
-                 return allTagks
-               }).catch((err) => {
-                 return self.q.when([]);
-               })
   };
 
   KairosDBDatasource.prototype._performMetricKeyValueLookup = function(metric, key, otherTags) {
-    console.log('START _performMetricKeyValueLookup');
     metric = metric.trim();
     key = key.trim();
-    if (!metric || !key) return this.q.when([]);
+    if (!metric || !key) {
+      return this.q.when([]);
+    }
 
     var metricsOptions = { name: metric };
     if (otherTags) {
@@ -309,87 +174,52 @@ function (angular, _, sdk, dateMath, kbn) {
       metricsOptions["tags"] = tags;
     }
 
-    let promises = this.selectedDS.map( o => {
-      return new Promise((resolve, reject) => {
-        console.log('START _performMetricKeyValueLookup');
-        console.log(o.url + '/api/v1/datapoints/query/tags');
-        this.backendSrv.datasourceRequest({
-              url: o.url + '/api/v1/datapoints/query/tags',
-              method: 'POST',
-              withCredentials: o.withCredentials,
-              requestId: self.panelId + '.' + metric + '.' + key + '.' + 'metricKeyValueLookup' + o.id,
-              data: {
-                metrics: [metricsOptions],
-                cache_time: 0,
-                start_absolute: 0
-              }
-            })
-            .then((result) => {
-              console.log('RETURN _performMetricKeyValueLookup');
-              if (!result.data) resolve([]);
-              console.log('_performMetricKeyValueLookup: keys -' + o.name, result.data.queries[0].results[0].tags[key]);
-              resolve(result.data.queries[0].results[0].tags[key]); // array type
-            }).catch((err) => {
-              console.log('ERROR _performMetricKeyValueLookup');
-              resolve([]) // show partials success even if one of more fails
-            });
-        })
-      });
-      console.log(`There are ${promises.length} request in promises`)
-      return this.q.all(promises)
-                 .then((value) => {
-                   let allKeys = []
-                   for (let list of value) { allKeys = allKeys.concat(list) }
-                   console.log('RETURN multi _performMetricKeyValueLookup: allKeys', allKeys);
-                   return allKeys
-                 }).catch((err) => {
-                   return self.q.when([]);
-                 })
+    var options = {
+      method: 'POST',
+      withCredentials: this.withCredentials,
+      url: this.url + '/api/v1/datapoints/query/tags',
+      requestId: self.panelId + "." + metric + "." + key + "." + "metricKeyValueLookup",
+      data: {
+        metrics: [metricsOptions],
+        cache_time: 0,
+        start_absolute: 0
+      }
+    };
+
+    return this.backendSrv.datasourceRequest(options).then(function (result) {
+      if (!result.data) {
+        return this.q.when([]);
+      }
+      return result.data.queries[0].results[0].tags[key];
+    });
   };
 
   KairosDBDatasource.prototype.performTagSuggestQuery = function (metric) {
-    console.log('START performTagSuggestQuery');
+    var options = {
+      url: this.url + '/api/v1/datapoints/query/tags',
+      method: 'POST',
+      withCredentials: this.withCredentials,
+      requestId: "tagSuggestQuery",
+      data: {
+        metrics: [
+          { name: metric }
+        ],
+        cache_time: 0,
+        start_absolute: 0
+      }
+    };
 
-    let promises = this.selectedDS.map( o => {
-      return new Promise((resolve, reject) => {
-        console.log('START performTagSuggestQuery');
-        console.log(o.url + '/api/v1/datapoints/query/tags');
-        this.backendSrv.datasourceRequest({
-              url: o.url + '/api/v1/datapoints/query/tags',
-              method: 'POST',
-              withCredentials: o.withCredentials,
-              requestId: 'tagSuggestQuery' + o.id,
-              data: {
-                metrics: [ { name: metric } ],
-                cache_time: 0,
-                start_absolute: 0
-              }
-            }).then((result) => {
-              console.log('RETURN performTagSuggestQuery');
-              if (!result.data) resolve([]);
-              console.log('performTagSuggestQuery: keys -' + o.name, result.data.queries[0].results[0].tags[key]);
-              resolve(result.data.queries[0].results[0]); // array type
-            }).catch((err) => {
-              console.log('ERROR performTagSuggestQuery');
-              resolve([]) // show partials success even if one of more fails
-            });
-        })
-      });
-      console.log(`There are ${promises.length} request in promises`)
-      return this.q.all(promises)
-                 .then((value) => {
-                   let allKeys = []
-                   for (let list of value) { allKeys = allKeys.concat(list) }
-                   console.log('RETURN multi performTagSuggestQuery: allKeys', allKeys);
-                   return allKeys
-                 }).catch((err) => {
-                   return self.q.when([]);
-                 })
+    return this.backendSrv.datasourceRequest(options).then(function (response) {
+      if (!response.data) {
+        return [];
+      }
+      else {
+        return response.data.queries[0].results[0];
+      }
+    });
   };
 
   KairosDBDatasource.prototype.metricFindQuery = function (query) {
-    console.log('==============================================');
-    console.log('query', query)
     if (!query) {
       return this.q.when([]);
     }
@@ -414,19 +244,16 @@ function (angular, _, sdk, dateMath, kbn) {
 
     var metrics_query = interpolated.match(metrics_regex);
     if (metrics_query) {
-      console.log('metrics_query', metrics_query);
       return this._performMetricSuggestQuery(metrics_query[1]).then(responseTransform);
     }
 
     var tag_names_query = interpolated.match(tag_names_regex);
     if (tag_names_query) {
-      console.log('tag_names_query', tag_names_query);
       return this._performMetricKeyLookup(tag_names_query[1]).then(responseTransform);
     }
 
     var tag_values_query = interpolated.match(tag_values_regex);
     if (tag_values_query) {
-      console.log('tag_values_query', tag_values_query);
       return this._performMetricKeyValueLookup(tag_values_query[1], tag_values_query[2], tag_values_query[3]).then(responseTransform);
     }
 
@@ -442,8 +269,7 @@ function (angular, _, sdk, dateMath, kbn) {
    * @param results
    * @returns {*}
    */
-  function handleQueryError(results) {;
-    console.log('HANDLEQUERYERROR')
+  function handleQueryError(results) {
     if (results.data.errors && !_.isEmpty(results.data.errors)) {
       var errors = {
         message: results.data.errors[0]
@@ -455,84 +281,72 @@ function (angular, _, sdk, dateMath, kbn) {
     }
   }
 
-  function handleKairosDBQueryResponse(plotParams, templateSrv, allResults) {
-    console.log('HANDLE RESPONSE START');
-    // console.log('resultsList', resultsList)
-    console.log('allResults', allResults)
-    let outputList = []
-    for (let results of allResults) {
-      let output = [];
-      let index = 0;
-      // _.each(resultsList, function (results) {
-        _.each(results.data.queries, function (series) {
-          _.each(series.results, function (result) {
-            let details = "";
-            let target = plotParams[index].alias;
-            let groupAliases = {};
-            let valueGroup = 1;
-            let timeGroup = 1;
+  function handleKairosDBQueryResponse(plotParams, templateSrv, results) {
+    var output = [];
+    var index = 0;
+    _.each(results.data.queries, function (series) {
+      _.each(series.results, function (result) {
+        var details = "";
+        var target = plotParams[index].alias;
+        var groupAliases = {};
+        var valueGroup = 1;
+        var timeGroup = 1;
 
-            // collect values for group aliases, then use them as scopedVars for templating
-            _.each(result.group_by, function(element) {
-              if (element.name === "tag") {
-                _.each(element.group, function(value, key) {
-                  groupAliases["_tag_group_" + key] = { value : value };
+        // collect values for group aliases, then use them as scopedVars for templating
+        _.each(result.group_by, function(element) {
+          if (element.name === "tag") {
+            _.each(element.group, function(value, key) {
+              groupAliases["_tag_group_" + key] = { value : value };
 
-                  // If the Alias name starts with $group_by, then use that
-                  // as the label
-                  if (target.startsWith('$group_by(')) {
-                    let aliasname = target.split('$group_by(')[1].slice(0, -1);
-                    if (aliasname === key) {
-                      target = value;
-                    }
-                  }
-                  else {
-                    details += key + "=" + value + " ";
-                  }
-                });
+              // If the Alias name starts with $group_by, then use that
+              // as the label
+              if (target.startsWith('$group_by(')) {
+                var aliasname = target.split('$group_by(')[1].slice(0, -1);
+                if (aliasname === key) {
+                  target = value;
+                }
               }
-              else if (element.name === "value") {
-                groupAliases["_value_group_" + valueGroup] = { value : element.group.group_number.toString() };
-                valueGroup ++;
-              }
-              else if (element.name === "time") {
-                groupAliases["_time_group_" + timeGroup] = { value : element.group.group_number.toString() };
-                timeGroup ++;
+              else {
+                details += key + "=" + value + " ";
               }
             });
-
-            // Target here refers to the alias string
-            // use replaceCount to prevent unpredict infinite loop
-            for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++){
-              target = templateSrv.replace(target, groupAliases);
-            }
-
-            let datapoints = [];
-
-            for (let i = 0; i < result.values.length; i++) {
-              let t = Math.floor(result.values[i][0]);
-              let v = result.values[i][1];
-              datapoints[i] = [v, t];
-            }
-            if (plotParams[index].exouter) {
-              datapoints = new PeakFilter(datapoints, 10);
-            }
-            output.push({ target: target, datapoints: datapoints });
-          });
-
-          index++;
+          }
+          else if (element.name === "value") {
+            groupAliases["_value_group_" + valueGroup] = { value : element.group.group_number.toString() };
+            valueGroup ++;
+          }
+          else if (element.name === "time") {
+            groupAliases["_time_group_" + timeGroup] = { value : element.group.group_number.toString() };
+            timeGroup ++;
+          }
         });
-        console.log('Result after parse : ', _.flatten(output))
-        outputList = outputList.concat(_.flatten(output))
-    }
 
-    console.log('HANDLE RESPONSE END');
-    console.log('outputList after parse : ', outputList)
-    return { data: outputList };
+        // Target here refers to the alias string
+        // use replaceCount to prevent unpredict infinite loop
+        for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++){
+          target = templateSrv.replace(target, groupAliases);
+        }
+
+        var datapoints = [];
+
+        for (var i = 0; i < result.values.length; i++) {
+          var t = Math.floor(result.values[i][0]);
+          var v = result.values[i][1];
+          datapoints[i] = [v, t];
+        }
+        if (plotParams[index].exouter) {
+          datapoints = new PeakFilter(datapoints, 10);
+        }
+        output.push({ target: target, datapoints: datapoints });
+      });
+
+      index++;
+    });
+
+    return { data: _.flatten(output) };
   }
 
   function currentTemplateValue(value, templateSrv, scopedVars) {
-    console.log('CURRENTTEMPLATEVALUE')
     var replacedValue;
     // Make sure there is a variable in the value
     if (templateSrv.variableExists(value)) {
@@ -564,7 +378,6 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   function convertTargetToQuery(options, target) {
-    console.log('CONVERTTARGETTOQUERY');
     if (!target.metric || target.hide) {
       return null;
     }
@@ -648,7 +461,6 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   KairosDBDatasource.prototype.getDefaultAlias = function(target) {
-    console.log('GETDEFAULTALIAS')
     if (!target.metric) {
       return "";
     }
@@ -684,7 +496,6 @@ function (angular, _, sdk, dateMath, kbn) {
   //////////////////////////////////////////////////////////////////////
 
   KairosDBDatasource.prototype.convertToKairosInterval = function (intervalString) {
-    console.log('CONVERTTOKAIROSINTERVAL');
     intervalString = self.templateSrv.replace(intervalString);
 
     var interval_regex = /(\d+(?:\.\d+)?)([Mwdhmsy])/;
@@ -714,7 +525,6 @@ function (angular, _, sdk, dateMath, kbn) {
   };
 
   function convertToKairosTime(date, response_obj, start_stop_name) {
-    console.log('CONVERTTOKAIROSTIME')
     var name;
 
     if (_.isString(date)) {
@@ -749,7 +559,6 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   function convertToKairosDBTimeUnit(unit) {
-    console.log('CONVERTTOKAIROSDBTIMEUNIT');
     switch (unit) {
       case 'ms':
         return 'milliseconds';
@@ -774,7 +583,6 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   function PeakFilter(dataIn, limit) {
-    console.log('PEAKFILTER');
     var datapoints = dataIn;
     var arrLength = datapoints.length;
     if (arrLength <= 3) {
@@ -808,7 +616,6 @@ function (angular, _, sdk, dateMath, kbn) {
   }
 
   function expandTargets(options) {
-    console.log('EXPANDTARGETS');
     return _.flatten(_.map(
       options.targets,
       function(target) {

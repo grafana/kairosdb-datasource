@@ -1,6 +1,9 @@
 import {KairosDBDatasource} from './datasource';
 import {KairosDBQueryCtrl} from './query_ctrl';
-import {KairosDBConfigCtrl} from './config_ctrl'
+
+class KairosDBConfigCtrl {
+  static templateUrl = "partials/config.html";
+}
 
 class KairosDBQueryOptionsCtrl {
   static templateUrl = "partials/query.options.html";
