@@ -417,6 +417,10 @@ function (angular, _, sdk, dateMath, kbn) {
           returnedAggregator.trim = chosenAggregator.trim;
         }
 
+        if (chosenAggregator.size) {
+          returnedAggregator.size = chosenAggregator.size;
+        }
+
         query.aggregators.push(returnedAggregator);
       });
     }
