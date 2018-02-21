@@ -321,7 +321,11 @@ function (angular, _, sdk, dateMath, kbn) {
           }
         });
 
-        target = templateSrv.replace(target, groupAliases);
+        // Target here refers to the alias string
+        // use replaceCount to prevent unpredict infinite loop
+        for (let replaceCount = 0; target.indexOf('$') != -1 && replaceCount < 10; replaceCount++){
+          target = templateSrv.replace(target, groupAliases);
+        }
 
         var datapoints = [];
 
