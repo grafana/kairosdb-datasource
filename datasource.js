@@ -23,6 +23,8 @@ define([
     this.templateSrv = templateSrv
     this.datasourceSrv = datasourceSrv
     this.multi = instanceSettings.jsonData.multi
+    this.metrics = null
+    this.metricsIsFetching = false
     if (this.multi) this.selectedDS = this.getLatestSelectedDS(instanceSettings.jsonData.selectedDataSources)
     else this.selectedDS = [instanceSettings]
 
@@ -127,22 +129,50 @@ define([
    */
   KairosDBDatasource.prototype._performMetricSuggestQuery = function (metric) {
     //Requires a KairosDB version supporting server-side metric names filtering
+    let intervalID = null
     let promises = this.selectedDS.map(o => {
+      // console.log(this.panelId + '.metricnames' + o.id + metric)
       return new Promise((resolve, reject) => {
-        this.backendSrv.datasourceRequest({
-              url: o.url + '/api/v1/metricnames?containing=' + metric,
-              method: 'GET',
-              withCredentials: o.withCredentials,
-              requestId: this.panelId + '.metricnames' +  + o.id
-            })
-            .then(result => {
-              if (!result.data) resolve([])
+        if (!this.metricsIsFetching && !this.metrics) {
+          this.metricsIsFetching = true
+          this.backendSrv.datasourceRequest({
+                url: o.url + '/api/v1/metricnames?containing=' + metric,
+                method: 'GET',
+                withCredentials: o.withCredentials,
+                requestId: this.panelId + '.metricnames' + o.id + metric
+              })
+              .then(result => {
+                this.metricsIsFetching = false
+                this.metrics = result.data.results
+                if (!result.data) resolve([])
+                let metrics = []
+                _.each(result.data.results, r => {
+                  if (r.indexOf(metric) >= 0) metrics.push(r)
+                })
+                console.log(result);
+                resolve(metrics)
+              }).catch(err => resolve([])) // show partials success even if one of more fails
+        } else {
+          let count = 0
+          const TIMEOUT = 20000
+          const INTERVAL = 200
+          intervalID = setInterval(() => {
+            if (this.metrics) {
               let metrics = []
-              _.each(result.data.results, r => {
+              _.each(this.metrics, r => {
                 if (r.indexOf(metric) >= 0) metrics.push(r)
               })
+              console.log('get data');
+              clearInterval(intervalID)
               resolve(metrics)
-            }).catch(err => resolve([])) // show partials success even if one of more fails
+            } else if (count * INTERVAL > TIMEOUT) {
+              console.log('timeout');
+              clearInterval(intervalID)
+              resolve([])
+            }
+            count++
+          }, 200)
+        }
       })
     })
     return this.q.all(promises)
