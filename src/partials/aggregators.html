@@ -1,0 +1,15 @@
+<div class="gf-form-group">
+    <div class="gf-form-inline">
+        <div class="gf-form">
+            <label class="gf-form-label query-keyword width-8">
+                Aggregators
+            </label>
+        </div>
+        <aggregator-editor></aggregator-editor>
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+    </div>
+
+    <aggregator ng-repeat="aggregator in ctrl.entries track by $index" value="aggregator" on-remove="ctrl.remove(aggregator)"></aggregator>
+</div>

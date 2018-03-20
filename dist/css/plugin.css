@@ -1,0 +1,34 @@
+.group-by-tag-checkbox input + label::before,
+.group-by-tag-checkbox input + label::after {
+    transition: none !important;
+    background: #292929 none;
+}
+
+.group-by-tag-checkbox {
+    margin-left: -3px;
+}
+
+.group-by-tag-checkbox input + label::before {
+    color: #eb6618;
+}
+
+.group-by-tag-checkbox:hover input + label::before {
+    color: #eb6618;
+}
+
+.group-by-tag-checkbox input + label::after {
+    color: #5bbf00;
+}
+
+.group-by-tag-checkbox:hover input + label::after {
+    color: #5bbf00;
+}
+
+.tag-label {
+    margin-left: 2px;
+    margin-right: 0;
+}
+
+.tag-switch {
+    padding-right: 4px;
+}

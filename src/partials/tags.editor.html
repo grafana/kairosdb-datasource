@@ -1,0 +1,26 @@
+<div class="gf-form-group" ng-if="ctrl.target.query.metricName">
+    <div class="gf-form-inline">
+        <div class="gf-form">
+            <label class="gf-form-label query-keyword width-8">
+                Tags
+            </label>
+        </div>
+        <div class="gf-form" ng-if="!ctrl.tagsInitializationError ">
+            <label class="gf-form-label" ng-show="!ctrl.tags.initialized">
+                Loading tags... <span class="fa fa-spinner fa-spin"></span>
+            </label>
+            <label class="gf-form-label" ng-show="ctrl.tags.initialized">
+                <b>{{ctrl.tags.size}} tags, {{ctrl.tags.combinations}} combinations</b>
+            </label>
+        </div>
+        <div class="gf-form" ng-if="ctrl.tagsInitializationError">
+            <label class="gf-form-label" style="color: red">
+                <strong>Unable to load tags: {{ctrl.tagsInitializationError}}</strong>
+            </label>
+        </div>
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+    </div>
+    <tags-select selected-values="ctrl.target.query.tags[tagName]" tag-name="tagName" tag-values="tagValues" ng-repeat="(tagName, tagValues) in ctrl.tags.tags"></tags-select>
+</div>

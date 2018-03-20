@@ -1,0 +1,17 @@
+<query-editor-row query-ctrl="ctrl">
+    <div class="gf-form-inline">
+        <div class="gf-form" ng-if="!ctrl.datasource.initialized && !ctrl.datasource.initializationError">
+            <label class="gf-form-label">
+                Loading metric names... <span class="fa fa-spinner fa-spin"></span>
+            </label>
+        </div>
+        <div class="gf-form" ng-if="ctrl.datasource.initializationError">
+            <label class="gf-form-label" style="color: red">
+                <strong>Unable to load metric names</strong>
+            </label>
+        </div>
+        <div class="gf-form gf-form--grow">
+            <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+    </div>
+</query-editor-row>
