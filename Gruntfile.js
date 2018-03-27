@@ -102,7 +102,7 @@ module.exports = function (grunt) {
         "tslint",
         "typescript:build",
         "babel",
-        // "karma",
+        "karma",
         "clean:post"
     ]);
 };
