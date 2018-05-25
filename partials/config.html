@@ -1,2 +1,47 @@
-<datasource-http-settings current="ctrl.current"></datasource-http-settings>
+<datasource-http-settings current="ctrl.current" ng-if="!ctrl.current.jsonData.multi"></datasource-http-settings>
 
+<!-- Adding just to see if can add more stuff and how to populate it into instanceSettings -->
+<!-- Seems like this will really help https://github.com/bosun-monitor/bosun-grafana-datasource/blob/master/src/partials/config.html -->
+<!-- This is crazy how ctrl.current is mapped to the instanceSettings in the datasource.js -->
+<!-- So if you set thing here, it is just gonna work -->
+<!-- Plan is to set multiple url here so that it we can add other sub urls in here. -->
+
+<h3>Multi-Nodes Support</h3>
+<gf-form-switch class="gf-form" label="Multi-Nodes" checked="ctrl.current.jsonData.multi" switch-class="max-width-6">
+  <label for="check-414" class="gf-form-label pointer" ng-show="ctrl.label">Multi-Nodes</label>
+  <div class="gf-form-switch max-width-6" ng-if="ctrl.show">
+    <input id="check-414" type="checkbox" ng-model="ctrl.checked" ng-change="ctrl.internalOnChange()" class="ng-pristine ng-untouched ng-valid ng-empty">
+    <label for="check-414" data-on="Yes" data-off="No"></label>
+  </div>
+</gf-form-switch>
+<div ng-if="ctrl.current.jsonData.multi" ng-init="addDatasource = null">
+  <div class="gf-form-group">
+    <div class="gf-form max-width-30">
+      <div class="gf-form-select-wrapper gf-form-select-wrapper--has-help-icon max-width-24">
+        <select class="gf-form-input ng-pristine ng-valid ng-not-empty ng-touched" ng-model="addDatasource" ng-options="ds.name for ds in ctrl.allKairosDataSources | filter:ctrl.isSelected()">
+          <option value="">- Choose A Datasource-</option>
+        </select>
+        <info-popover mode="right-absolute" class="gf-form-help-icon gf-form-help-icon--right-absolute drop-help drop-hide-out-of-bounds drop-target">
+          Choose any datasource to use.
+          <br>
+          Important Notice:
+          <br>
+          1. It needs to at have the same structure that other selected datasources have.
+          <br>
+          2. The setting for each datasource (such as proxy and auth) are defined as is when the datasource is created.
+        </info-popover>
+      </div>
+      <span class="gf-form-label">
+        <button type="submit" class="btn btn-outline-primary btn-mini" ng-click="ctrl.selectDataSource(addDatasource); addDatasource = null">Add Datasource</button>
+      </span>
+    </div>
+  </div>
+  <div class="gf-form max-width-30" ng-repeat="ds in ctrl.current.jsonData.selectedDataSources track by $index">
+    <span class="gf-form-label">
+      {{ds.name}}
+    </span>
+    <span class="gf-form-label">
+      <button type="submit" class="btn btn-outline-danger btn-mini" ng-click="ctrl.current.jsonData.selectedDataSources.splice($index, 1)">Remove</button>
+    </span>
+  </div>
+</div>
