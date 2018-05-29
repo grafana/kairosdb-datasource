@@ -25,8 +25,8 @@
         "url": "https://github.com/grafana/kairosdb-datasource/blob/master/LICENSE"
       }
     ],
-    "version": "3.0.0",
-    "updated": "2018-03-20"
+    "version": "3.0.1",
+    "updated": "2018-05-29"
   },
   "dependencies": {
     "grafanaVersion": "4.6.2+",
