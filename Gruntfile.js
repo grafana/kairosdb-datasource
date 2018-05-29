@@ -25,9 +25,9 @@ module.exports = function (grunt) {
                 src: ["**/*", "!**/*.js", "!**/*.scss", "!node_modules/**/*"],
                 dest: "dist"
             },
-            pluginDef: {
+            metadata: {
                 expand: true,
-                src: ["plugin.json"],
+                src: ["plugin.json", "README.md"],
                 dest: "dist"
             }
         },
