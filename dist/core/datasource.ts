@@ -48,7 +48,9 @@ export class KairosDBDatasource {
     }
 
     public initialize(): void {
-        this.metricNamesStore.initialize().then(() => this.initialized = true, () => this.initializationError = true);
+        this.metricNamesStore.getMetricNames()
+            .then(() => this.initialized = true,
+                () => this.initializationError = true);
     }
 
     public query(options) {
@@ -112,7 +114,7 @@ export class KairosDBDatasource {
     }
 
     private getMetricNamesContaining(metricNamePart) {
-        return this.metricNamesStore.get()
+        return this.metricNamesStore.getMetricNames()
             .then((metricNames) => _.filter(metricNames, (metricName) => _.includes(metricName, metricNamePart)));
     }
 

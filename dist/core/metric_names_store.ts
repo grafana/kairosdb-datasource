@@ -16,20 +16,13 @@ export class MetricNamesStore {
         this.datasource = datasource;
     }
 
-    public initialize(): Promise<string[]> {
+    public getMetricNames(): Promise<string[]> {
         if (this.cacheInitialized()) {
-            this.initialized = true;
             return this.promiseUtils.resolvedPromise(this.metricNames);
+        } else if (this.fetchingPromise) {
+            return this.fetchingPromise;
         } else {
             return this.fetch();
-        }
-    }
-
-    public get(): Promise<string[]> {
-        if (this.initialized) {
-            return this.promiseUtils.resolvedPromise(this.metricNames);
-        } else {
-            return this.fetchingPromise;
         }
     }
 

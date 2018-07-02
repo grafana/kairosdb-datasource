@@ -14,21 +14,15 @@ System.register(["lodash"], function(exports_1) {
                     this.promiseUtils = promiseUtils;
                     this.datasource = datasource;
                 }
-                MetricNamesStore.prototype.initialize = function () {
+                MetricNamesStore.prototype.getMetricNames = function () {
                     if (this.cacheInitialized()) {
-                        this.initialized = true;
                         return this.promiseUtils.resolvedPromise(this.metricNames);
+                    }
+                    else if (this.fetchingPromise) {
+                        return this.fetchingPromise;
                     }
                     else {
                         return this.fetch();
-                    }
-                };
-                MetricNamesStore.prototype.get = function () {
-                    if (this.initialized) {
-                        return this.promiseUtils.resolvedPromise(this.metricNames);
-                    }
-                    else {
-                        return this.fetchingPromise;
                     }
                 };
                 MetricNamesStore.prototype.cacheInitialized = function () {
