@@ -76,8 +76,9 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                         return; // todo: target validation, throw message to grafana with detailed info
                     }
                     var aliases = convertedTargets.map(function (target) { return target.query.alias; });
+                    var templatingUtils = new templating_utils_1.TemplatingUtils(this.templateSrv, options.scopedVars);
                     var unpackedTargets = lodash_1.default.flatten(convertedTargets.map(function (target) {
-                        return _this.templatingUtils.replace(target.query.metricName)
+                        return templatingUtils.replace(target.query.metricName)
                             .map(function (metricName) {
                             var clonedTarget = lodash_1.default.cloneDeep(target);
                             clonedTarget.query.metricName = metricName;

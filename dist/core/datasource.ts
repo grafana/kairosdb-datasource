@@ -64,8 +64,9 @@ export class KairosDBDatasource {
             return; // todo: target validation, throw message to grafana with detailed info
         }
         const aliases = convertedTargets.map((target) => target.query.alias);
+        const templatingUtils = new TemplatingUtils(this.templateSrv, options.scopedVars);
         const unpackedTargets = _.flatten(convertedTargets.map((target) => {
-            return this.templatingUtils.replace(target.query.metricName)
+            return templatingUtils.replace(target.query.metricName)
                 .map((metricName) => {
                     const clonedTarget = _.cloneDeep(target);
                     clonedTarget.query.metricName = metricName;
