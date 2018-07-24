@@ -1,3 +1,4 @@
 node_modules
 test-results
 .idea/
+package-lock.json
