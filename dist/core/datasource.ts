@@ -52,6 +52,31 @@ export class KairosDBDatasource {
             .then(() => this.initialized = true,
                 () => this.initializationError = true);
     }
+    //
+    // public query(options) {
+    //     const enabledTargets = _.cloneDeep(options.targets.filter((target) => !target.hide));
+    //     const convertedTargets = _.map(enabledTargets, (target) => {
+    //         return this.legacyTargetConverter.isApplicable(target) ?
+    //             {query: this.legacyTargetConverter.convert(target)} : target;
+    //     });
+    //
+    //     if (!this.targetValidator.areValidTargets(convertedTargets)) {
+    //         return; // todo: target validation, throw message to grafana with detailed info
+    //     }
+    //     const aliases = convertedTargets.map((target) => target.query.alias);
+    //     const templatingUtils = new TemplatingUtils(this.templateSrv, options.scopedVars);
+    //     const unpackedTargets = _.flatten(convertedTargets.map((target) => {
+    //         return templatingUtils.replace(target.query.metricName)
+    //             .map((metricName) => {
+    //                 const clonedTarget = _.cloneDeep(target);
+    //                 clonedTarget.query.metricName = metricName;
+    //                 return clonedTarget;
+    //             });
+    //     }));
+    //     const requestBuilder = this.getRequestBuilder(options.scopedVars);
+    //     return this.executeRequest(requestBuilder.buildDatapointsQuery(unpackedTargets, options))
+    //         .then((response) => this.responseHandler.convertToDatapoints(response.data, aliases));
+    // }
 
     public query(options) {
         const enabledTargets = _.cloneDeep(options.targets.filter((target) => !target.hide));
@@ -64,14 +89,15 @@ export class KairosDBDatasource {
             return; // todo: target validation, throw message to grafana with detailed info
         }
         const aliases = convertedTargets.map((target) => target.query.alias);
-        const templatingUtils = new TemplatingUtils(this.templateSrv, options.scopedVars);
+        // const templatingUtils = new TemplatingUtils(this.templateSrv, options.scopedVars);
+        const templatingUtils = this.templateSrv;
         const unpackedTargets = _.flatten(convertedTargets.map((target) => {
-            return templatingUtils.replace(target.query.metricName)
-                .map((metricName) => {
-                    const clonedTarget = _.cloneDeep(target);
-                    clonedTarget.query.metricName = metricName;
-                    return clonedTarget;
-                });
+            const replacedQuery = templatingUtils.replace(JSON.stringify(target.query), options.scopedVars);
+            return [JSON.parse(replacedQuery)].map((query) => {
+                const clonedTarget = _.cloneDeep(target);
+                clonedTarget.query  = query;
+                return clonedTarget;
+            });
         }));
         const requestBuilder = this.getRequestBuilder(options.scopedVars);
         return this.executeRequest(requestBuilder.buildDatapointsQuery(unpackedTargets, options))
