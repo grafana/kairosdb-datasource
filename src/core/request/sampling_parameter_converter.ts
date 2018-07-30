@@ -26,9 +26,10 @@ export class SamplingParameterConverter {
                     this.samplingConverter.convert(relativeTime.value, relativeTime.unit);
                 samplingParameter.value = convertedSampling.interval;
                 samplingUnitAggregatorParameter.value = convertedSampling.unit;
+            } else {
+                samplingParameter.value = relativeTime.value;
+                samplingUnitAggregatorParameter.value = relativeTime.unit;
             }
-            samplingParameter.value = relativeTime.value;
-            samplingUnitAggregatorParameter.value = relativeTime.unit;
             parameters.push(samplingUnitAggregatorParameter);
         }
         return aggregator;
