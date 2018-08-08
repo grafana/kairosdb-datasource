@@ -83,10 +83,10 @@ System.register(["lodash", "../../directives/group_by/group_by_time_entry", "../
                     }
                     else {
                         var rangeAgg = new range_aggregator_1.RangeAggregator(horizontalAggregator.name);
-                        rangeAgg.parameters[this.findParameterIndex(rangeAgg, "value")].value =
-                            time_unit_utils_1.TimeUnitUtils.extractValue(horizontalAggregator.sampling_rate);
-                        rangeAgg.parameters[this.findParameterIndex(rangeAgg, "unit")].value =
-                            time_unit_utils_1.TimeUnitUtils.convertTimeUnit(time_unit_utils_1.TimeUnitUtils.extractUnit(horizontalAggregator.sampling_rate));
+                        rangeAgg.parameters[this.findParameterIndex(rangeAgg, "value")].value = horizontalAggregator.sampling_rate;
+                        //     TimeUnitUtils.extractValue(horizontalAggregator.sampling_rate);
+                        // rangeAgg.parameters[this.findParameterIndex(rangeAgg, "unit")].value =
+                        //     TimeUnitUtils.convertTimeUnit(TimeUnitUtils.extractUnit(horizontalAggregator.sampling_rate));
                         return rangeAgg;
                     }
                 };
