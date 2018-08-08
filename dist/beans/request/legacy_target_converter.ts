@@ -56,9 +56,6 @@ export class LegacyTargetConverter {
         } else {
             const rangeAgg = new RangeAggregator(horizontalAggregator.name);
             rangeAgg.parameters[this.findParameterIndex(rangeAgg, "value")].value = horizontalAggregator.sampling_rate;
-            //     TimeUnitUtils.extractValue(horizontalAggregator.sampling_rate);
-            // rangeAgg.parameters[this.findParameterIndex(rangeAgg, "unit")].value =
-            //     TimeUnitUtils.convertTimeUnit(TimeUnitUtils.extractUnit(horizontalAggregator.sampling_rate));
             return rangeAgg;
         }
     }
