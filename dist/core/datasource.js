@@ -65,31 +65,6 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     this.metricNamesStore.getMetricNames()
                         .then(function () { return _this.initialized = true; }, function () { return _this.initializationError = true; });
                 };
-                //
-                // public query(options) {
-                //     const enabledTargets = _.cloneDeep(options.targets.filter((target) => !target.hide));
-                //     const convertedTargets = _.map(enabledTargets, (target) => {
-                //         return this.legacyTargetConverter.isApplicable(target) ?
-                //             {query: this.legacyTargetConverter.convert(target)} : target;
-                //     });
-                //
-                //     if (!this.targetValidator.areValidTargets(convertedTargets)) {
-                //         return; // todo: target validation, throw message to grafana with detailed info
-                //     }
-                //     const aliases = convertedTargets.map((target) => target.query.alias);
-                //     const templatingUtils = new TemplatingUtils(this.templateSrv, options.scopedVars);
-                //     const unpackedTargets = _.flatten(convertedTargets.map((target) => {
-                //         return templatingUtils.replace(target.query.metricName)
-                //             .map((metricName) => {
-                //                 const clonedTarget = _.cloneDeep(target);
-                //                 clonedTarget.query.metricName = metricName;
-                //                 return clonedTarget;
-                //             });
-                //     }));
-                //     const requestBuilder = this.getRequestBuilder(options.scopedVars);
-                //     return this.executeRequest(requestBuilder.buildDatapointsQuery(unpackedTargets, options))
-                //         .then((response) => this.responseHandler.convertToDatapoints(response.data, aliases));
-                // }
                 KairosDBDatasource.prototype.query = function (options) {
                     var _this = this;
                     var enabledTargets = lodash_1.default.cloneDeep(options.targets.filter(function (target) { return !target.hide; }));

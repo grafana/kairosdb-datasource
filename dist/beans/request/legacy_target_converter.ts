@@ -69,7 +69,10 @@ export class LegacyTargetConverter {
             return percentileAgg;
         } else {
             const percentileAgg = new PercentileAggregator();
-            percentileAgg.parameters[this.findParameterIndex(percentileAgg, "unit")].value = horizontalAggregator.sampling_rate;
+            percentileAgg.parameters[this.findParameterIndex(percentileAgg, "value")].value =
+                horizontalAggregator.sampling_rate;
+            percentileAgg.parameters[this.findParameterIndex(percentileAgg, "percentile")].value =
+                horizontalAggregator.percentile;
             return percentileAgg;
         }
     }
