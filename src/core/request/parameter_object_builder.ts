@@ -16,8 +16,9 @@ export class ParameterObjectBuilder {
             this.autoValueDependentParameters = autoValueSwitch.dependentParameters
                 .map((parameter) => parameter.type);
         }
-        this.autoIntervalValue = TimeUnitUtils.extractValue(interval);
-        this.autoIntervalUnit = TimeUnitUtils.convertTimeUnit(TimeUnitUtils.extractUnit(interval));
+        const relativeTime = TimeUnitUtils.convertFromInterval(interval);
+        this.autoIntervalValue = relativeTime.value;
+        this.autoIntervalUnit = relativeTime.unit;
     }
 
     public build(parameter: AggregatorParameter): any {

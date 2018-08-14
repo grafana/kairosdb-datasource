@@ -18,8 +18,9 @@ System.register(["lodash", "../../utils/time_unit_utils"], function(exports_1) {
                         this.autoValueDependentParameters = autoValueSwitch.dependentParameters
                             .map(function (parameter) { return parameter.type; });
                     }
-                    this.autoIntervalValue = time_unit_utils_1.TimeUnitUtils.extractValue(interval);
-                    this.autoIntervalUnit = time_unit_utils_1.TimeUnitUtils.convertTimeUnit(time_unit_utils_1.TimeUnitUtils.extractUnit(interval));
+                    var relativeTime = time_unit_utils_1.TimeUnitUtils.convertFromInterval(interval);
+                    this.autoIntervalValue = relativeTime.value;
+                    this.autoIntervalUnit = relativeTime.unit;
                 }
                 ParameterObjectBuilder.prototype.build = function (parameter) {
                     switch (parameter.type) {
