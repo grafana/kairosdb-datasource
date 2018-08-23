@@ -67,6 +67,7 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                 };
                 KairosDBDatasource.prototype.query = function (options) {
                     var _this = this;
+                    this.queryOptions = options;
                     var enabledTargets = lodash_1.default.cloneDeep(options.targets.filter(function (target) { return !target.hide; }));
                     var convertedTargets = lodash_1.default.map(enabledTargets, function (target) {
                         return _this.legacyTargetConverter.isApplicable(target) ?
@@ -98,7 +99,7 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                 };
                 KairosDBDatasource.prototype.metricFindQuery = function (query) {
                     var _this = this;
-                    var func = this.templatingFunctionsCtrl.resolve(query);
+                    var func = this.templatingFunctionsCtrl.resolve(query, this.queryOptions.scopedVars);
                     return func().then(function (values) { return values.map(function (value) { return _this.mapToTemplatingValue(value); }); });
                 };
                 KairosDBDatasource.prototype.getMetricNames = function () {

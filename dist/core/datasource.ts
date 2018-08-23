@@ -28,6 +28,7 @@ export class KairosDBDatasource {
     private templateSrv: any;
     private legacyTargetConverter: LegacyTargetConverter;
     private templatingUtils: TemplatingUtils;
+    private queryOptions: any;
 
     constructor(instanceSettings, $q, backendSrv, templateSrv) {
         this.type = instanceSettings.type;
@@ -54,6 +55,7 @@ export class KairosDBDatasource {
     }
 
     public query(options) {
+        this.queryOptions = options;
         const enabledTargets = _.cloneDeep(options.targets.filter((target) => !target.hide));
         const convertedTargets = _.map(enabledTargets, (target) => {
             return this.legacyTargetConverter.isApplicable(target) ?
@@ -86,7 +88,7 @@ export class KairosDBDatasource {
     }
 
     public metricFindQuery(query: string) {
-        const func = this.templatingFunctionsCtrl.resolve(query);
+        const func = this.templatingFunctionsCtrl.resolve(query, this.queryOptions.scopedVars);
         return func().then((values) => values.map((value) => this.mapToTemplatingValue(value)));
     }
 

@@ -16,6 +16,7 @@ export declare class KairosDBDatasource {
     private templateSrv;
     private legacyTargetConverter;
     private templatingUtils;
+    private queryOptions;
     constructor(instanceSettings: any, $q: any, backendSrv: any, templateSrv: any);
     initialize(): void;
     query(options: any): any;
