@@ -87,8 +87,8 @@ export class KairosDBDatasource {
             .then(this.handleMetricTagsResponse);
     }
 
-    public metricFindQuery(query: string) {
-        const func = this.templatingFunctionsCtrl.resolve(query, this.queryOptions.scopedVars);
+    public metricFindQuery(query: string, options) {
+        const func = this.templatingFunctionsCtrl.resolve(query, options.scopedVars);
         return func().then((values) => values.map((value) => this.mapToTemplatingValue(value)));
     }
 

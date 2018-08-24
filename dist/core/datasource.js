@@ -97,9 +97,9 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     return this.executeRequest(this.getRequestBuilder().buildMetricTagsQuery(metricName, filters))
                         .then(this.handleMetricTagsResponse);
                 };
-                KairosDBDatasource.prototype.metricFindQuery = function (query) {
+                KairosDBDatasource.prototype.metricFindQuery = function (query, options) {
                     var _this = this;
-                    var func = this.templatingFunctionsCtrl.resolve(query, this.queryOptions.scopedVars);
+                    var func = this.templatingFunctionsCtrl.resolve(query, options.scopedVars);
                     return func().then(function (values) { return values.map(function (value) { return _this.mapToTemplatingValue(value); }); });
                 };
                 KairosDBDatasource.prototype.getMetricNames = function () {
