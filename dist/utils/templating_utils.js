@@ -14,19 +14,21 @@ System.register(["lodash"], function(exports_1) {
                 }
                 TemplatingUtils.prototype.replace = function (expression) {
                     var replacedExpression = this.templateSrv.replace(expression, this.scopedVars);
-                    var matchedMultiValues = replacedExpression.match(TemplatingUtils.MULTI_VALUE_REGEX);
-                    if (!lodash_1.default.isNil(matchedMultiValues)) {
-                        var replacedValues = [replacedExpression];
-                        matchedMultiValues.forEach(function (multiValue) {
-                            var values = multiValue.replace(TemplatingUtils.MULTI_VALUE_BOUNDARIES, "")
-                                .split(TemplatingUtils.MULTI_VALUE_SEPARATOR);
-                            replacedValues = lodash_1.default.flatMap(values, function (value) {
-                                return replacedValues.map(function (replacedValue) {
-                                    return replacedValue.replace(multiValue, value);
+                    if (replacedExpression) {
+                        var matchedMultiValues = replacedExpression.match(TemplatingUtils.MULTI_VALUE_REGEX);
+                        if (!lodash_1.default.isNil(matchedMultiValues)) {
+                            var replacedValues = [replacedExpression];
+                            matchedMultiValues.forEach(function (multiValue) {
+                                var values = multiValue.replace(TemplatingUtils.MULTI_VALUE_BOUNDARIES, "")
+                                    .split(TemplatingUtils.MULTI_VALUE_SEPARATOR);
+                                replacedValues = lodash_1.default.flatMap(values, function (value) {
+                                    return replacedValues.map(function (replacedValue) {
+                                        return replacedValue.replace(multiValue, value);
+                                    });
                                 });
                             });
-                        });
-                        return replacedValues;
+                            return replacedValues;
+                        }
                     }
                     return [replacedExpression];
                 };
