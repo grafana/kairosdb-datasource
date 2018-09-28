@@ -1,0 +1,20 @@
+<div class="gf-form-inline" ng-repeat="segment in ctrl.segments" ng-if="ctrl.tagValues.length > 0">
+    <div class="gf-form" ng-if="$first">
+        <label class="gf-form-label offset-width-8 width-10">
+            <a bs-tooltip="'Values: ' + ctrl.tagValues.join(', ')">{{ctrl.tagName}}</a>
+        </label>
+    </div>
+
+    <div class="gf-form" ng-class="{'offset-width-18': !$first}">
+        <tag-input segment="segment" tag-values="ctrl.tagValues" on-change="ctrl.onChange()"></tag-input>
+        <div class="gf-form-label" ng-if="!$last">
+            <a ng-click="ctrl.remove(segment)">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="gf-form gf-form--grow">
+        <div class="gf-form-label gf-form-label--grow"></div>
+    </div>
+</div>
