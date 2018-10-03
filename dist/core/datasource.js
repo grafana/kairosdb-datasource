@@ -75,7 +75,7 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     if (!this.targetValidator.areValidTargets(convertedTargets)) {
                         return; // todo: target validation, throw message to grafana with detailed info
                     }
-                    var aliases = convertedTargets.map(function (target) { return target.query.alias; });
+                    var aliases = this.templatingUtils.replaceAll(convertedTargets.map(function (target) { return target.query.alias; }));
                     var unpackedTargets = lodash_1.default.flatten(convertedTargets.map(function (target) {
                         return _this.templatingUtils.replace(target.query.metricName)
                             .map(function (metricName) {
