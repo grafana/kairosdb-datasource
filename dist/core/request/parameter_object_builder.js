@@ -53,16 +53,13 @@ System.register(["lodash", "../../utils/time_unit_utils"], function(exports_1) {
                 ParameterObjectBuilder.prototype.buildSamplingParameter = function (parameter, autoValue) {
                     var parameterObject = { sampling: {} };
                     parameterObject.sampling[parameter.name] =
-                        this.isOverriddenByAutoValue(parameter) ? autoValue : parameter.value;
+                        this.autoValueEnabled ? autoValue : parameter.value;
                     return parameterObject;
                 };
                 ParameterObjectBuilder.prototype.buildDefault = function (parameter) {
                     var parameterObject = {};
                     parameterObject[parameter.name] = parameter.value;
                     return parameterObject;
-                };
-                ParameterObjectBuilder.prototype.isOverriddenByAutoValue = function (parameter) {
-                    return lodash_1.default.includes(this.autoValueDependentParameters, parameter.type);
                 };
                 return ParameterObjectBuilder;
             })();

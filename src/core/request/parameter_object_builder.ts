@@ -54,7 +54,7 @@ export class ParameterObjectBuilder {
     private buildSamplingParameter(parameter: AggregatorParameter, autoValue: string) {
         const parameterObject = {sampling: {}};
         parameterObject.sampling[parameter.name] =
-            this.isOverriddenByAutoValue(parameter) ? autoValue : parameter.value;
+            this.autoValueEnabled ? autoValue : parameter.value;
         return parameterObject;
     }
 
@@ -62,9 +62,5 @@ export class ParameterObjectBuilder {
         const parameterObject = {};
         parameterObject[parameter.name] = parameter.value;
         return parameterObject;
-    }
-
-    private isOverriddenByAutoValue(parameter: AggregatorParameter) {
-        return _.includes(this.autoValueDependentParameters, parameter.type);
     }
 }
