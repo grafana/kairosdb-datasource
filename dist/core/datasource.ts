@@ -28,6 +28,7 @@ export class KairosDBDatasource {
     private templateSrv: any;
     private legacyTargetConverter: LegacyTargetConverter;
     private templatingUtils: TemplatingUtils;
+    private queryOptions: any;
 
     constructor(instanceSettings, $q, backendSrv, templateSrv) {
         this.type = instanceSettings.type;
@@ -54,6 +55,7 @@ export class KairosDBDatasource {
     }
 
     public query(options) {
+        this.queryOptions = options;
         const enabledTargets = _.cloneDeep(options.targets.filter((target) => !target.hide));
         const convertedTargets = _.map(enabledTargets, (target) => {
             return this.legacyTargetConverter.isApplicable(target) ?
@@ -64,13 +66,15 @@ export class KairosDBDatasource {
             return; // todo: target validation, throw message to grafana with detailed info
         }
         const aliases = convertedTargets.map((target) => target.query.alias);
+        // const templatingUtils = new TemplatingUtils(this.templateSrv, options.scopedVars);
+        const templatingUtils = this.templateSrv;
         const unpackedTargets = _.flatten(convertedTargets.map((target) => {
-            return this.templatingUtils.replace(target.query.metricName)
-                .map((metricName) => {
-                    const clonedTarget = _.cloneDeep(target);
-                    clonedTarget.query.metricName = metricName;
-                    return clonedTarget;
-                });
+            const replacedQuery = templatingUtils.replace(JSON.stringify(target.query), options.scopedVars);
+            return [JSON.parse(replacedQuery)].map((query) => {
+                const clonedTarget = _.cloneDeep(target);
+                clonedTarget.query  = query;
+                return clonedTarget;
+            });
         }));
         const requestBuilder = this.getRequestBuilder(options.scopedVars);
         return this.executeRequest(requestBuilder.buildDatapointsQuery(unpackedTargets, options))
@@ -83,8 +87,8 @@ export class KairosDBDatasource {
             .then(this.handleMetricTagsResponse);
     }
 
-    public metricFindQuery(query: string) {
-        const func = this.templatingFunctionsCtrl.resolve(query);
+    public metricFindQuery(query: string, options) {
+        const func = this.templatingFunctionsCtrl.resolve(query, options.scopedVars);
         return func().then((values) => values.map((value) => this.mapToTemplatingValue(value)));
     }
 

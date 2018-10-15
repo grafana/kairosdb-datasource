@@ -19,7 +19,7 @@
     "chai": "^4.1.2",
     "es6-shim": "^0.35.3",
     "grafana-sdk-mocks": "github:grafana/grafana-sdk-mocks",
-    "grunt": "^1.0.1",
+    "grunt": "^1.0.3",
     "grunt-babel": "~6.0.0",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-copy": "^1.0.0",
@@ -33,7 +33,7 @@
     "grunt-tslint": "~5.0.1",
     "grunt-typescript": "^0.8.0",
     "jsdom": "~11.4.0",
-    "karma": "^1.7.1",
+    "karma": "^2.0.5",
     "karma-chai": "^0.1.0",
     "karma-es6-shim": "^1.0.0",
     "karma-junit-reporter": "^1.2.0",
@@ -43,13 +43,13 @@
     "karma-systemjs": "^0.16.0",
     "load-grunt-tasks": "3.5.2",
     "lodash": "^4.17.4",
-    "mocha": "^1.0",
+    "mocha": "^5.2.0",
     "mocha-each": "^1.1.0",
     "moment": "^2.18.1",
     "plugin-typescript": "^7.1.1",
     "prunk": "~1.3.1",
     "q": "^1.5.1",
-    "sinon": "^3.2.1",
+    "sinon": "^6.1.4",
     "sprintf-js": "^1.1.1",
     "systemjs": "^0.19.47",
     "systemjs-plugin-css": "^0.1.35",
@@ -57,7 +57,8 @@
     "typescript": "^2.6.1"
   },
   "dependencies": {
-    "grafana-sdk-mocks": "github:grafana/grafana-sdk-mocks"
+    "grafana-sdk-mocks": "github:grafana/grafana-sdk-mocks",
+    "grunt-cli": "^1.2.0"
   },
   "homepage": "https://github.com/grafana/kairosdb-datasource"
 }
