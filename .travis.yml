@@ -1,0 +1,25 @@
+language: node_js
+node_js:
+- node
+sudo: false
+services:
+- docker
+env:
+  global:
+  - TARGET=install
+install: true
+before_script:
+- npm install -g grunt-cli
+- npm install
+script:
+- grunt
+- zip -r grafana-kairosdb-datasource.zip src/ dist/
+deploy:
+  provider: releases
+  api_key:
+    secure: D3P2hXGBCTaZhRwlEe0c1+ir/FwLgVuqZtKhv/gjWE4opec/nDUXmo/qtbWYwuuwgtawip/v1Tbz+XdIcOSrFASGOWBDUfOMdYd/srvnxqiG2GpH5FOdBHF5M9EdoV4R6ijgViCyiWuD8GZ2mIR2VbsZYjxIXdcOI9ZptF1ndx3OSyjEotm23sOE1XFPvD05pkkb8I5QRw02IS5FKLW5Nhs79LNk9TusjUmw7CVRH3l12Dc3/Q/afHf4FXiRUkjEPGtvs+2aNGz9+QLqBxYklRZ5P28Ebc7I5WS+hicbOOC6tRosn819DMT1HlpYODRUFR5YvFq8kouoJvpy1u3luzxmNF8Bxtkn8VAcYuurgmCsWOX4W4wsGYxvxeUKw2Nu0ZF61UWUvV0/Z7zan1xYlL5obRau7go+iwK1Jj5nAUrQ/KYF4bfkytdQpCjBAr7R+ygICHDxGCdx7fIr+p46NsVVzv4WB/LrRhO+vaNCosXfGWGBb7YBGnoY1oo+8QXzllJKOolIlPQSOrRsmij6x0IBUq/vIM/shDIh92xhyu6RnAgkVPrKeILlAQxQqQbwP+Jgpdp5WhxPwWojUAHNlFSrfvJiksHp3v1e2OESqkinaN99YN8qvPTBXKmwGnnUcmaHCb1Fyng76+751cjz2UQiLolW36eLpAbrXT3DM6I=
+  file: grafana-kairosdb-datasource.zip
+  skip_cleanup: true
+  on:
+    repo: ArpNetworking/kairosdb-datasource
+    tags: true
