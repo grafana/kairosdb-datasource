@@ -62,8 +62,7 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                 }
                 KairosDBDatasource.prototype.initialize = function () {
                     var _this = this;
-                    this.metricNamesStore.getMetricNames()
-                        .then(function () { return _this.initialized = true; }, function () { return _this.initializationError = true; });
+                    this.metricNamesStore.initialize().then(function () { return _this.initialized = true; }, function () { return _this.initializationError = true; });
                 };
                 KairosDBDatasource.prototype.query = function (options) {
                     var _this = this;
@@ -121,7 +120,7 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     ].forEach(function (func) { return _this.templatingFunctionsCtrl.register(func); });
                 };
                 KairosDBDatasource.prototype.getMetricNamesContaining = function (metricNamePart) {
-                    return this.metricNamesStore.getMetricNames()
+                    return this.metricNamesStore.get()
                         .then(function (metricNames) { return lodash_1.default.filter(metricNames, function (metricName) { return lodash_1.default.includes(metricName, metricNamePart); }); });
                 };
                 KairosDBDatasource.prototype.getMetricTagNames = function (metricName) {

@@ -42,6 +42,7 @@ System.register(["./aggregator", "./divide_aggregator", "./percentile_aggregator
                 new range_aggregator_1.RangeAggregator("max"),
                 new range_aggregator_1.RangeAggregator("min"),
                 new range_aggregator_1.RangeAggregator("gaps"),
+                new range_aggregator_1.RangeAggregator("merge"),
                 new percentile_aggregator_1.PercentileAggregator(),
                 new sma_aggregator_1.SmaAggregator(),
                 new range_aggregator_1.RangeAggregator("sum"),

@@ -8,7 +8,8 @@ export declare class MetricNamesStore {
     private promiseUtils;
     private metricNames;
     constructor(datasource: KairosDBDatasource, promiseUtils: PromiseUtils, datasourceUrl: string);
-    getMetricNames(): Promise<string[]>;
+    initialize(): Promise<string[]>;
+    get(): Promise<string[]>;
     private cacheInitialized();
     private fetch();
 }
