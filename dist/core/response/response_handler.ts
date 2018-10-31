@@ -15,7 +15,15 @@ export class KairosDBResponseHandler {
             })
             .map((entry) => _.map(entry.results, (result) => {
                 return {
-                    datapoints: result.values.map((value) => value.reverse()),
+                    datapoints: _.flatMap(result.values, (value) => {
+                      const v = value[1];
+                      if (typeof(v) === "object" && v.bins) {
+                        const bins = v.bins;
+                        return _.map(Object.keys(bins), (k) => [parseFloat(k), value[0], bins[k]]);
+                      } else {
+                        return [value.reverse()];
+                      }
+                    }),
                     target: this.seriesNameBuilder.build(result.name, entry.alias, result.group_by)
                 };
             }));

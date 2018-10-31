@@ -18,11 +18,11 @@
     "links": [
       {
         "name": "GitHub",
-        "url": "https://github.com/grafana/kairosdb-datasource"
+        "url": "https://github.com/ArpNetworking/kairosdb-datasource"
       },
       {
         "name": "License",
-        "url": "https://github.com/grafana/kairosdb-datasource/blob/master/LICENSE"
+        "url": "https://github.com/ArpNetworking/kairosdb-datasource/blob/master/LICENSE"
       }
     ],
     "version": "3.0.2",

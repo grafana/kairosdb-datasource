@@ -19,6 +19,7 @@ export const AGGREGATORS = [
     new RangeAggregator("max"),
     new RangeAggregator("min"),
     new RangeAggregator("gaps"),
+    new RangeAggregator("merge"),
     new PercentileAggregator(),
     new SmaAggregator(),
     new RangeAggregator("sum"),

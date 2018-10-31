@@ -19,7 +19,16 @@ System.register(["lodash"], function(exports_1) {
                     })
                         .map(function (entry) { return lodash_1.default.map(entry.results, function (result) {
                         return {
-                            datapoints: result.values.map(function (value) { return value.reverse(); }),
+                            datapoints: lodash_1.default.flatMap(result.values, function (value) {
+                                var v = value[1];
+                                if (typeof (v) === "object" && v.bins) {
+                                    var bins = v.bins;
+                                    return lodash_1.default.map(Object.keys(bins), function (k) { return [parseFloat(k), value[0], bins[k]]; });
+                                }
+                                else {
+                                    return [value.reverse()];
+                                }
+                            }),
                             target: _this.seriesNameBuilder.build(result.name, entry.alias, result.group_by)
                         };
                     }); });
