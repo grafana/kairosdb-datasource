@@ -76,8 +76,8 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     if (!this.targetValidator.areValidTargets(convertedTargets)) {
                         return;
                     }
-                    var aliases = convertedTargets.map(function (target) { return target.query.alias; });
                     var templatingUtils = new templating_utils_1.TemplatingUtils(this.templateSrv, options.scopedVars);
+                    var aliases = templatingUtils.replaceAll(convertedTargets.map(function (target) { return target.query.alias; }));
                     var unpackedTargets = lodash_1.default.flatten(convertedTargets.map(function (target) {
                         return templatingUtils.replace(target.query.metricName)
                             .map(function (metricName) {

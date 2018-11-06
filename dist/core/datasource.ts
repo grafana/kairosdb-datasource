@@ -61,8 +61,8 @@ export class KairosDBDatasource {
         if (!this.targetValidator.areValidTargets(convertedTargets)) {
             return; // todo: target validation, throw message to grafana with detailed info
         }
-        const aliases = convertedTargets.map((target) => target.query.alias);
         const templatingUtils = new TemplatingUtils(this.templateSrv, options.scopedVars);
+        const aliases = templatingUtils.replaceAll(convertedTargets.map((target) => target.query.alias));
         const unpackedTargets = _.flatten(convertedTargets.map((target) => {
             return templatingUtils.replace(target.query.metricName)
                 .map((metricName) => {
