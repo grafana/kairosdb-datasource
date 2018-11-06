@@ -3,11 +3,10 @@ export declare class TagsSelectCtrl {
     tagValues: string[];
     selectedValues: string[];
     segments: any[];
-    /** @ngInject **/
     constructor(uiSegmentSrv: any);
     onChange(): void;
     remove(segment: any): void;
-    private update();
+    private update;
 }
 export declare function TagsSelectDirective(): {
     bindToController: boolean;

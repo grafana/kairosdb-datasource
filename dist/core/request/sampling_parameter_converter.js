@@ -1,8 +1,9 @@
-System.register(["lodash", "../../beans/aggregators/parameters/sampling_aggregator_parameter", "../../beans/aggregators/parameters/sampling_unit_aggregator_parameter"], function(exports_1) {
-    var lodash_1, sampling_aggregator_parameter_1, sampling_unit_aggregator_parameter_1;
-    var SamplingParameterConverter;
+System.register(["lodash", "../../beans/aggregators/parameters/sampling_aggregator_parameter", "../../beans/aggregators/parameters/sampling_unit_aggregator_parameter"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, sampling_aggregator_parameter_1, sampling_unit_aggregator_parameter_1, SamplingParameterConverter;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
             },
@@ -11,8 +12,9 @@ System.register(["lodash", "../../beans/aggregators/parameters/sampling_aggregat
             },
             function (sampling_unit_aggregator_parameter_1_1) {
                 sampling_unit_aggregator_parameter_1 = sampling_unit_aggregator_parameter_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             SamplingParameterConverter = (function () {
                 function SamplingParameterConverter(samplingConverter) {
                     this.samplingConverter = samplingConverter;
@@ -36,9 +38,9 @@ System.register(["lodash", "../../beans/aggregators/parameters/sampling_aggregat
                     return lodash_1.default.findIndex(parameters, function (parameter) { return parameter.type === type; });
                 };
                 return SamplingParameterConverter;
-            })();
+            }());
             exports_1("SamplingParameterConverter", SamplingParameterConverter);
         }
-    }
+    };
 });
 //# sourceMappingURL=sampling_parameter_converter.js.map

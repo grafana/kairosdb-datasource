@@ -9,7 +9,6 @@ export declare class MetricNameFieldCtrl {
     private $q;
     private $scope;
     private promiseUtils;
-    /** @ngInject **/
     constructor($scope: any, $q: any, uiSegmentSrv: any);
     onChange(segment: any): void;
     suggestMetrics(): string[];

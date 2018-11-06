@@ -1,16 +1,18 @@
-System.register(["lodash"], function(exports_1) {
-    var lodash_1;
-    var TimeUnit, Trim, Alignment;
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, TimeUnit, Trim, Alignment;
+    var __moduleName = context_1 && context_1.id;
     function EnumValues(enumType) {
         return lodash_1.default.pickBy(lodash_1.default.values(enumType), function (value) { return !lodash_1.default.isNumber(value); });
     }
     exports_1("EnumValues", EnumValues);
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             (function (TimeUnit) {
                 TimeUnit[TimeUnit["MILLISECONDS"] = 0] = "MILLISECONDS";
                 TimeUnit[TimeUnit["SECONDS"] = 1] = "SECONDS";
@@ -35,6 +37,6 @@ System.register(["lodash"], function(exports_1) {
             })(Alignment || (Alignment = {}));
             exports_1("Alignment", Alignment);
         }
-    }
+    };
 });
 //# sourceMappingURL=utils.js.map

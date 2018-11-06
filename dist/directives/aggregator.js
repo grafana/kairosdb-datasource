@@ -1,6 +1,7 @@
-System.register(["lodash", "./aggregator_editor"], function(exports_1) {
-    var lodash_1;
-    var AggregatorCtrl;
+System.register(["lodash", "./aggregator_editor"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, AggregatorCtrl;
+    var __moduleName = context_1 && context_1.id;
     function AggregatorDirective() {
         return {
             bindToController: true,
@@ -16,12 +17,14 @@ System.register(["lodash", "./aggregator_editor"], function(exports_1) {
     }
     exports_1("AggregatorDirective", AggregatorDirective);
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
             },
-            function (_1) {}],
-        execute: function() {
+            function (_1) {
+            }
+        ],
+        execute: function () {
             AggregatorCtrl = (function () {
                 function AggregatorCtrl() {
                     this.isAutoValue = false;
@@ -33,9 +36,9 @@ System.register(["lodash", "./aggregator_editor"], function(exports_1) {
                     return this.value.parameters.filter(function (parameter) { return !lodash_1.default.includes(dependentParametersTypes, parameter.type); });
                 };
                 return AggregatorCtrl;
-            })();
+            }());
             exports_1("AggregatorCtrl", AggregatorCtrl);
         }
-    }
+    };
 });
 //# sourceMappingURL=aggregator.js.map

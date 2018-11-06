@@ -5,6 +5,6 @@ export declare class SamplingConverter {
         unit: string;
     };
     isApplicable(value: any): boolean;
-    private isFloat(value);
-    private convertToMiliseconds(value, shortUnit);
+    private isFloat;
+    private convertToMiliseconds;
 }

@@ -7,5 +7,5 @@ export declare class MetricTags {
     combinations: number;
     multiValuedTags: string[];
     updateTags(tags: any): void;
-    private updateInfo();
+    private updateInfo;
 }

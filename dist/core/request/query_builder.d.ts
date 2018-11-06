@@ -10,12 +10,12 @@ export declare class KairosDBQueryBuilder {
     buildMetricNameQuery(): any;
     buildMetricTagsQuery(metricName: string, filters?: {}): any;
     buildDatapointsQuery(targets: any, options: any): any;
-    private buildMetricQuery(target, defaultInterval);
-    private unpackTags(tags);
-    private convertAggregatorToQueryObject(aggregatorDefinition, defaultInterval);
-    private convertParameters(aggregatorDefinition, defaultInterval);
-    private buildRequest(requestStub);
-    private buildRequestId(actionName, panelId);
-    private buildUrl(urlStub);
-    private buildTagsRequestBody(metricName, filters?);
+    private buildMetricQuery;
+    private unpackTags;
+    private convertAggregatorToQueryObject;
+    private convertParameters;
+    private buildRequest;
+    private buildRequestId;
+    private buildUrl;
+    private buildTagsRequestBody;
 }

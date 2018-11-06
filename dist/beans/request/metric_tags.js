@@ -1,12 +1,14 @@
-System.register(["lodash"], function(exports_1) {
-    var lodash_1;
-    var MetricTags;
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, MetricTags;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             MetricTags = (function () {
                 function MetricTags() {
                     this.tags = {};
@@ -25,9 +27,9 @@ System.register(["lodash"], function(exports_1) {
                     this.size = lodash_1.default.keys(this.tags).length;
                 };
                 return MetricTags;
-            })();
+            }());
             exports_1("MetricTags", MetricTags);
         }
-    }
+    };
 });
 //# sourceMappingURL=metric_tags.js.map

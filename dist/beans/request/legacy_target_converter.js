@@ -1,8 +1,9 @@
-System.register(["lodash", "../../directives/group_by/group_by_time_entry", "../../utils/time_unit_utils", "../aggregators/aggregator", "../aggregators/divide_aggregator", "../aggregators/percentile_aggregator", "../aggregators/range_aggregator", "../aggregators/rate_aggregator", "../aggregators/sampler_aggregator", "../aggregators/scale_aggregator", "../aggregators/trim_aggregator", "./target"], function(exports_1) {
-    var lodash_1, group_by_time_entry_1, time_unit_utils_1, aggregator_1, divide_aggregator_1, percentile_aggregator_1, range_aggregator_1, rate_aggregator_1, sampler_aggregator_1, scale_aggregator_1, trim_aggregator_1, target_1;
-    var LegacyTargetConverter;
+System.register(["lodash", "../../directives/group_by/group_by_time_entry", "../../utils/time_unit_utils", "../aggregators/aggregator", "../aggregators/divide_aggregator", "../aggregators/percentile_aggregator", "../aggregators/range_aggregator", "../aggregators/rate_aggregator", "../aggregators/sampler_aggregator", "../aggregators/scale_aggregator", "../aggregators/trim_aggregator", "./target"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, group_by_time_entry_1, time_unit_utils_1, aggregator_1, divide_aggregator_1, percentile_aggregator_1, range_aggregator_1, rate_aggregator_1, sampler_aggregator_1, scale_aggregator_1, trim_aggregator_1, target_1, LegacyTargetConverter;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
             },
@@ -38,8 +39,9 @@ System.register(["lodash", "../../directives/group_by/group_by_time_entry", "../
             },
             function (target_1_1) {
                 target_1 = target_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             LegacyTargetConverter = (function () {
                 function LegacyTargetConverter() {
                 }
@@ -70,7 +72,7 @@ System.register(["lodash", "../../directives/group_by/group_by_time_entry", "../
                 LegacyTargetConverter.prototype.mapGroupByTime = function (groupBy) {
                     var intervalValue = time_unit_utils_1.TimeUnitUtils.extractValue(groupBy.range_size);
                     var unit = time_unit_utils_1.TimeUnitUtils.convertTimeUnit(groupBy.range_size.replace(intervalValue, ""));
-                    return new group_by_time_entry_1.GroupByTimeEntry(intervalValue, unit, groupBy.group_count);
+                    return new group_by_time_entry_1.GroupByTimeEntry(intervalValue, unit, +groupBy.group_count);
                 };
                 LegacyTargetConverter.prototype.mapGroupByValue = function (groupBy) {
                     return groupBy.range_size;
@@ -152,9 +154,9 @@ System.register(["lodash", "../../directives/group_by/group_by_time_entry", "../
                     return lodash_1.default.findIndex(aggregator.parameters, function (parameter) { return parameter.name === parameterName; });
                 };
                 return LegacyTargetConverter;
-            })();
+            }());
             exports_1("LegacyTargetConverter", LegacyTargetConverter);
         }
-    }
+    };
 });
 //# sourceMappingURL=legacy_target_converter.js.map

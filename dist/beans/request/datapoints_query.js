@@ -1,8 +1,10 @@
-System.register([], function(exports_1) {
+System.register([], function (exports_1, context_1) {
+    "use strict";
     var DatapointsQuery;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             DatapointsQuery = (function () {
                 function DatapointsQuery(startAbsolute, endAbsolute, metrics) {
                     this.cache_time = 0;
@@ -11,9 +13,9 @@ System.register([], function(exports_1) {
                     this.metrics = metrics;
                 }
                 return DatapointsQuery;
-            })();
+            }());
             exports_1("DatapointsQuery", DatapointsQuery);
         }
-    }
+    };
 });
 //# sourceMappingURL=datapoints_query.js.map

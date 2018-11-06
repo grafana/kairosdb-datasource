@@ -1,4 +1,5 @@
 import { Aggregator } from "../beans/aggregators/aggregator";
+import "./aggregator_editor";
 export declare class AggregatorsCtrl {
     entries: Aggregator[];
     availableAggregators: Aggregator[];

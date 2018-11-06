@@ -1,6 +1,7 @@
-System.register(["lodash", "../../beans/aggregators/utils"], function(exports_1) {
-    var lodash_1, utils_1;
-    var GroupByTimeCtrl;
+System.register(["lodash", "../../beans/aggregators/utils", "../../directives/group_by/group_by_time_entry"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, utils_1, group_by_time_entry_1, GroupByTimeCtrl;
+    var __moduleName = context_1 && context_1.id;
     function GroupByTimeDirective() {
         return {
             bindToController: true,
@@ -15,14 +16,18 @@ System.register(["lodash", "../../beans/aggregators/utils"], function(exports_1)
     }
     exports_1("GroupByTimeDirective", GroupByTimeDirective);
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
             },
             function (utils_1_1) {
                 utils_1 = utils_1_1;
-            }],
-        execute: function() {
+            },
+            function (group_by_time_entry_1_1) {
+                group_by_time_entry_1 = group_by_time_entry_1_1;
+            }
+        ],
+        execute: function () {
             GroupByTimeCtrl = (function () {
                 function GroupByTimeCtrl() {
                     this.inputVisible = false;
@@ -31,7 +36,7 @@ System.register(["lodash", "../../beans/aggregators/utils"], function(exports_1)
                 }
                 GroupByTimeCtrl.prototype.add = function (entry) {
                     if (this.isValidEntry(entry)) {
-                        this.entries.push(entry);
+                        this.entries.push(new group_by_time_entry_1.GroupByTimeEntry(entry.interval, entry.unit, entry.count));
                     }
                     this.inputVisible = !this.inputVisible;
                 };
@@ -42,9 +47,9 @@ System.register(["lodash", "../../beans/aggregators/utils"], function(exports_1)
                     return !isNaN(entry.interval) && !isNaN(entry.count);
                 };
                 return GroupByTimeCtrl;
-            })();
+            }());
             exports_1("GroupByTimeCtrl", GroupByTimeCtrl);
         }
-    }
+    };
 });
 //# sourceMappingURL=group_by_time.js.map

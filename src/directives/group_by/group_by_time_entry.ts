@@ -8,4 +8,8 @@ export class GroupByTimeEntry {
         this.unit = unit;
         this.count = count;
     }
+
+    public asString(): string {
+      return "time(" + this.interval + ", " + this.unit + ", " + this.count + ")";
+    }
 }

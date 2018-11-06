@@ -1,5 +1,5 @@
 <ng-include src="'public/plugins/grafana-kairosdb-datasource/partials/metric.names.loading.html'" ng-if="!ctrl.datasource.initialized"></ng-include>
-<query-editor-row query-ctrl="ctrl" can-collapse="false" ng-if="ctrl.datasource.initialized">
+<query-editor-row query-ctrl="ctrl" can-collapse="true" ng-if="ctrl.datasource.initialized">
     <ng-include src="'public/plugins/grafana-kairosdb-datasource/partials/metric.name.row.html'"></ng-include>
     <ng-include src="'public/plugins/grafana-kairosdb-datasource/partials/tags.editor.html'"></ng-include>
     <ng-include src="'public/plugins/grafana-kairosdb-datasource/partials/group.by.editor.html'" ng-if="ctrl.tags.initialized && ctrl.tags.multiValuedTags"></ng-include>

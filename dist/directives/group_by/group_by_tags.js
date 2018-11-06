@@ -1,6 +1,7 @@
-System.register(["lodash"], function(exports_1) {
-    var lodash_1;
-    var GroupByTagsCtrl;
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, GroupByTagsCtrl;
+    var __moduleName = context_1 && context_1.id;
     function GroupByTagsDirective() {
         return {
             bindToController: true,
@@ -16,11 +17,12 @@ System.register(["lodash"], function(exports_1) {
     }
     exports_1("GroupByTagsDirective", GroupByTagsDirective);
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             GroupByTagsCtrl = (function () {
                 function GroupByTagsCtrl() {
                     var _this = this;
@@ -37,9 +39,9 @@ System.register(["lodash"], function(exports_1) {
                     this.inputVisible = !this.inputVisible;
                 };
                 return GroupByTagsCtrl;
-            })();
+            }());
             exports_1("GroupByTagsCtrl", GroupByTagsCtrl);
         }
-    }
+    };
 });
 //# sourceMappingURL=group_by_tags.js.map

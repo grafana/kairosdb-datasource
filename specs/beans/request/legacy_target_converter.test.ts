@@ -1,4 +1,6 @@
+import {should} from "chai";
 import {LegacyTargetConverter} from "../../../src/beans/request/legacy_target_converter";
+import {GroupByTimeEntry} from "../../../src/directives/group_by/group_by_time_entry";
 
 function sortNestedJSON(object) {
     return JSON.parse(JSON.stringify(object));
@@ -177,15 +179,11 @@ describe("LegacyTargetConverter", () => {
                 tags: [
                     "rowname"
                 ],
-                time: [
-                    {
-                        count: "100",
-                        interval: "10",
-                        unit: "MINUTES"
-                    }
-                ],
                 value: [
                     "20"
+                ],
+                time: [
+                    new GroupByTimeEntry( "10", "MINUTES", 100)
                 ]
             },
             metricName: "query_12346_child_count.github.net",
@@ -233,8 +231,14 @@ describe("LegacyTargetConverter", () => {
     });
     describe("alias", () => {
         it("convert groupBy properly", () => {
+            const legacyGroupBy = legacyTargetConverter.convert(legacy_complex).groupBy;
+            // For some reason deep.equals returns a false negative even though the contents match
             // tslint:disable-next-line
-            legacyTargetConverter.convert(legacy_complex).groupBy.should.be.deep.equal(modern_complex.query.groupBy);
+            legacyGroupBy.time.should.be.deep.equal(modern_complex.query.groupBy.time);
+            // tslint:disable-next-line
+            legacyGroupBy.tags.should.be.deep.equal(modern_complex.query.groupBy.tags);
+            // tslint:disable-next-line
+            legacyGroupBy.value.should.be.deep.equal(modern_complex.query.groupBy.value);
         });
     });
     describe("alias", () => {

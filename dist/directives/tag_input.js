@@ -1,6 +1,7 @@
-System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
-    var lodash_1, promise_utils_1;
-    var TAG_VALUE_SUGGESTIONS_LIMIT, TagInputCtrl, TagInputLink;
+System.register(["lodash", "../utils/promise_utils"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, promise_utils_1, TAG_VALUE_SUGGESTIONS_LIMIT, TagInputCtrl, TagInputLink;
+    var __moduleName = context_1 && context_1.id;
     function TagInputDirective() {
         return {
             bindToController: true,
@@ -18,17 +19,17 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
     }
     exports_1("TagInputDirective", TagInputDirective);
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
             },
             function (promise_utils_1_1) {
                 promise_utils_1 = promise_utils_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             TAG_VALUE_SUGGESTIONS_LIMIT = 20;
             TagInputCtrl = (function () {
-                /** @ngInject **/
                 function TagInputCtrl($scope, $q, uiSegmentSrv) {
                     this.uiSegmentSrv = uiSegmentSrv;
                     this.promiseUtils = new promise_utils_1.PromiseUtils($q);
@@ -45,7 +46,7 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
                     }));
                 };
                 return TagInputCtrl;
-            })();
+            }());
             exports_1("TagInputCtrl", TagInputCtrl);
             TagInputLink = (function () {
                 function TagInputLink(scope, element) {
@@ -54,9 +55,9 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
                     };
                 }
                 return TagInputLink;
-            })();
+            }());
             exports_1("TagInputLink", TagInputLink);
         }
-    }
+    };
 });
 //# sourceMappingURL=tag_input.js.map

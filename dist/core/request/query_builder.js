@@ -1,8 +1,9 @@
-System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/request/metric_query", "../../utils/templating_utils", "./group_bys_builder", "./parameter_object_builder", "./sampling_converter", "./sampling_parameter_converter"], function(exports_1) {
-    var lodash_1, datapoints_query_1, metric_query_1, templating_utils_1, group_bys_builder_1, parameter_object_builder_1, sampling_converter_1, sampling_parameter_converter_1;
-    var KairosDBQueryBuilder;
+System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/request/metric_query", "../../utils/templating_utils", "./group_bys_builder", "./parameter_object_builder", "./sampling_converter", "./sampling_parameter_converter"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, datapoints_query_1, metric_query_1, templating_utils_1, group_bys_builder_1, parameter_object_builder_1, sampling_converter_1, sampling_parameter_converter_1, KairosDBQueryBuilder;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
             },
@@ -26,8 +27,9 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
             },
             function (sampling_parameter_converter_1_1) {
                 sampling_parameter_converter_1 = sampling_parameter_converter_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             KairosDBQueryBuilder = (function () {
                 function KairosDBQueryBuilder(withCredentials, url, apiPath, templateSrv, scopedVars) {
                     this.withCredentials = withCredentials;
@@ -104,9 +106,9 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
                     };
                 };
                 return KairosDBQueryBuilder;
-            })();
+            }());
             exports_1("KairosDBQueryBuilder", KairosDBQueryBuilder);
         }
-    }
+    };
 });
 //# sourceMappingURL=query_builder.js.map

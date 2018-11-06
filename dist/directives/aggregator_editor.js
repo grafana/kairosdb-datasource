@@ -1,5 +1,7 @@
-System.register(["lodash"], function(exports_1) {
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
     var lodash_1;
+    var __moduleName = context_1 && context_1.id;
     function AggregatorEditorLink(scope) {
         scope.newAggregator = null;
         scope.pickAggregator = function (aggregatorName) {
@@ -19,12 +21,13 @@ System.register(["lodash"], function(exports_1) {
     }
     exports_1("AggregatorEditorDirective", AggregatorEditorDirective);
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
         }
-    }
+    };
 });
 //# sourceMappingURL=aggregator_editor.js.map

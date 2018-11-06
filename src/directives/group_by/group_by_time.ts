@@ -1,6 +1,6 @@
-import {GroupByTimeEntry} from "group_by_time_entry";
 import _ from "lodash";
 import {EnumValues, TimeUnit} from "../../beans/aggregators/utils";
+import {GroupByTimeEntry} from "../../directives/group_by/group_by_time_entry";
 
 export class GroupByTimeCtrl {
     public entries: GroupByTimeEntry[];
@@ -11,9 +11,10 @@ export class GroupByTimeCtrl {
         this.entries = this.entries || [];
     }
 
-    public add(entry): void {
+    public add(entry: any): void {
         if (this.isValidEntry(entry)) {
-            this.entries.push(entry);
+            this.entries.push(
+              new GroupByTimeEntry(entry.interval, entry.unit, entry.count));
         }
         this.inputVisible = !this.inputVisible;
     }

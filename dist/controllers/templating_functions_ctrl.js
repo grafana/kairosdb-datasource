@@ -1,12 +1,14 @@
-System.register(["lodash"], function(exports_1) {
-    var lodash_1;
-    var TemplatingFunctionsCtrl;
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, TemplatingFunctionsCtrl;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             TemplatingFunctionsCtrl = (function () {
                 function TemplatingFunctionsCtrl(templatingFunctionResolver) {
                     this.functions = [];
@@ -20,9 +22,9 @@ System.register(["lodash"], function(exports_1) {
                     return this.templatingFunctionResolver.unpackFunction(matchedFunction, functionBody);
                 };
                 return TemplatingFunctionsCtrl;
-            })();
+            }());
             exports_1("TemplatingFunctionsCtrl", TemplatingFunctionsCtrl);
         }
-    }
+    };
 });
 //# sourceMappingURL=templating_functions_ctrl.js.map

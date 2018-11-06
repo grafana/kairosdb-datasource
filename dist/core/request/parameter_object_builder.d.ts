@@ -7,8 +7,8 @@ export declare class ParameterObjectBuilder {
     private autoIntervalUnit;
     constructor(interval: string, autoValueSwitch: AutoValueSwitch);
     build(parameter: AggregatorParameter): any;
-    private buildAlignmentParameter(parameter);
-    private buildSamplingParameter(parameter, autoValue);
-    private buildDefault(parameter);
-    private isOverriddenByAutoValue(parameter);
+    private buildAlignmentParameter;
+    private buildSamplingParameter;
+    private buildDefault;
+    private isOverriddenByAutoValue;
 }

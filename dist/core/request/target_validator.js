@@ -1,12 +1,14 @@
-System.register(["lodash"], function(exports_1) {
-    var lodash_1;
-    var TargetValidator;
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, TargetValidator;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             TargetValidator = (function () {
                 function TargetValidator() {
                 }
@@ -18,9 +20,9 @@ System.register(["lodash"], function(exports_1) {
                     return !lodash_1.default.isNil(target) && !lodash_1.default.isEmpty(target.metricName);
                 };
                 return TargetValidator;
-            })();
+            }());
             exports_1("TargetValidator", TargetValidator);
         }
-    }
+    };
 });
 //# sourceMappingURL=target_validator.js.map

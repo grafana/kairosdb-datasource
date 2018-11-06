@@ -1,12 +1,14 @@
-System.register(["lodash"], function(exports_1) {
-    var lodash_1;
-    var TemplatingFunctionResolver;
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, TemplatingFunctionResolver;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             TemplatingFunctionResolver = (function () {
                 function TemplatingFunctionResolver(templatingUtils) {
                     this.templatingUtils = templatingUtils;
@@ -32,9 +34,9 @@ System.register(["lodash"], function(exports_1) {
                 TemplatingFunctionResolver.FILTER_ARGUMENT_SEPARATOR = "=";
                 TemplatingFunctionResolver.FILTER_ARGUMENT_REGEXP = new RegExp("^\\S+" + TemplatingFunctionResolver.FILTER_ARGUMENT_SEPARATOR);
                 return TemplatingFunctionResolver;
-            })();
+            }());
             exports_1("TemplatingFunctionResolver", TemplatingFunctionResolver);
         }
-    }
+    };
 });
 //# sourceMappingURL=templating_function_resolver.js.map

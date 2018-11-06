@@ -1,15 +1,17 @@
-System.register(["lodash", "../beans/aggregators/utils"], function(exports_1) {
-    var lodash_1, utils_1;
-    var TimeUnitUtils;
+System.register(["lodash", "../beans/aggregators/utils"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, utils_1, TimeUnitUtils;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
             },
             function (utils_1_1) {
                 utils_1 = utils_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             TimeUnitUtils = (function () {
                 function TimeUnitUtils() {
                 }
@@ -33,9 +35,9 @@ System.register(["lodash", "../beans/aggregators/utils"], function(exports_1) {
                 TimeUnitUtils.SHORT_UNITS = lodash_1.default.zipObject(["ms", "s", "m", "h", "d", "w", "M", "y"], TimeUnitUtils.TIME_UNIT_STRINGS);
                 TimeUnitUtils.LONG_UNITS = lodash_1.default.zipObject(["millisecond", "second", "minute", "hour", "day", "week", "month", "year"], TimeUnitUtils.TIME_UNIT_STRINGS);
                 return TimeUnitUtils;
-            })();
+            }());
             exports_1("TimeUnitUtils", TimeUnitUtils);
         }
-    }
+    };
 });
 //# sourceMappingURL=time_unit_utils.js.map

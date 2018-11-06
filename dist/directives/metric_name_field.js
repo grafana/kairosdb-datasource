@@ -1,6 +1,7 @@
-System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
-    var lodash_1, promise_utils_1;
-    var METRIC_NAMES_SUGGESTIONS_LIMIT, MetricNameFieldCtrl, MetricNameFieldLink;
+System.register(["lodash", "../utils/promise_utils"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, promise_utils_1, METRIC_NAMES_SUGGESTIONS_LIMIT, MetricNameFieldCtrl, MetricNameFieldLink;
+    var __moduleName = context_1 && context_1.id;
     function MetricNameFieldDirective() {
         return {
             bindToController: true,
@@ -18,17 +19,17 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
     }
     exports_1("MetricNameFieldDirective", MetricNameFieldDirective);
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
             },
             function (promise_utils_1_1) {
                 promise_utils_1 = promise_utils_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             METRIC_NAMES_SUGGESTIONS_LIMIT = 20;
             MetricNameFieldCtrl = (function () {
-                /** @ngInject **/
                 function MetricNameFieldCtrl($scope, $q, uiSegmentSrv) {
                     this.uiSegmentSrv = uiSegmentSrv;
                     this.aliasInputVisible = false;
@@ -61,7 +62,7 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
                     this.aliasInputVisible = false;
                 };
                 return MetricNameFieldCtrl;
-            })();
+            }());
             exports_1("MetricNameFieldCtrl", MetricNameFieldCtrl);
             MetricNameFieldLink = (function () {
                 function MetricNameFieldLink(scope, element) {
@@ -70,9 +71,9 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
                     };
                 }
                 return MetricNameFieldLink;
-            })();
+            }());
             exports_1("MetricNameFieldLink", MetricNameFieldLink);
         }
-    }
+    };
 });
 //# sourceMappingURL=metric_name_field.js.map

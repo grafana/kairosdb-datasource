@@ -1,2 +1,3 @@
-import { RangeAggregator } from "./range_aggregator";
-export declare const AGGREGATORS: RangeAggregator[];
+import { Aggregator } from "./aggregator";
+export declare const AGGREGATORS: Aggregator[];
+export declare function fromObject(object: any): Aggregator;

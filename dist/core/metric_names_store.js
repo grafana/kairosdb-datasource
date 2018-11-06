@@ -1,12 +1,14 @@
-System.register(["lodash"], function(exports_1) {
-    var lodash_1;
-    var MetricNamesStore;
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, MetricNamesStore;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             MetricNamesStore = (function () {
                 function MetricNamesStore(datasource, promiseUtils, datasourceUrl) {
                     this.initialized = false;
@@ -47,9 +49,9 @@ System.register(["lodash"], function(exports_1) {
                     return this.fetchingPromise;
                 };
                 return MetricNamesStore;
-            })();
+            }());
             exports_1("MetricNamesStore", MetricNamesStore);
         }
-    }
+    };
 });
 //# sourceMappingURL=metric_names_store.js.map

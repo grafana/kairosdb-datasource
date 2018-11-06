@@ -1,6 +1,7 @@
-System.register(["lodash"], function(exports_1) {
-    var lodash_1;
-    var TagsSelectCtrl;
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, TagsSelectCtrl;
+    var __moduleName = context_1 && context_1.id;
     function TagsSelectDirective() {
         return {
             bindToController: true,
@@ -17,13 +18,13 @@ System.register(["lodash"], function(exports_1) {
     }
     exports_1("TagsSelectDirective", TagsSelectDirective);
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             TagsSelectCtrl = (function () {
-                /** @ngInject **/
                 function TagsSelectCtrl(uiSegmentSrv) {
                     var _this = this;
                     this.uiSegmentSrv = uiSegmentSrv;
@@ -50,9 +51,9 @@ System.register(["lodash"], function(exports_1) {
                         .filter(function (value) { return !lodash_1.default.isNil(value); });
                 };
                 return TagsSelectCtrl;
-            })();
+            }());
             exports_1("TagsSelectCtrl", TagsSelectCtrl);
         }
-    }
+    };
 });
 //# sourceMappingURL=tags_select.js.map

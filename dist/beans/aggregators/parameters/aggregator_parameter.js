@@ -1,8 +1,10 @@
-System.register([], function(exports_1) {
+System.register([], function (exports_1, context_1) {
+    "use strict";
     var AggregatorParameter;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             AggregatorParameter = (function () {
                 function AggregatorParameter(name, text, value) {
                     if (text === void 0) { text = name; }
@@ -12,9 +14,9 @@ System.register([], function(exports_1) {
                     this.value = value;
                 }
                 return AggregatorParameter;
-            })();
+            }());
             exports_1("AggregatorParameter", AggregatorParameter);
         }
-    }
+    };
 });
 //# sourceMappingURL=aggregator_parameter.js.map

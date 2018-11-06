@@ -1,8 +1,9 @@
-System.register(["lodash", "../beans/function", "../beans/request/legacy_target_converter", "../controllers/templating_functions_ctrl", "../utils/promise_utils", "../utils/templating_function_resolver", "../utils/templating_utils", "./metric_names_store", "./request/query_builder", "./request/target_validator", "./response/response_handler", "./response/series_name_builder"], function(exports_1) {
-    var lodash_1, function_1, legacy_target_converter_1, templating_functions_ctrl_1, promise_utils_1, templating_function_resolver_1, templating_utils_1, metric_names_store_1, query_builder_1, target_validator_1, response_handler_1, series_name_builder_1;
-    var KairosDBDatasource;
+System.register(["lodash", "../beans/function", "../beans/request/legacy_target_converter", "../controllers/templating_functions_ctrl", "../utils/promise_utils", "../utils/templating_function_resolver", "../utils/templating_utils", "./metric_names_store", "./request/query_builder", "./request/target_validator", "./response/response_handler", "./response/series_name_builder"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, function_1, legacy_target_converter_1, templating_functions_ctrl_1, promise_utils_1, templating_function_resolver_1, templating_utils_1, metric_names_store_1, query_builder_1, target_validator_1, response_handler_1, series_name_builder_1, KairosDBDatasource;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
             },
@@ -38,8 +39,9 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
             },
             function (series_name_builder_1_1) {
                 series_name_builder_1 = series_name_builder_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             KairosDBDatasource = (function () {
                 function KairosDBDatasource(instanceSettings, $q, backendSrv, templateSrv) {
                     this.initialized = false;
@@ -72,11 +74,12 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                             { query: _this.legacyTargetConverter.convert(target) } : target;
                     });
                     if (!this.targetValidator.areValidTargets(convertedTargets)) {
-                        return; // todo: target validation, throw message to grafana with detailed info
+                        return;
                     }
                     var aliases = convertedTargets.map(function (target) { return target.query.alias; });
+                    var templatingUtils = new templating_utils_1.TemplatingUtils(this.templateSrv, options.scopedVars);
                     var unpackedTargets = lodash_1.default.flatten(convertedTargets.map(function (target) {
-                        return _this.templatingUtils.replace(target.query.metricName)
+                        return templatingUtils.replace(target.query.metricName)
                             .map(function (metricName) {
                             var clonedTarget = lodash_1.default.cloneDeep(target);
                             clonedTarget.query.metricName = metricName;
@@ -140,9 +143,9 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     };
                 };
                 return KairosDBDatasource;
-            })();
+            }());
             exports_1("KairosDBDatasource", KairosDBDatasource);
         }
-    }
+    };
 });
 //# sourceMappingURL=datasource.js.map

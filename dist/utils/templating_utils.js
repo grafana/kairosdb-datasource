@@ -1,12 +1,14 @@
-System.register(["lodash"], function(exports_1) {
-    var lodash_1;
-    var TemplatingUtils;
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, TemplatingUtils;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             TemplatingUtils = (function () {
                 function TemplatingUtils(templateSrv, scopedVars) {
                     this.templateSrv = templateSrv;
@@ -16,17 +18,17 @@ System.register(["lodash"], function(exports_1) {
                     var replacedExpression = this.templateSrv.replace(expression, this.scopedVars);
                     var matchedMultiValues = replacedExpression.match(TemplatingUtils.MULTI_VALUE_REGEX);
                     if (!lodash_1.default.isNil(matchedMultiValues)) {
-                        var replacedValues = [replacedExpression];
+                        var replacedValues_1 = [replacedExpression];
                         matchedMultiValues.forEach(function (multiValue) {
                             var values = multiValue.replace(TemplatingUtils.MULTI_VALUE_BOUNDARIES, "")
                                 .split(TemplatingUtils.MULTI_VALUE_SEPARATOR);
-                            replacedValues = lodash_1.default.flatMap(values, function (value) {
-                                return replacedValues.map(function (replacedValue) {
+                            replacedValues_1 = lodash_1.default.flatMap(values, function (value) {
+                                return replacedValues_1.map(function (replacedValue) {
                                     return replacedValue.replace(multiValue, value);
                                 });
                             });
                         });
-                        return replacedValues;
+                        return replacedValues_1;
                     }
                     return [replacedExpression];
                 };
@@ -38,9 +40,9 @@ System.register(["lodash"], function(exports_1) {
                 TemplatingUtils.MULTI_VALUE_REGEX = /{.*?}/g;
                 TemplatingUtils.MULTI_VALUE_BOUNDARIES = /[{}]/g;
                 return TemplatingUtils;
-            })();
+            }());
             exports_1("TemplatingUtils", TemplatingUtils);
         }
-    }
+    };
 });
 //# sourceMappingURL=templating_utils.js.map

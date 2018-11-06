@@ -54,7 +54,7 @@ module.exports = function (grunt) {
                 ]
             }
         },
-        typescript: {
+        ts: {
             build: {
                 src: [
                     "dist/**/*.ts"
@@ -100,7 +100,7 @@ module.exports = function (grunt) {
         "copy",
         "packageModules",
         "tslint",
-        "typescript:build",
+        "ts:build",
         "babel",
         "karma",
         "clean:post"

@@ -1,15 +1,17 @@
-System.register(["lodash", "../../utils/time_unit_utils"], function(exports_1) {
-    var lodash_1, time_unit_utils_1;
-    var ParameterObjectBuilder;
+System.register(["lodash", "../../utils/time_unit_utils"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, time_unit_utils_1, ParameterObjectBuilder;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
             },
             function (time_unit_utils_1_1) {
                 time_unit_utils_1 = time_unit_utils_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             ParameterObjectBuilder = (function () {
                 function ParameterObjectBuilder(interval, autoValueSwitch) {
                     this.autoValueDependentParameters = [];
@@ -64,9 +66,9 @@ System.register(["lodash", "../../utils/time_unit_utils"], function(exports_1) {
                     return lodash_1.default.includes(this.autoValueDependentParameters, parameter.type);
                 };
                 return ParameterObjectBuilder;
-            })();
+            }());
             exports_1("ParameterObjectBuilder", ParameterObjectBuilder);
         }
-    }
+    };
 });
 //# sourceMappingURL=parameter_object_builder.js.map

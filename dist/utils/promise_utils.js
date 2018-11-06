@@ -1,8 +1,10 @@
-System.register([], function(exports_1) {
+System.register([], function (exports_1, context_1) {
+    "use strict";
     var PromiseUtils;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             PromiseUtils = (function () {
                 function PromiseUtils($q) {
                     this.$q = $q;
@@ -13,9 +15,9 @@ System.register([], function(exports_1) {
                     return defer.promise;
                 };
                 return PromiseUtils;
-            })();
+            }());
             exports_1("PromiseUtils", PromiseUtils);
         }
-    }
+    };
 });
 //# sourceMappingURL=promise_utils.js.map

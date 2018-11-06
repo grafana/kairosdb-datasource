@@ -41,7 +41,7 @@ export class LegacyTargetConverter {
     private mapGroupByTime(groupBy): GroupByTimeEntry {
         const intervalValue = TimeUnitUtils.extractValue(groupBy.range_size);
         const unit = TimeUnitUtils.convertTimeUnit(groupBy.range_size.replace(intervalValue, ""));
-        return new GroupByTimeEntry(intervalValue, unit, groupBy.group_count);
+        return new GroupByTimeEntry(intervalValue, unit, +groupBy.group_count);
     }
 
     private mapGroupByValue(groupBy) {

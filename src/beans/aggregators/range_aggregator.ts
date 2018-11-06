@@ -5,6 +5,16 @@ import {SamplingAggregatorParameter} from "./parameters/sampling_aggregator_para
 import {SamplingUnitAggregatorParameter} from "./parameters/sampling_unit_aggregator_parameter";
 
 export class RangeAggregator extends Aggregator {
+    public static fromObject(object: any): RangeAggregator {
+        const rval = new RangeAggregator(object.name);
+        const alignment = AlignmentAggregatorParameter.fromObject(object.parameters[0]);
+        const sampleAgg = SamplingAggregatorParameter.fromObject(object.parameters[1]);
+        const sampleUnit = SamplingUnitAggregatorParameter.fromObject(object.parameters[2]);
+        rval.parameters = [alignment, sampleAgg, sampleUnit];
+        rval.autoValueSwitch = new AutoValueSwitch([sampleAgg, sampleUnit]);
+        return rval;
+    }
+
     constructor(name: string) {
         super(name);
         const samplingAggregatorParameter = new SamplingAggregatorParameter("every", "1");

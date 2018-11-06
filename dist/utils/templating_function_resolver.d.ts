@@ -6,6 +6,6 @@ export declare class TemplatingFunctionResolver {
     private templatingUtils;
     constructor(templatingUtils: TemplatingUtils);
     unpackFunction(matchedFunction: any, functionBody: string): () => Promise<string[]>;
-    private mapToFilter(filter);
-    private isFilterArgument(argument);
+    private mapToFilter;
+    private isFilterArgument;
 }

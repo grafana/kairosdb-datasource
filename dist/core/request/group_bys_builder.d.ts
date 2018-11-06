@@ -5,5 +5,5 @@ export declare class GroupBysBuilder {
     private samplingConverter;
     constructor(templatingUtils: TemplatingUtils, samplingConverter: SamplingConverter);
     build(groupBysDefinition: any): any[];
-    private buildRangeSize(parameters);
+    private buildRangeSize;
 }

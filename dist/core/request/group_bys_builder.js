@@ -1,12 +1,14 @@
-System.register(["lodash"], function(exports_1) {
-    var lodash_1;
-    var GroupBysBuilder;
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, GroupBysBuilder;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             GroupBysBuilder = (function () {
                 function GroupBysBuilder(templatingUtils, samplingConverter) {
                     this.templatingUtils = templatingUtils;
@@ -41,9 +43,9 @@ System.register(["lodash"], function(exports_1) {
                     };
                 };
                 return GroupBysBuilder;
-            })();
+            }());
             exports_1("GroupBysBuilder", GroupBysBuilder);
         }
-    }
+    };
 });
 //# sourceMappingURL=group_bys_builder.js.map

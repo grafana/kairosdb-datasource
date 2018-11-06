@@ -25,6 +25,7 @@ module.exports = function(config) {
                 // Set path for third-party libraries as modules
                 paths: {
                     "app/": "node_modules/grafana-sdk-mocks/app/",
+                    "chai": "node_modules/chai/chai.js",
                     "css": "node_modules/systemjs-plugin-css/css.js",
                     "lodash": "node_modules/lodash/lodash.js",
                     "mocha-each": "node_modules/mocha-each/build/index.js",
@@ -80,13 +81,16 @@ module.exports = function(config) {
                 transpiler: "plugin-typescript",
             }
         },
-        reporters: ["dots", "junit"],
+        reporters: ["mocha", "junit"],
         logLevel: config.LOG_INFO,
-        browsers: ["PhantomJS"],
+        browsers: ["ChromeHeadless"],
         junitReporter: {
             outputFile: 'kairosdb-plugin-unit-tests-results.xml',
             outputDir: 'test-results',
             useBrowserName: false
+        },
+        mochaReporter: {
+            showDiff: true
         }
     });
 };

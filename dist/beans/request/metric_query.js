@@ -1,8 +1,10 @@
-System.register([], function(exports_1) {
+System.register([], function (exports_1, context_1) {
+    "use strict";
     var MetricQuery;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             MetricQuery = (function () {
                 function MetricQuery(name, tags, aggregators, group_by) {
                     this.limit = 0;
@@ -12,9 +14,9 @@ System.register([], function(exports_1) {
                     this.group_by = group_by;
                 }
                 return MetricQuery;
-            })();
+            }());
             exports_1("MetricQuery", MetricQuery);
         }
-    }
+    };
 });
 //# sourceMappingURL=metric_query.js.map

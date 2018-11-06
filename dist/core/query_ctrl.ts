@@ -31,8 +31,16 @@ export class KairosDBQueryCtrl extends QueryCtrl {
         if (this.legacyTargetConverter.isApplicable(this.target)) {
             this.target.query = this.legacyTargetConverter.convert(this.target);
         }
-        this.target.query = this.target.query || new KairosDBTarget();
+        if (this.target.query && !(this.target.query instanceof KairosDBTarget)) {
+            this.target.query = KairosDBTarget.fromObject(this.target.query);
+        } else {
+            this.target.query = this.target.query || new KairosDBTarget();
+        }
         this.initializeTags(this.target.query.metricName);
+    }
+
+    public getCollapsedText(): string {
+        return this.target.query.asString();
     }
 
     private onTargetChange(newTarget, oldTarget) {

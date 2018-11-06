@@ -1,8 +1,9 @@
-System.register(["app/core/utils/kbn", "../../beans/aggregators/utils", "../../utils/time_unit_utils"], function(exports_1) {
-    var kbn_1, utils_1, time_unit_utils_1;
-    var SamplingConverter;
+System.register(["app/core/utils/kbn", "../../beans/aggregators/utils", "../../utils/time_unit_utils"], function (exports_1, context_1) {
+    "use strict";
+    var kbn_1, utils_1, time_unit_utils_1, SamplingConverter;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (kbn_1_1) {
                 kbn_1 = kbn_1_1;
             },
@@ -11,8 +12,9 @@ System.register(["app/core/utils/kbn", "../../beans/aggregators/utils", "../../u
             },
             function (time_unit_utils_1_1) {
                 time_unit_utils_1 = time_unit_utils_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             SamplingConverter = (function () {
                 function SamplingConverter() {
                 }
@@ -37,9 +39,9 @@ System.register(["app/core/utils/kbn", "../../beans/aggregators/utils", "../../u
                 };
                 SamplingConverter.MILLISECONDS_STRING = time_unit_utils_1.TimeUnitUtils.getString(utils_1.TimeUnit.MILLISECONDS);
                 return SamplingConverter;
-            })();
+            }());
             exports_1("SamplingConverter", SamplingConverter);
         }
-    }
+    };
 });
 //# sourceMappingURL=sampling_converter.js.map

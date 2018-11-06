@@ -1,11 +1,12 @@
 import { Aggregator } from "../beans/aggregators/aggregator";
 import { AggregatorParameter } from "../beans/aggregators/parameters/aggregator_parameter";
+import "./aggregator_editor";
 export declare class AggregatorCtrl {
     value: Aggregator;
     visibleParameters: AggregatorParameter[];
     isAutoValue: boolean;
     constructor();
-    private getVisibleParameters();
+    private getVisibleParameters;
 }
 export declare function AggregatorDirective(): {
     bindToController: boolean;

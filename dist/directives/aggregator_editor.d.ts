@@ -1,6 +1,8 @@
+declare function AggregatorEditorLink(scope: any): void;
 export declare function AggregatorEditorDirective(): {
-    link: (scope: any) => void;
+    link: typeof AggregatorEditorLink;
     restrict: string;
     scope: boolean;
     templateUrl: string;
 };
+export {};

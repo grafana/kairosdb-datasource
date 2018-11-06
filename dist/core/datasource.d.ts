@@ -25,12 +25,12 @@ export declare class KairosDBDatasource {
         value: any;
     }[]>;
     getMetricNames(): any;
-    private getRequestBuilder(scopedVars?);
-    private executeRequest(request);
-    private handleMetricTagsResponse(response);
-    private registerTemplatingFunctions();
-    private getMetricNamesContaining(metricNamePart);
-    private getMetricTagNames(metricName);
-    private getMetricTagValues(metricName, tagName, filters);
-    private mapToTemplatingValue(entry);
+    private getRequestBuilder;
+    private executeRequest;
+    private handleMetricTagsResponse;
+    private registerTemplatingFunctions;
+    private getMetricNamesContaining;
+    private getMetricTagNames;
+    private getMetricTagValues;
+    private mapToTemplatingValue;
 }

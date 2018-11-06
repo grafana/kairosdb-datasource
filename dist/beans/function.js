@@ -1,8 +1,10 @@
-System.register([], function(exports_1) {
+System.register([], function (exports_1, context_1) {
+    "use strict";
     var TemplatingFunction;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             TemplatingFunction = (function () {
                 function TemplatingFunction(name, body) {
                     this.name = name;
@@ -16,9 +18,9 @@ System.register([], function(exports_1) {
                     return "^" + this.name + "\\(([\\S ]+)\\)" + "$";
                 };
                 return TemplatingFunction;
-            })();
+            }());
             exports_1("TemplatingFunction", TemplatingFunction);
         }
-    }
+    };
 });
 //# sourceMappingURL=function.js.map

@@ -4,5 +4,5 @@ export declare class TemplatingFunction {
     regexp: string;
     constructor(name: string, body: any);
     run(args: string[]): any;
-    private getRegexp();
+    private getRegexp;
 }

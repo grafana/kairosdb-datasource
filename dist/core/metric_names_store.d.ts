@@ -10,6 +10,6 @@ export declare class MetricNamesStore {
     constructor(datasource: KairosDBDatasource, promiseUtils: PromiseUtils, datasourceUrl: string);
     initialize(): Promise<string[]>;
     get(): Promise<string[]>;
-    private cacheInitialized();
-    private fetch();
+    private cacheInitialized;
+    private fetch;
 }

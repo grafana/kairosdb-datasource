@@ -1,12 +1,14 @@
-System.register(["lodash"], function(exports_1) {
-    var lodash_1;
-    var SeriesNameBuilder;
+System.register(["lodash"], function (exports_1, context_1) {
+    "use strict";
+    var lodash_1, SeriesNameBuilder;
+    var __moduleName = context_1 && context_1.id;
     return {
-        setters:[
+        setters: [
             function (lodash_1_1) {
                 lodash_1 = lodash_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             SeriesNameBuilder = (function () {
                 function SeriesNameBuilder() {
                 }
@@ -55,9 +57,9 @@ System.register(["lodash"], function(exports_1) {
                 };
                 SeriesNameBuilder.SEPARATOR = "_";
                 return SeriesNameBuilder;
-            })();
+            }());
             exports_1("SeriesNameBuilder", SeriesNameBuilder);
         }
-    }
+    };
 });
 //# sourceMappingURL=series_name_builder.js.map

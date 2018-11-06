@@ -1,4 +1,4 @@
-import { GroupByTimeEntry } from "group_by_time_entry";
+import { GroupByTimeEntry } from "../../directives/group_by/group_by_time_entry";
 export declare class GroupByTimeCtrl {
     entries: GroupByTimeEntry[];
     inputVisible: boolean;
@@ -6,7 +6,7 @@ export declare class GroupByTimeCtrl {
     constructor();
     add(entry: any): void;
     remove(entry: any): void;
-    private isValidEntry(entry);
+    private isValidEntry;
 }
 export declare function GroupByTimeDirective(): {
     bindToController: boolean;
