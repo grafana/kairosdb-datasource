@@ -76,6 +76,7 @@ System.register(["./aggregator", "./divide_aggregator", "./percentile_aggregator
                 new range_aggregator_1.RangeAggregator("min"),
                 new range_aggregator_1.RangeAggregator("gaps"),
                 new range_aggregator_1.RangeAggregator("merge"),
+                new range_aggregator_1.RangeAggregator("movingWindow"),
                 new percentile_aggregator_1.PercentileAggregator(),
                 new sma_aggregator_1.SmaAggregator(),
                 new range_aggregator_1.RangeAggregator("sum"),
@@ -87,7 +88,7 @@ System.register(["./aggregator", "./divide_aggregator", "./percentile_aggregator
                 new trim_aggregator_1.TrimAggregator()
             ]);
             RANGE_AGGREGATORS = ["avg", "dev", "count", "first", "gaps",
-                "last", "least_squares", "max", "min", "gaps", "merge", "sum"];
+                "last", "least_squares", "max", "min", "gaps", "merge", "sum", "movingWindow"];
         }
     };
 });

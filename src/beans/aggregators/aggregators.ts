@@ -20,6 +20,7 @@ export const AGGREGATORS = [
     new RangeAggregator("min"),
     new RangeAggregator("gaps"),
     new RangeAggregator("merge"),
+    new RangeAggregator("movingWindow"),
     new PercentileAggregator(),
     new SmaAggregator(),
     new RangeAggregator("sum"),
@@ -32,7 +33,7 @@ export const AGGREGATORS = [
 ];
 
 const RANGE_AGGREGATORS = ["avg", "dev", "count", "first", "gaps",
-    "last", "least_squares", "max", "min", "gaps", "merge", "sum"];
+    "last", "least_squares", "max", "min", "gaps", "merge", "sum", "movingWindow"];
 
 export function fromObject(object: any): Aggregator {
   if (object.name in RANGE_AGGREGATORS) {
