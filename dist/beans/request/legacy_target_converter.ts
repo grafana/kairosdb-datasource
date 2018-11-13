@@ -55,10 +55,7 @@ export class LegacyTargetConverter {
             return rangeAgg;
         } else {
             const rangeAgg = new RangeAggregator(horizontalAggregator.name);
-            rangeAgg.parameters[this.findParameterIndex(rangeAgg, "value")].value =
-                TimeUnitUtils.extractValue(horizontalAggregator.sampling_rate);
-            rangeAgg.parameters[this.findParameterIndex(rangeAgg, "unit")].value =
-                TimeUnitUtils.convertTimeUnit(TimeUnitUtils.extractUnit(horizontalAggregator.sampling_rate));
+            rangeAgg.parameters[this.findParameterIndex(rangeAgg, "value")].value = horizontalAggregator.sampling_rate;
             return rangeAgg;
         }
     }
@@ -72,8 +69,8 @@ export class LegacyTargetConverter {
             return percentileAgg;
         } else {
             const percentileAgg = new PercentileAggregator();
-            percentileAgg.parameters[this.findParameterIndex(percentileAgg, "unit")].value =
-                TimeUnitUtils.convertTimeUnit(TimeUnitUtils.extractUnit(horizontalAggregator.sampling_rate));
+            percentileAgg.parameters[this.findParameterIndex(percentileAgg, "value")].value =
+                horizontalAggregator.sampling_rate;
             percentileAgg.parameters[this.findParameterIndex(percentileAgg, "percentile")].value =
                 horizontalAggregator.percentile;
             return percentileAgg;

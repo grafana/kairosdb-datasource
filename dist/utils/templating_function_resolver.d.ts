@@ -5,7 +5,7 @@ export declare class TemplatingFunctionResolver {
     private static FILTER_ARGUMENT_REGEXP;
     private templatingUtils;
     constructor(templatingUtils: TemplatingUtils);
-    unpackFunction(matchedFunction: any, functionBody: string): () => Promise<string[]>;
+    unpackFunction(scopedVar: any, matchedFunction: any, functionBody: string): () => Promise<string[]>;
     private mapToFilter(filter);
     private isFilterArgument(argument);
 }

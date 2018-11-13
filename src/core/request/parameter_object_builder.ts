@@ -16,8 +16,9 @@ export class ParameterObjectBuilder {
             this.autoValueDependentParameters = autoValueSwitch.dependentParameters
                 .map((parameter) => parameter.type);
         }
-        this.autoIntervalValue = TimeUnitUtils.extractValue(interval);
-        this.autoIntervalUnit = TimeUnitUtils.convertTimeUnit(TimeUnitUtils.extractUnit(interval));
+        const relativeTime = TimeUnitUtils.convertFromInterval(interval);
+        this.autoIntervalValue = relativeTime.value;
+        this.autoIntervalUnit = relativeTime.unit;
     }
 
     public build(parameter: AggregatorParameter): any {
@@ -53,7 +54,7 @@ export class ParameterObjectBuilder {
     private buildSamplingParameter(parameter: AggregatorParameter, autoValue: string) {
         const parameterObject = {sampling: {}};
         parameterObject.sampling[parameter.name] =
-            this.isOverriddenByAutoValue(parameter) ? autoValue : parameter.value;
+            this.autoValueEnabled ? autoValue : parameter.value;
         return parameterObject;
     }
 
@@ -61,9 +62,5 @@ export class ParameterObjectBuilder {
         const parameterObject = {};
         parameterObject[parameter.name] = parameter.value;
         return parameterObject;
-    }
-
-    private isOverriddenByAutoValue(parameter: AggregatorParameter) {
-        return _.includes(this.autoValueDependentParameters, parameter.type);
     }
 }
