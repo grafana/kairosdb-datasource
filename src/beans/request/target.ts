@@ -1,7 +1,14 @@
+import * as dateMath from "app/core/utils/datemath";
+import {Moment} from "moment";
 import {Aggregator} from "../aggregators/aggregator";
 import * as Aggregators from "../aggregators/aggregators";
 import {AggregatorParameter} from "../aggregators/parameters/aggregator_parameter";
 import {GroupBy} from "./group_by";
+
+export interface TimeRange {
+    from: Moment | string;
+    to: Moment | string;
+}
 
 export class KairosDBTarget {
     public static fromObject(object: any): KairosDBTarget {
@@ -12,7 +19,28 @@ export class KairosDBTarget {
       rval.groupBy = GroupBy.fromObject(object.groupBy);
       rval.aggregators = (object.aggregators || []).map(
           (val) => Aggregators.fromObject(val));
+      rval.timeRange = object.timeRange;
       return rval;
+    }
+
+    public static startTime(target: KairosDBTarget): number {
+        if (target.timeRange) {
+            const startMoment: Moment = dateMath.parse(target.timeRange.from);
+            if (startMoment) {
+                return startMoment.unix() * 1000;
+            }
+        }
+        return undefined;
+    }
+
+    public static endTime(target: KairosDBTarget): number {
+        if (target.timeRange) {
+            const endMoment: Moment = dateMath.parse(target.timeRange.to);
+            if (endMoment) {
+                return endMoment.unix() * 1000;
+            }
+        }
+        return undefined;
     }
 
     public metricName: string = undefined;
@@ -20,6 +48,7 @@ export class KairosDBTarget {
     public tags: {[key: string]: string[]} = {};
     public groupBy: GroupBy = new GroupBy();
     public aggregators: Aggregator[] = [];
+    public timeRange: TimeRange = undefined;
 
     public asString(): string {
       let str = "SELECT ";

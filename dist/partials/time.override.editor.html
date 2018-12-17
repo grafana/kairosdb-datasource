@@ -1,0 +1,20 @@
+<div class="gf-form-group" ng-if="ctrl.target.query.metricName">
+    <div class="gf-form-inline">
+        <div class="gf-form">
+            <label class="gf-form-label query-keyword width-8">
+                Time Range
+            </label>
+            <label class="gf-form-label" ng-show="!ctrl.target.query.timeRange">
+                <a ng-click="timeOverridden = true">
+                    <i class="fa fa-plus" bs-tooltip="'Add override'"></i>
+                </a>
+            </label>
+            <time-picker class="gf-timepicker-nav" dashboard="ctrl.panelCtrl.dashboard" query="ctrl.target.query" ng-show="ctrl.target.query.timeRange"></time-picker>
+            <label class="gf-form-label" ng-show="ctrl.target.query.timeRange">
+                <a ng-click="timeOverridden = false">
+                    <i class="fa fa-times"></i>
+                </a>
+            </label>
+        </div>
+    </div>
+</div>

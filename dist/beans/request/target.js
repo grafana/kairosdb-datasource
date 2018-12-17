@@ -1,9 +1,12 @@
-System.register(["../aggregators/aggregators", "./group_by"], function (exports_1, context_1) {
+System.register(["app/core/utils/datemath", "../aggregators/aggregators", "./group_by"], function (exports_1, context_1) {
     "use strict";
-    var Aggregators, group_by_1, KairosDBTarget;
+    var dateMath, Aggregators, group_by_1, KairosDBTarget;
     var __moduleName = context_1 && context_1.id;
     return {
         setters: [
+            function (dateMath_1) {
+                dateMath = dateMath_1;
+            },
             function (Aggregators_1) {
                 Aggregators = Aggregators_1;
             },
@@ -19,6 +22,7 @@ System.register(["../aggregators/aggregators", "./group_by"], function (exports_
                     this.tags = {};
                     this.groupBy = new group_by_1.GroupBy();
                     this.aggregators = [];
+                    this.timeRange = undefined;
                 }
                 KairosDBTarget.fromObject = function (object) {
                     var rval = new KairosDBTarget();
@@ -27,7 +31,26 @@ System.register(["../aggregators/aggregators", "./group_by"], function (exports_
                     rval.tags = object.tags || {};
                     rval.groupBy = group_by_1.GroupBy.fromObject(object.groupBy);
                     rval.aggregators = (object.aggregators || []).map(function (val) { return Aggregators.fromObject(val); });
+                    rval.timeRange = object.timeRange;
                     return rval;
+                };
+                KairosDBTarget.startTime = function (target) {
+                    if (target.timeRange) {
+                        var startMoment = dateMath.parse(target.timeRange.from);
+                        if (startMoment) {
+                            return startMoment.unix() * 1000;
+                        }
+                    }
+                    return undefined;
+                };
+                KairosDBTarget.endTime = function (target) {
+                    if (target.timeRange) {
+                        var endMoment = dateMath.parse(target.timeRange.to);
+                        if (endMoment) {
+                            return endMoment.unix() * 1000;
+                        }
+                    }
+                    return undefined;
                 };
                 KairosDBTarget.prototype.asString = function () {
                     var _this = this;

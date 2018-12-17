@@ -14,6 +14,7 @@ import {GroupByValueDirective} from "./directives/group_by/group_by_value";
 import {MetricNameFieldDirective} from "./directives/metric_name_field";
 import {TagInputDirective} from "./directives/tag_input";
 import {TagsSelectDirective} from "./directives/tags_select";
+import {TimePickerDirective} from "./directives/timepicker";
 
 class KairosDBQueryOptionsCtrl {
     public static templateUrl = "partials/query.options.html";
@@ -35,4 +36,5 @@ angular.module("grafana.directives")
     .directive("tagInput", TagInputDirective)
     .directive("groupByValue", GroupByValueDirective)
     .directive("groupByTime", GroupByTimeDirective)
-    .directive("groupByTags", GroupByTagsDirective);
+    .directive("groupByTags", GroupByTagsDirective)
+    .directive("timePicker", TimePickerDirective);

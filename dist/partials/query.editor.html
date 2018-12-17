@@ -4,4 +4,5 @@
     <ng-include src="'public/plugins/grafana-kairosdb-datasource/partials/tags.editor.html'"></ng-include>
     <ng-include src="'public/plugins/grafana-kairosdb-datasource/partials/group.by.editor.html'" ng-if="ctrl.tags.initialized && ctrl.tags.multiValuedTags"></ng-include>
     <aggregators ng-if="ctrl.tags.initialized" available-aggregators="ctrl.aggregators" entries="ctrl.target.query.aggregators"></aggregators>
+    <ng-include src="'public/plugins/grafana-kairosdb-datasource/partials/time.override.editor.html'" ng-if="ctrl.tags.initialized"></ng-include>
 </query-editor-row>

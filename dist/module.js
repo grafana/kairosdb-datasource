@@ -1,6 +1,6 @@
-System.register(["angular", "./core/config_ctrl", "./core/datasource", "./core/query_ctrl", "./directives/aggregator", "./directives/aggregator_editor", "./directives/aggregators", "./directives/group_by/group_by_tags", "./directives/group_by/group_by_time", "./directives/group_by/group_by_value", "./directives/metric_name_field", "./directives/tag_input", "./directives/tags_select"], function (exports_1, context_1) {
+System.register(["angular", "./core/config_ctrl", "./core/datasource", "./core/query_ctrl", "./directives/aggregator", "./directives/aggregator_editor", "./directives/aggregators", "./directives/group_by/group_by_tags", "./directives/group_by/group_by_time", "./directives/group_by/group_by_value", "./directives/metric_name_field", "./directives/tag_input", "./directives/tags_select", "./directives/timepicker"], function (exports_1, context_1) {
     "use strict";
-    var angular_1, config_ctrl_1, datasource_1, query_ctrl_1, aggregator_1, aggregator_editor_1, aggregators_1, group_by_tags_1, group_by_time_1, group_by_value_1, metric_name_field_1, tag_input_1, tags_select_1, KairosDBQueryOptionsCtrl;
+    var angular_1, config_ctrl_1, datasource_1, query_ctrl_1, aggregator_1, aggregator_editor_1, aggregators_1, group_by_tags_1, group_by_time_1, group_by_value_1, metric_name_field_1, tag_input_1, tags_select_1, timepicker_1, KairosDBQueryOptionsCtrl;
     var __moduleName = context_1 && context_1.id;
     return {
         setters: [
@@ -42,6 +42,9 @@ System.register(["angular", "./core/config_ctrl", "./core/datasource", "./core/q
             },
             function (tags_select_1_1) {
                 tags_select_1 = tags_select_1_1;
+            },
+            function (timepicker_1_1) {
+                timepicker_1 = timepicker_1_1;
             }
         ],
         execute: function () {
@@ -64,7 +67,8 @@ System.register(["angular", "./core/config_ctrl", "./core/datasource", "./core/q
                 .directive("tagInput", tag_input_1.TagInputDirective)
                 .directive("groupByValue", group_by_value_1.GroupByValueDirective)
                 .directive("groupByTime", group_by_time_1.GroupByTimeDirective)
-                .directive("groupByTags", group_by_tags_1.GroupByTagsDirective);
+                .directive("groupByTags", group_by_tags_1.GroupByTagsDirective)
+                .directive("timePicker", timepicker_1.TimePickerDirective);
         }
     };
 });

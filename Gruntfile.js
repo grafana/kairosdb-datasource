@@ -61,12 +61,15 @@ module.exports = function (grunt) {
                 ],
                 dest: "dist/",
                 options: {
+                    moduleResolution: "node",
                     module: "system",
                     target: "es5",
                     rootDir: "dist/",
+                    allowSyntheticDefaultImports: true,
                     keepDirectoryHierarchy: false,
                     declaration: true,
                     emitDecoratorMetadata: true,
+                    esModuleInterop: true,
                     experimentalDecorators: true,
                     sourceMap: true,
                     noImplicitAny: false

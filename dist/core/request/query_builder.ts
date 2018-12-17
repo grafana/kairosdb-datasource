@@ -63,7 +63,9 @@ export class KairosDBQueryBuilder {
             target.metricName,
             this.unpackTags(_.pickBy(target.tags, (tagValues) => tagValues.length)),
             target.aggregators.map((aggregator) => this.convertAggregatorToQueryObject(aggregator, defaultInterval)),
-            this.groupBysBuilder.build(target.groupBy)
+            this.groupBysBuilder.build(target.groupBy),
+            KairosDBTarget.startTime(target),
+            KairosDBTarget.endTime(target)
         );
     }
 

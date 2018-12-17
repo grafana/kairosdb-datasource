@@ -1,6 +1,6 @@
-System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/request/metric_query", "../../utils/templating_utils", "./group_bys_builder", "./parameter_object_builder", "./sampling_converter", "./sampling_parameter_converter"], function (exports_1, context_1) {
+System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/request/metric_query", "../../beans/request/target", "../../utils/templating_utils", "./group_bys_builder", "./parameter_object_builder", "./sampling_converter", "./sampling_parameter_converter"], function (exports_1, context_1) {
     "use strict";
-    var lodash_1, datapoints_query_1, metric_query_1, templating_utils_1, group_bys_builder_1, parameter_object_builder_1, sampling_converter_1, sampling_parameter_converter_1, KairosDBQueryBuilder;
+    var lodash_1, datapoints_query_1, metric_query_1, target_1, templating_utils_1, group_bys_builder_1, parameter_object_builder_1, sampling_converter_1, sampling_parameter_converter_1, KairosDBQueryBuilder;
     var __moduleName = context_1 && context_1.id;
     return {
         setters: [
@@ -12,6 +12,9 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
             },
             function (metric_query_1_1) {
                 metric_query_1 = metric_query_1_1;
+            },
+            function (target_1_1) {
+                target_1 = target_1_1;
             },
             function (templating_utils_1_1) {
                 templating_utils_1 = templating_utils_1_1;
@@ -70,7 +73,7 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
                 };
                 KairosDBQueryBuilder.prototype.buildMetricQuery = function (target, defaultInterval) {
                     var _this = this;
-                    return new metric_query_1.MetricQuery(target.metricName, this.unpackTags(lodash_1.default.pickBy(target.tags, function (tagValues) { return tagValues.length; })), target.aggregators.map(function (aggregator) { return _this.convertAggregatorToQueryObject(aggregator, defaultInterval); }), this.groupBysBuilder.build(target.groupBy));
+                    return new metric_query_1.MetricQuery(target.metricName, this.unpackTags(lodash_1.default.pickBy(target.tags, function (tagValues) { return tagValues.length; })), target.aggregators.map(function (aggregator) { return _this.convertAggregatorToQueryObject(aggregator, defaultInterval); }), this.groupBysBuilder.build(target.groupBy), target_1.KairosDBTarget.startTime(target), target_1.KairosDBTarget.endTime(target));
                 };
                 KairosDBQueryBuilder.prototype.unpackTags = function (tags) {
                     var _this = this;
