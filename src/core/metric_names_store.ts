@@ -28,8 +28,10 @@ export class MetricNamesStore {
     public get(): Promise<string[]> {
         if (this.initialized) {
             return this.promiseUtils.resolvedPromise(this.metricNames);
-        } else {
+        } else if (this.fetchingPromise !== undefined) {
             return this.fetchingPromise;
+        } else {
+            return this.initialize();
         }
     }
 

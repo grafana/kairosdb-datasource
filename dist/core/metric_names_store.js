@@ -29,8 +29,11 @@ System.register(["lodash"], function (exports_1, context_1) {
                     if (this.initialized) {
                         return this.promiseUtils.resolvedPromise(this.metricNames);
                     }
-                    else {
+                    else if (this.fetchingPromise !== undefined) {
                         return this.fetchingPromise;
+                    }
+                    else {
+                        return this.initialize();
                     }
                 };
                 MetricNamesStore.prototype.cacheInitialized = function () {
