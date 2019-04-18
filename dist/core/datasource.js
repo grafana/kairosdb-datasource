@@ -65,6 +65,10 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     this.metricNamesStore.getMetricNames()
                         .then(function () { return _this.initialized = true; }, function () { return _this.initializationError = true; });
                 };
+                KairosDBDatasource.prototype.testDatasource = function () {
+                    return this.executeRequest(this.getRequestBuilder().buildHealthStatusQuery())
+                        .then(function (response) { return response.status; });
+                };
                 KairosDBDatasource.prototype.query = function (options) {
                     var _this = this;
                     var enabledTargets = lodash_1.default.cloneDeep(options.targets.filter(function (target) { return !target.hide; }));
