@@ -51,6 +51,11 @@ export class KairosDBDatasource {
         this.metricNamesStore.initialize().then(() => this.initialized = true, () => this.initializationError = true);
     }
 
+    public testDatasource() {
+        return this.executeRequest(this.getRequestBuilder().buildHealthStatusQuery())
+            .then((response) => response.status);
+    }
+
     public query(options) {
         const enabledTargets = _.cloneDeep(options.targets.filter((target) => !target.hide));
         const convertedTargets = _.map(enabledTargets, (target) => {

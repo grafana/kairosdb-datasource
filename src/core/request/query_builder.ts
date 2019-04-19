@@ -29,6 +29,13 @@ export class KairosDBQueryBuilder {
         this.samplingParameterConverter = new SamplingParameterConverter(samplingConverter);
     }
 
+    public buildHealthStatusQuery() {
+        return this.buildRequest({
+            method: "GET",
+            url: "/health/status"
+        });
+    }
+
     public buildMetricNameQuery() {
         return this.buildRequest({
             method: "GET",
