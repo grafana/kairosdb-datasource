@@ -12,6 +12,10 @@ export enum Alignment {
     NONE, START_TIME, SAMPLING
 }
 
+export enum Filter {
+    GT, GTE, EQUAL, LTE, LT
+}
+
 export function EnumValues(enumType) {
     return _.pickBy(_.values(enumType), (value) => !_.isNumber(value));
 }

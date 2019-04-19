@@ -1,6 +1,6 @@
-System.register(["./aggregator", "./divide_aggregator", "./percentile_aggregator", "./range_aggregator", "./rate_aggregator", "./sampler_aggregator", "./scale_aggregator", "./sma_aggregator", "./trim_aggregator"], function (exports_1, context_1) {
+System.register(["./aggregator", "./divide_aggregator", "./filter_aggregator", "./percentile_aggregator", "./range_aggregator", "./rate_aggregator", "./sampler_aggregator", "./scale_aggregator", "./sma_aggregator", "./trim_aggregator"], function (exports_1, context_1) {
     "use strict";
-    var aggregator_1, divide_aggregator_1, percentile_aggregator_1, range_aggregator_1, rate_aggregator_1, sampler_aggregator_1, scale_aggregator_1, sma_aggregator_1, trim_aggregator_1, AGGREGATORS, RANGE_AGGREGATORS;
+    var aggregator_1, divide_aggregator_1, filter_aggregator_1, percentile_aggregator_1, range_aggregator_1, rate_aggregator_1, sampler_aggregator_1, scale_aggregator_1, sma_aggregator_1, trim_aggregator_1, AGGREGATORS, RANGE_AGGREGATORS;
     var __moduleName = context_1 && context_1.id;
     function fromObject(object) {
         if (object.name in RANGE_AGGREGATORS) {
@@ -30,6 +30,9 @@ System.register(["./aggregator", "./divide_aggregator", "./percentile_aggregator
         else if (object.name === "diff") {
             return new aggregator_1.Aggregator("diff");
         }
+        else if (object.name === "filter") {
+            return filter_aggregator_1.FilterAggregator.fromObject(object);
+        }
         return object;
     }
     exports_1("fromObject", fromObject);
@@ -40,6 +43,9 @@ System.register(["./aggregator", "./divide_aggregator", "./percentile_aggregator
             },
             function (divide_aggregator_1_1) {
                 divide_aggregator_1 = divide_aggregator_1_1;
+            },
+            function (filter_aggregator_1_1) {
+                filter_aggregator_1 = filter_aggregator_1_1;
             },
             function (percentile_aggregator_1_1) {
                 percentile_aggregator_1 = percentile_aggregator_1_1;
@@ -85,8 +91,9 @@ System.register(["./aggregator", "./divide_aggregator", "./percentile_aggregator
                 new rate_aggregator_1.RateAggregator(),
                 new sampler_aggregator_1.SamplerAggregator(),
                 new scale_aggregator_1.ScaleAggregator(),
-                new trim_aggregator_1.TrimAggregator()
-            ]);
+                new trim_aggregator_1.TrimAggregator(),
+                new filter_aggregator_1.FilterAggregator()
+            ].sort(function (a, b) { return a.name.localeCompare(b.name); }));
             RANGE_AGGREGATORS = ["avg", "dev", "count", "first", "gaps",
                 "last", "least_squares", "max", "min", "gaps", "merge", "sum", "movingWindow"];
         }

@@ -1,5 +1,6 @@
 import {Aggregator} from "./aggregator";
 import {DivideAggregator} from "./divide_aggregator";
+import {FilterAggregator} from "./filter_aggregator";
 import {PercentileAggregator} from "./percentile_aggregator";
 import {RangeAggregator} from "./range_aggregator";
 import {RateAggregator} from "./rate_aggregator";
@@ -29,8 +30,9 @@ export const AGGREGATORS = [
     new RateAggregator(),
     new SamplerAggregator(),
     new ScaleAggregator(),
-    new TrimAggregator()
-];
+    new TrimAggregator(),
+    new FilterAggregator()
+].sort( (a, b) => a.name.localeCompare(b.name));
 
 const RANGE_AGGREGATORS = ["avg", "dev", "count", "first", "gaps",
     "last", "least_squares", "max", "min", "gaps", "merge", "sum", "movingWindow"];
@@ -54,6 +56,8 @@ export function fromObject(object: any): Aggregator {
       return TrimAggregator.fromObject(object);
   } else if (object.name === "diff") {
       return new Aggregator("diff");
+  } else if (object.name === "filter") {
+      return FilterAggregator.fromObject(object);
   }
 
   return object;

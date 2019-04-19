@@ -28,7 +28,7 @@ System.register(["lodash", "../utils/promise_utils"], function (exports_1, conte
             }
         ],
         execute: function () {
-            METRIC_NAMES_SUGGESTIONS_LIMIT = 200;
+            METRIC_NAMES_SUGGESTIONS_LIMIT = 20;
             MetricNameFieldCtrl = (function () {
                 function MetricNameFieldCtrl($scope, $q, uiSegmentSrv) {
                     this.uiSegmentSrv = uiSegmentSrv;

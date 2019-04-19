@@ -18,4 +18,11 @@ export declare enum Alignment {
     START_TIME = 1,
     SAMPLING = 2
 }
+export declare enum Filter {
+    GT = 0,
+    GTE = 1,
+    EQUAL = 2,
+    LTE = 3,
+    LT = 4
+}
 export declare function EnumValues(enumType: any): any;
