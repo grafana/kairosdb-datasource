@@ -13,7 +13,8 @@ before_script:
 - npm install
 script:
 - grunt
-- zip -r grafana-kairosdb-datasource.zip src/ dist/
+- cp -R dist kairosdb-datasource
+- zip -r kairosdb-datasource.zip kairosdb-datasource/
 deploy:
   provider: releases
   api_key:
