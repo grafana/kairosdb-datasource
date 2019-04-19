@@ -68,7 +68,7 @@ System.register(["app/plugins/sdk", "../beans/aggregators/aggregators", "../bean
                     else {
                         _this.target.query = _this.target.query || new target_1.KairosDBTarget();
                     }
-                    _this.initializeTags(_this.target.query.metricName);
+                    _this.initializeTags(_this.target.query.metricName, _this.target.query);
                     return _this;
                 }
                 KairosDBQueryCtrl.prototype.getCollapsedText = function () {
@@ -83,21 +83,45 @@ System.register(["app/plugins/sdk", "../beans/aggregators/aggregators", "../bean
                     if (newMetricName === oldMetricName) {
                         return;
                     }
-                    this.target.query = this.buildNewTarget(newMetricName);
-                    this.initializeTags(newMetricName);
+                    var query = this.buildNewTarget(newMetricName);
+                    this.initializeTags(newMetricName, query);
+                    this.target.query = query;
                 };
                 KairosDBQueryCtrl.prototype.buildNewTarget = function (metricName) {
+                    var oldQuery = this.target.query;
                     var target = new target_1.KairosDBTarget();
                     target.metricName = metricName;
+                    if (oldQuery) {
+                        target.aggregators = oldQuery.aggregators;
+                        target.alias = oldQuery.alias;
+                        target.tags = oldQuery.tags;
+                        target.groupBy = oldQuery.groupBy;
+                        target.timeRange = oldQuery.timeRange;
+                    }
                     return target;
                 };
-                KairosDBQueryCtrl.prototype.initializeTags = function (metricName) {
+                KairosDBQueryCtrl.prototype.initializeTags = function (metricName, query) {
                     var _this = this;
                     this.clear();
                     if (metricName) {
                         this.tags = new metric_tags_1.MetricTags();
                         this.datasource.getMetricTags(metricName)
-                            .then(function (tags) { return _this.tags.updateTags(tags); }, function (error) { return _this.tagsInitializationError = error.data.message; });
+                            .then(function (tags) { return _this.tags.updateTags(tags); }, function (error) { return _this.tagsInitializationError = error.data.message; })
+                            .then(function () {
+                            if (!_this.tagsInitializationError) {
+                                var newTags_1 = {};
+                                Object.keys(query.tags)
+                                    .filter(function (tag) { return _this.tags.tags.hasOwnProperty(tag); })
+                                    .forEach(function (tag) { return newTags_1[tag] = query.tags[tag].filter(function (value) { return _this.tags.tags[tag].indexOf(value) > -1; }); });
+                                Object.keys(_this.tags.tags)
+                                    .filter(function (tag) { return !query.tags.hasOwnProperty(tag); })
+                                    .forEach(function (tag) { return newTags_1[tag] = []; });
+                                query.tags = newTags_1;
+                                if (query.groupBy.tags) {
+                                    query.groupBy.tags = query.groupBy.tags.filter(function (tag) { return _this.tags.tags.hasOwnProperty(tag); });
+                                }
+                            }
+                        });
                     }
                 };
                 KairosDBQueryCtrl.prototype.isTargetChanged = function (newTarget, oldTarget) {

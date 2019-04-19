@@ -36,7 +36,7 @@ export class KairosDBQueryCtrl extends QueryCtrl {
         } else {
             this.target.query = this.target.query || new KairosDBTarget();
         }
-        this.initializeTags(this.target.query.metricName);
+        this.initializeTags(this.target.query.metricName, this.target.query);
     }
 
     public getCollapsedText(): string {
@@ -53,17 +53,26 @@ export class KairosDBQueryCtrl extends QueryCtrl {
         if (newMetricName === oldMetricName) {
             return;
         }
-        this.target.query = this.buildNewTarget(newMetricName);
-        this.initializeTags(newMetricName);
+        const query = this.buildNewTarget(newMetricName);
+        this.initializeTags(newMetricName, query);
+        this.target.query = query;
     }
 
     private buildNewTarget(metricName) {
+        const oldQuery: KairosDBTarget | undefined = this.target.query;
         const target = new KairosDBTarget();
         target.metricName = metricName;
+        if (oldQuery) {
+          target.aggregators = oldQuery.aggregators;
+          target.alias = oldQuery.alias;
+          target.tags = oldQuery.tags;
+          target.groupBy = oldQuery.groupBy;
+          target.timeRange = oldQuery.timeRange;
+        }
         return target;
     }
 
-    private initializeTags(metricName: string) {
+    private initializeTags(metricName: string, query: KairosDBTarget) {
         this.clear();
         if (metricName) {
             this.tags = new MetricTags();
@@ -71,6 +80,23 @@ export class KairosDBQueryCtrl extends QueryCtrl {
                 .then(
                     (tags) => this.tags.updateTags(tags),
                     (error) => this.tagsInitializationError = error.data.message
+                )
+                .then(
+                  () => {
+                    if (!this.tagsInitializationError) {
+                      const newTags: {[key: string]: string[]} = {};
+                      Object.keys(query.tags)
+                        .filter((tag) => this.tags.tags.hasOwnProperty(tag))
+                        .forEach((tag) => newTags[tag] = query.tags[tag].filter((value) => this.tags.tags[tag].indexOf(value) > -1));
+                      Object.keys(this.tags.tags)
+                        .filter((tag) => !query.tags.hasOwnProperty(tag))
+                        .forEach((tag) => newTags[tag] = []);
+                      query.tags = newTags;
+                      if (query.groupBy.tags) {
+                        query.groupBy.tags = query.groupBy.tags.filter((tag) => this.tags.tags.hasOwnProperty(tag));
+                      }
+                    }
+                  }
                 );
         }
     }
