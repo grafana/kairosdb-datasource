@@ -1,7 +1,7 @@
 import _ from "lodash";
 import {PromiseUtils} from "../utils/promise_utils";
 
-const METRIC_NAMES_SUGGESTIONS_LIMIT = 20;
+const METRIC_NAMES_SUGGESTIONS_LIMIT = 200;
 
 export class MetricNameFieldCtrl {
     public value: string;
