@@ -53,6 +53,18 @@ function (angular, _, sdk, dateMath, kbn) {
     }
 
     return this.performTimeSeriesQuery(queries, start, end)
+      
+    // ZMON-HACK remove this .then() clause to chart-data-permanence hack.  
+      .then(function(results) {
+        var h = hashCode(JSON.stringify(queries));
+        if (!results) {
+          results = JSON.parse(self.lastResults[h] || '{}');
+        } else {
+          self.lastResults[h] = JSON.stringify(results);
+        }
+        return results;
+      })
+      
       .then(handleKairosDBQueryResponseAlias, handleQueryError);
   };
 
@@ -472,6 +484,17 @@ function (angular, _, sdk, dateMath, kbn) {
     }
 
     return datapoints;
+  }
+
+  function hashCode(queries){    
+    var hash = 0, i, chr;
+    if (queries.length === 0) return hash;
+    for (i = 0; i < queries.length; i++) {
+      chr   = queries.charCodeAt(i);
+      hash  = ((hash << 5) - hash) + chr;
+      hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
   }
 
   return KairosDBDatasource;
