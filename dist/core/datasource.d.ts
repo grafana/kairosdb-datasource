@@ -16,6 +16,7 @@ export declare class KairosDBDatasource {
     private templateSrv;
     private legacyTargetConverter;
     private templatingUtils;
+    private lastResult;
     constructor(instanceSettings: any, $q: any, backendSrv: any, templateSrv: any);
     initialize(): void;
     query(options: any): any;
@@ -33,4 +34,6 @@ export declare class KairosDBDatasource {
     private getMetricTagNames(metricName);
     private getMetricTagValues(metricName, tagName, filters);
     private mapToTemplatingValue(entry);
+    private hashCode(queries);
+    private cacheAndConvertToDataPoints(hashedQuery, responseData, aliases);
 }

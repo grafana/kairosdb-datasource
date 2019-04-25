@@ -59,6 +59,7 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     this.targetValidator = new target_validator_1.TargetValidator();
                     this.legacyTargetConverter = new legacy_target_converter_1.LegacyTargetConverter();
                     this.registerTemplatingFunctions();
+                    this.lastResult = {};
                 }
                 KairosDBDatasource.prototype.initialize = function () {
                     var _this = this;
@@ -85,8 +86,10 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                         });
                     }));
                     var requestBuilder = this.getRequestBuilder(options.scopedVars);
+                    var hashedQuery = this.hashCode(JSON.stringify(unpackedTargets));
                     return this.executeRequest(requestBuilder.buildDatapointsQuery(unpackedTargets, options))
-                        .then(function (response) { return _this.responseHandler.convertToDatapoints(response.data, aliases); });
+                        .then(function (response) { return _this.cacheAndConvertToDataPoints(hashedQuery, response.data, aliases); })
+                        .catch(function () { return _this.responseHandler.convertToDatapoints(_this.lastResult[hashedQuery], aliases); });
                 };
                 KairosDBDatasource.prototype.getMetricTags = function (metricNameTemplate, filters) {
                     if (filters === void 0) { filters = {}; }
@@ -139,6 +142,20 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                         text: entry,
                         value: entry
                     };
+                };
+                KairosDBDatasource.prototype.hashCode = function (queries) {
+                    var hash = 0;
+                    if (queries.length === 0) {
+                        return hash;
+                    }
+                    for (var i = 0; i < queries.length; i++) {
+                        hash = Math.imul(31, hash) + queries.charCodeAt(i);
+                    }
+                    return hash;
+                };
+                KairosDBDatasource.prototype.cacheAndConvertToDataPoints = function (hashedQuery, responseData, aliases) {
+                    this.lastResult[hashedQuery] = responseData;
+                    return this.responseHandler.convertToDatapoints(responseData, aliases);
                 };
                 return KairosDBDatasource;
             })();

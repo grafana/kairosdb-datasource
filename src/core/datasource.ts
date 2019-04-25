@@ -28,6 +28,7 @@ export class KairosDBDatasource {
     private templateSrv: any;
     private legacyTargetConverter: LegacyTargetConverter;
     private templatingUtils: TemplatingUtils;
+    private lastResult: any;
 
     constructor(instanceSettings, $q, backendSrv, templateSrv) {
         this.type = instanceSettings.type;
@@ -45,6 +46,7 @@ export class KairosDBDatasource {
         this.targetValidator = new TargetValidator();
         this.legacyTargetConverter = new LegacyTargetConverter();
         this.registerTemplatingFunctions();
+        this.lastResult = {};
     }
 
     public initialize(): void {
@@ -73,8 +75,10 @@ export class KairosDBDatasource {
                 });
         }));
         const requestBuilder = this.getRequestBuilder(options.scopedVars);
+        const  hashedQuery = this.hashCode(JSON.stringify(unpackedTargets));
         return this.executeRequest(requestBuilder.buildDatapointsQuery(unpackedTargets, options))
-            .then((response) => this.responseHandler.convertToDatapoints(response.data, aliases));
+            .then((response) => this.cacheAndConvertToDataPoints(hashedQuery, response.data, aliases))
+            .catch(() => this.responseHandler.convertToDatapoints(this.lastResult[hashedQuery], aliases));
     }
 
     public getMetricTags(metricNameTemplate, filters = {}) {
@@ -135,5 +139,21 @@ export class KairosDBDatasource {
             text: entry,
             value: entry
         };
+    }
+
+    private hashCode(queries) {
+        let hash = 0;
+        if (queries.length === 0) {
+            return hash;
+        }
+        for (let i = 0; i < queries.length; i++) {
+          hash = Math.imul(31, hash) + queries.charCodeAt(i);
+        }
+        return hash;
+    }
+
+    private cacheAndConvertToDataPoints(hashedQuery, responseData, aliases) {
+        this.lastResult[hashedQuery] = responseData;
+        return this.responseHandler.convertToDatapoints(responseData, aliases);
     }
 }
