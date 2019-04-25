@@ -1,0 +1,48 @@
+<div class="gf-form-inline">
+    <div class="gf-form">
+        <label class="gf-form-label query-keyword width-8">
+            Group by
+        </label>
+    </div>
+    <div class="gf-form">
+        <label class="gf-form-label width-5">
+            Tag
+        </label>
+    </div>
+    <div class="gf-form-inline">
+        <gf-form-switch
+                ng-repeat="tag in ctrl.allowedValues"
+                class="gf-form group-by-tag-checkbox"
+                label="{{tag}}"
+                label-class="tag-label"
+                switch-class="tag-switch"
+                checked="ctrl.selectedTags[tag]" on-change="ctrl.onChange()">
+        </gf-form-switch>
+        <gf-form-switch ng-repeat="tag in ctrl.tags" ng-if="ctrl.allowedValues.indexOf(tag) === -1"
+                        class="gf-form group-by-tag-checkbox"
+                        label="{{tag}}"
+                        label-class="tag-label"
+                        switch-class="tag-switch"
+                        checked="ctrl.selectedTags[tag]" on-change="ctrl.onChange()">
+        </gf-form-switch>
+    </div>
+    <div ng-show="ctrl.inputVisible">
+        <input type="text" ng-model="newTag"
+               class="gf-form-input width-10" placeholder="Custom value"/>
+    </div>
+    <div class="gf-form">
+        <label class="gf-form-label">
+            <a ng-click="ctrl.addCustom(newTag); newTag=''; ctrl.onChange()">
+                <i class="fa fa-plus" bs-tooltip="'Add custom value'"></i>
+            </a>
+        </label>
+    </div>
+    <div class="gf-form" ng-show="allowedGroupByTags.length == 0">
+        <label class="gf-form-label">
+            No tags to group by
+        </label>
+    </div>
+    <div class="gf-form gf-form--grow">
+        <div class="gf-form-label gf-form-label--grow"></div>
+    </div>
+</div>

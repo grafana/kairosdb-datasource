@@ -1,0 +1,42 @@
+<div class="gf-form-inline">
+    <div class="gf-form">
+        <select ng-model="newAggregatorName" ng-change="pickAggregator(newAggregatorName);">
+            <option value="" disabled selected>Select aggregator</option>
+            <option ng-repeat="agg in ctrl.availableAggregators" value="{{agg.name}}">{{agg.name}}</option>
+        </select>
+    </div>
+
+    <div class="gf-form" ng-repeat="parameter in newAggregator.parameters track by $index"
+        ng-if="!isAutoValue() || !newAggregator.autoValueSwitch.dependentParameters.includes(parameter)">
+        <div class="gf-form">
+            <label class="gf-form-label">
+                {{parameter.text}}
+            </label>
+        </div>
+        <div class="gf-form">
+            <input ng-if="!parameter.allowedValues"
+                   type="text" class="gf-form-input width-5"
+                   ng-model="newAggregator.parameters[$index].value"/>
+            <select ng-if="parameter.allowedValues" class="width-8"
+                    ng-model="newAggregator.parameters[$index].value">
+                <option ng-repeat="value in parameter.allowedValues">{{value}}</option>
+            </select>
+        </div>
+    </div>
+
+    <gf-form-switch class="gf-form group-by-tag-checkbox" ng-if="newAggregator.autoValueSwitch"
+                    label="Auto value"
+                    checked="newAggregator.autoValueSwitch.enabled">
+    </gf-form-switch>
+
+    <div class="gf-form" ng-show="newAggregator">
+        <label class="gf-form-label">
+            <a ng-click="ctrl.add(newAggregator); newAggregator = null; newAggregatorName=null;">
+                <i class="fa fa-plus"></i>
+            </a>
+        </label>
+    </div>
+    <div class="gf-form gf-form--grow">
+        <div class="gf-form-label gf-form-label--grow"></div>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+<div class="gf-form-inline">
+    <div class="gf-form">
+        <label class="gf-form-label offset-width-8 width-5">
+            Time
+        </label>
+    </div>
+    <div class="gf-form" ng-repeat="entry in ctrl.entries">
+        <label class="gf-form-label">
+            Interval: {{entry.interval}} {{entry.unit}} Count: {{entry.count}}
+            <a ng-click="ctrl.remove(entry)">
+                <i class="fa fa-times"></i>
+            </a>
+        </label>
+    </div>
+    <div ng-show="ctrl.inputVisible" class="gf-form">
+        <input type="text" ng-model="newEntry.interval"
+               bs-tooltip="'Duration of time groups'"
+               class="gf-form-input width-8" placeholder="Interval"/>
+        <select class="width-10" ng-model="newEntry.unit">
+            <option value="" disabled selected>Select unit</option>
+            <option ng-repeat="value in ctrl.allowedUnitValues">{{value}}</option>
+        </select>
+        <input type="text" ng-model="newEntry.count"
+               bs-tooltip="'Number of time groups to be formed'"
+               class="gf-form-input width-5" placeholder="Count"/>
+    </div>
+    <div class="gf-form">
+        <label class="gf-form-label">
+            <a ng-click="ctrl.add(newEntry); newEntry = {}">
+                <i class="fa fa-plus"></i>
+            </a>
+        </label>
+    </div>
+    <div class="gf-form gf-form--grow">
+        <div class="gf-form-label gf-form-label--grow"></div>
+    </div>
+</div>

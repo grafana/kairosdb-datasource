@@ -1,0 +1,32 @@
+<div class="gf-form">
+    <metric-segment segment="ctrl.segment" get-options="ctrl.suggestMetrics($index)"
+                    on-change="ctrl.onChange(segment)"></metric-segment>
+
+    <label class="gf-form-label" ng-show="!(ctrl.aliasInputVisible || ctrl.aliasAddedVisible)">
+        <a ng-click="ctrl.aliasInputVisible = true;">
+            <i class="fa fa-plus" bs-tooltip="'Add alias'"></i>
+        </a>
+    </label>
+
+    <label class="gf-form-label" ng-show="ctrl.aliasInputVisible || ctrl.alias">
+        as
+    </label>
+
+    <input type="text" placeholder="alias" ng-model="ctrl.aliasInput" class="gf-form-input width-10"
+           ng-show="ctrl.aliasInputVisible"/>
+
+    <label class="gf-form-label" ng-show="ctrl.aliasInputVisible">
+        <a ng-click="ctrl.setAlias(ctrl.aliasInput);">
+            <i class="fa fa-plus" bs-tooltip="'Save alias'"></i>
+        </a>
+    </label>
+    <label class="gf-form-label" ng-show="ctrl.alias">
+        <b>{{ctrl.alias}}</b>
+    </label>
+
+    <label class="gf-form-label" ng-show="ctrl.aliasAddedVisible">
+        <a ng-click="ctrl.aliasAddedVisible = false; ctrl.alias = null">
+            <i class="fa fa-times"></i>
+        </a>
+    </label>
+</div>
