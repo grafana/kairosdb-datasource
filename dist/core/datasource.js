@@ -88,7 +88,10 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     var requestBuilder = this.getRequestBuilder(options.scopedVars);
                     var hashedQuery = this.hashCode(JSON.stringify(unpackedTargets));
                     return this.executeRequest(requestBuilder.buildDatapointsQuery(unpackedTargets, options))
-                        .then(function (response) { return _this.cacheAndConvertToDataPoints(hashedQuery, response.data, aliases); })
+                        .then(function (response) {
+                        _this.cacheResponse(hashedQuery, response.data);
+                        return _this.responseHandler.convertToDatapoints(response.data, aliases);
+                    })
                         .catch(function () { return _this.responseHandler.convertToDatapoints(_this.lastResult[hashedQuery], aliases); });
                 };
                 KairosDBDatasource.prototype.getMetricTags = function (metricNameTemplate, filters) {
@@ -153,9 +156,8 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     }
                     return hash;
                 };
-                KairosDBDatasource.prototype.cacheAndConvertToDataPoints = function (hashedQuery, responseData, aliases) {
+                KairosDBDatasource.prototype.cacheResponse = function (hashedQuery, responseData) {
                     this.lastResult[hashedQuery] = responseData;
-                    return this.responseHandler.convertToDatapoints(responseData, aliases);
                 };
                 return KairosDBDatasource;
             })();

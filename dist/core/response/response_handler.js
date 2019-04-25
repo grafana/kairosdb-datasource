@@ -19,7 +19,7 @@ System.register(["lodash"], function(exports_1) {
                     })
                         .map(function (entry) { return lodash_1.default.map(entry.results, function (result) {
                         return {
-                            datapoints: result.values.map(function (value) { return value.reverse(); }),
+                            datapoints: result.values.map(function (value) { return value.slice().reverse(); }),
                             target: _this.seriesNameBuilder.build(result.name, entry.alias, result.group_by)
                         };
                     }); });

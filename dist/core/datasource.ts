@@ -77,7 +77,10 @@ export class KairosDBDatasource {
         const requestBuilder = this.getRequestBuilder(options.scopedVars);
         const  hashedQuery = this.hashCode(JSON.stringify(unpackedTargets));
         return this.executeRequest(requestBuilder.buildDatapointsQuery(unpackedTargets, options))
-            .then((response) => this.cacheAndConvertToDataPoints(hashedQuery, response.data, aliases))
+            .then((response) => {
+                this.cacheResponse(hashedQuery, response.data);
+                return this.responseHandler.convertToDatapoints(response.data, aliases);
+            })
             .catch(() => this.responseHandler.convertToDatapoints(this.lastResult[hashedQuery], aliases));
     }
 
@@ -152,8 +155,7 @@ export class KairosDBDatasource {
         return hash;
     }
 
-    private cacheAndConvertToDataPoints(hashedQuery, responseData, aliases) {
+    private cacheResponse(hashedQuery, responseData) {
         this.lastResult[hashedQuery] = responseData;
-        return this.responseHandler.convertToDatapoints(responseData, aliases);
     }
 }

@@ -15,7 +15,7 @@ export class KairosDBResponseHandler {
             })
             .map((entry) => _.map(entry.results, (result) => {
                 return {
-                    datapoints: result.values.map((value) => value.reverse()),
+                    datapoints: result.values.map((value) => [...value].reverse()),
                     target: this.seriesNameBuilder.build(result.name, entry.alias, result.group_by)
                 };
             }));

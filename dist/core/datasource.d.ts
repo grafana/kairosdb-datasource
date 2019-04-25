@@ -35,5 +35,5 @@ export declare class KairosDBDatasource {
     private getMetricTagValues(metricName, tagName, filters);
     private mapToTemplatingValue(entry);
     private hashCode(queries);
-    private cacheAndConvertToDataPoints(hashedQuery, responseData, aliases);
+    private cacheResponse(hashedQuery, responseData);
 }
