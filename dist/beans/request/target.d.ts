@@ -7,8 +7,6 @@ export interface TimeRange {
 }
 export declare class KairosDBTarget {
     static fromObject(object: any): KairosDBTarget;
-    static startTime(target: KairosDBTarget): number;
-    static endTime(target: KairosDBTarget): number;
     metricName: string;
     alias: string;
     tags: {
@@ -16,6 +14,8 @@ export declare class KairosDBTarget {
     };
     groupBy: GroupBy;
     aggregators: Aggregator[];
-    timeRange: TimeRange;
+    timeRange?: TimeRange;
+    startTime(): number | undefined;
+    endTime(): number | undefined;
     asString(): string;
 }

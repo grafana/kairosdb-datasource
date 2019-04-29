@@ -23,32 +23,32 @@ export class KairosDBTarget {
       return rval;
     }
 
-    public static startTime(target: KairosDBTarget): number {
-        if (target.timeRange) {
-            const startMoment: Moment = dateMath.parse(target.timeRange.from);
-            if (startMoment) {
-                return startMoment.unix() * 1000;
-            }
-        }
-        return undefined;
-    }
-
-    public static endTime(target: KairosDBTarget): number {
-        if (target.timeRange) {
-            const endMoment: Moment = dateMath.parse(target.timeRange.to);
-            if (endMoment) {
-                return endMoment.unix() * 1000;
-            }
-        }
-        return undefined;
-    }
-
     public metricName: string = undefined;
     public alias: string = undefined;
     public tags: {[key: string]: string[]} = {};
     public groupBy: GroupBy = new GroupBy();
     public aggregators: Aggregator[] = [];
-    public timeRange: TimeRange = undefined;
+    public timeRange?: TimeRange;
+
+    public startTime(): number | undefined {
+      if (this.timeRange) {
+        const startMoment: Moment = dateMath.parse(this.timeRange.from);
+        if (startMoment) {
+          return startMoment.unix() * 1000;
+        }
+      }
+      return undefined;
+    }
+
+    public endTime(): number | undefined {
+      if (this.timeRange) {
+        const endMoment: Moment = dateMath.parse(this.timeRange.to);
+        if (endMoment) {
+          return endMoment.unix() * 1000;
+        }
+      }
+      return undefined;
+    }
 
     public asString(): string {
       let str = "SELECT ";

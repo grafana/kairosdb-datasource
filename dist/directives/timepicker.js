@@ -108,6 +108,10 @@ System.register(["angular", "app/core/utils/datemath", "lodash", "moment", "../u
                     this.onRefresh();
                     this.$rootScope.appEvent("timepickerClosed");
                 };
+                TimePickerCtrl.prototype.applyCustom = function () {
+                    this.query.timeRange = { from: this.editTimeRaw.from, to: this.editTimeRaw.to };
+                    this.closeDropdown();
+                };
                 TimePickerCtrl.prototype.absoluteFromChanged = function () {
                     this.editTimeRaw.from = this.getAbsoluteMomentForTimezone(this.absolute.fromJs);
                 };

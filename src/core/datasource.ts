@@ -1,6 +1,7 @@
 import _ from "lodash";
 import {TemplatingFunction} from "../beans/function";
 import {LegacyTargetConverter} from "../beans/request/legacy_target_converter";
+import {KairosDBTarget} from "../beans/request/target";
 import {TemplatingFunctionsCtrl} from "../controllers/templating_functions_ctrl";
 import {PromiseUtils} from "../utils/promise_utils";
 import {TemplatingFunctionResolver} from "../utils/templating_function_resolver";
@@ -59,8 +60,13 @@ export class KairosDBDatasource {
     public query(options) {
         const enabledTargets = _.cloneDeep(options.targets.filter((target) => !target.hide));
         const convertedTargets = _.map(enabledTargets, (target) => {
-            return this.legacyTargetConverter.isApplicable(target) ?
-                {query: this.legacyTargetConverter.convert(target)} : target;
+            if (this.legacyTargetConverter.isApplicable(target)) {
+              return {query: this.legacyTargetConverter.convert(target)};
+            } else if (target.query instanceof KairosDBTarget) {
+              return {query: KairosDBTarget.fromObject(target.query)};
+            } else {
+              return target;
+            }
         });
 
         if (!this.targetValidator.areValidTargets(convertedTargets)) {

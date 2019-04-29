@@ -69,7 +69,9 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
                     var range = options.range;
                     var panelId = options.panelId;
                     var defaultInterval = options.interval;
-                    var requests = targets.map(function (target) { return _this.buildMetricQuery(target.query, defaultInterval); }), data = new datapoints_query_1.DatapointsQuery(range.from, range.to, requests);
+                    var requests = targets.map(function (target) {
+                        return _this.buildMetricQuery(target.query instanceof target_1.KairosDBTarget ? target.query : target_1.KairosDBTarget.fromObject(target.query), defaultInterval);
+                    }), data = new datapoints_query_1.DatapointsQuery(range.from, range.to, requests);
                     return this.buildRequest({
                         data: data,
                         method: "POST",
@@ -79,7 +81,7 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
                 };
                 KairosDBQueryBuilder.prototype.buildMetricQuery = function (target, defaultInterval) {
                     var _this = this;
-                    return new metric_query_1.MetricQuery(target.metricName, this.unpackTags(lodash_1.default.pickBy(target.tags, function (tagValues) { return tagValues.length; })), target.aggregators.map(function (aggregator) { return _this.convertAggregatorToQueryObject(aggregator, defaultInterval); }), this.groupBysBuilder.build(target.groupBy), target_1.KairosDBTarget.startTime(target), target_1.KairosDBTarget.endTime(target));
+                    return new metric_query_1.MetricQuery(target.metricName, this.unpackTags(lodash_1.default.pickBy(target.tags, function (tagValues) { return tagValues.length; })), target.aggregators.map(function (aggregator) { return _this.convertAggregatorToQueryObject(aggregator, defaultInterval); }), this.groupBysBuilder.build(target.groupBy), target.startTime(), target.endTime());
                 };
                 KairosDBQueryBuilder.prototype.unpackTags = function (tags) {
                     var _this = this;

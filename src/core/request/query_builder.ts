@@ -55,8 +55,12 @@ export class KairosDBQueryBuilder {
         const range = options.range;
         const panelId: string = options.panelId;
         const defaultInterval: string = options.interval;
-        const requests = targets.map((target) => this.buildMetricQuery(target.query, defaultInterval)),
-            data = new DatapointsQuery(range.from, range.to, requests);
+        const requests = targets.map((target) =>
+            this.buildMetricQuery(
+              target.query instanceof KairosDBTarget ? target.query : KairosDBTarget.fromObject(target.query),
+              defaultInterval)
+            ),
+        data = new DatapointsQuery(range.from, range.to, requests);
         return this.buildRequest({
             data,
             method: "POST",
@@ -71,8 +75,8 @@ export class KairosDBQueryBuilder {
             this.unpackTags(_.pickBy(target.tags, (tagValues) => tagValues.length)),
             target.aggregators.map((aggregator) => this.convertAggregatorToQueryObject(aggregator, defaultInterval)),
             this.groupBysBuilder.build(target.groupBy),
-            KairosDBTarget.startTime(target),
-            KairosDBTarget.endTime(target)
+            target.startTime(),
+            target.endTime()
         );
     }
 

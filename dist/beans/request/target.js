@@ -22,7 +22,6 @@ System.register(["app/core/utils/datemath", "../aggregators/aggregators", "./gro
                     this.tags = {};
                     this.groupBy = new group_by_1.GroupBy();
                     this.aggregators = [];
-                    this.timeRange = undefined;
                 }
                 KairosDBTarget.fromObject = function (object) {
                     var rval = new KairosDBTarget();
@@ -34,18 +33,18 @@ System.register(["app/core/utils/datemath", "../aggregators/aggregators", "./gro
                     rval.timeRange = object.timeRange;
                     return rval;
                 };
-                KairosDBTarget.startTime = function (target) {
-                    if (target.timeRange) {
-                        var startMoment = dateMath.parse(target.timeRange.from);
+                KairosDBTarget.prototype.startTime = function () {
+                    if (this.timeRange) {
+                        var startMoment = dateMath.parse(this.timeRange.from);
                         if (startMoment) {
                             return startMoment.unix() * 1000;
                         }
                     }
                     return undefined;
                 };
-                KairosDBTarget.endTime = function (target) {
-                    if (target.timeRange) {
-                        var endMoment = dateMath.parse(target.timeRange.to);
+                KairosDBTarget.prototype.endTime = function () {
+                    if (this.timeRange) {
+                        var endMoment = dateMath.parse(this.timeRange.to);
                         if (endMoment) {
                             return endMoment.unix() * 1000;
                         }

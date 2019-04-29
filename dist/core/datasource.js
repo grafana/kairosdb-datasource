@@ -1,6 +1,6 @@
-System.register(["lodash", "../beans/function", "../beans/request/legacy_target_converter", "../controllers/templating_functions_ctrl", "../utils/promise_utils", "../utils/templating_function_resolver", "../utils/templating_utils", "./metric_names_store", "./request/query_builder", "./request/target_validator", "./response/response_handler", "./response/series_name_builder"], function (exports_1, context_1) {
+System.register(["lodash", "../beans/function", "../beans/request/legacy_target_converter", "../beans/request/target", "../controllers/templating_functions_ctrl", "../utils/promise_utils", "../utils/templating_function_resolver", "../utils/templating_utils", "./metric_names_store", "./request/query_builder", "./request/target_validator", "./response/response_handler", "./response/series_name_builder"], function (exports_1, context_1) {
     "use strict";
-    var lodash_1, function_1, legacy_target_converter_1, templating_functions_ctrl_1, promise_utils_1, templating_function_resolver_1, templating_utils_1, metric_names_store_1, query_builder_1, target_validator_1, response_handler_1, series_name_builder_1, KairosDBDatasource;
+    var lodash_1, function_1, legacy_target_converter_1, target_1, templating_functions_ctrl_1, promise_utils_1, templating_function_resolver_1, templating_utils_1, metric_names_store_1, query_builder_1, target_validator_1, response_handler_1, series_name_builder_1, KairosDBDatasource;
     var __moduleName = context_1 && context_1.id;
     return {
         setters: [
@@ -12,6 +12,9 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
             },
             function (legacy_target_converter_1_1) {
                 legacy_target_converter_1 = legacy_target_converter_1_1;
+            },
+            function (target_1_1) {
+                target_1 = target_1_1;
             },
             function (templating_functions_ctrl_1_1) {
                 templating_functions_ctrl_1 = templating_functions_ctrl_1_1;
@@ -74,8 +77,15 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     var _this = this;
                     var enabledTargets = lodash_1.default.cloneDeep(options.targets.filter(function (target) { return !target.hide; }));
                     var convertedTargets = lodash_1.default.map(enabledTargets, function (target) {
-                        return _this.legacyTargetConverter.isApplicable(target) ?
-                            { query: _this.legacyTargetConverter.convert(target) } : target;
+                        if (_this.legacyTargetConverter.isApplicable(target)) {
+                            return { query: _this.legacyTargetConverter.convert(target) };
+                        }
+                        else if (target.query instanceof target_1.KairosDBTarget) {
+                            return { query: target_1.KairosDBTarget.fromObject(target.query) };
+                        }
+                        else {
+                            return target;
+                        }
                     });
                     if (!this.targetValidator.areValidTargets(convertedTargets)) {
                         return;

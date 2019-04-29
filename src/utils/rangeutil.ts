@@ -76,13 +76,6 @@ export function getRelativeTimesList(timepickerSettings, currentDisplay) {
     return option.section;
   });
 
-  // _.each(timepickerSettings.time_options, (duration: string) => {
-  //   let info = describeTextRange(duration);
-  //   if (info.section) {
-  //     groups[info.section].push(info);
-  //   }
-  // });
-
   return groups;
 }
 

@@ -4,10 +4,10 @@ export class MetricQuery {
     public limit: number = 0;
     public aggregators: any[];
     public group_by: any[];
-    public start_absolute: number;
-    public end_absolute: number;
+    public start_absolute?: number;
+    public end_absolute?: number;
 
-    constructor(name: string, tags: any, aggregators: any[], group_by: any[], start_absolute: number, end_absolute: number) {
+    constructor(name: string, tags: any, aggregators: any[], group_by: any[], start_absolute?: number, end_absolute?: number) {
         this.name = name;
         this.tags = tags;
         this.aggregators = aggregators;

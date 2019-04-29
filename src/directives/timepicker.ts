@@ -112,6 +112,11 @@ export class TimePickerCtrl {
     this.$rootScope.appEvent("timepickerClosed");
   }
 
+  public applyCustom() {
+    this.query.timeRange = {from: this.editTimeRaw.from, to: this.editTimeRaw.to};
+    this.closeDropdown();
+  }
+
   public absoluteFromChanged() {
     this.editTimeRaw.from = this.getAbsoluteMomentForTimezone(this.absolute.fromJs);
   }

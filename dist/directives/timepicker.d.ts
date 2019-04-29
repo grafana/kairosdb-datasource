@@ -26,6 +26,7 @@ export declare class TimePickerCtrl {
     onRefresh(): void;
     openDropdown(): void;
     closeDropdown(): void;
+    applyCustom(): void;
     absoluteFromChanged(): void;
     absoluteToChanged(): void;
     getAbsoluteMomentForTimezone(jsDate: any): any;
