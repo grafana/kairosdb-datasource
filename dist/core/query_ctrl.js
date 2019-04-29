@@ -112,7 +112,12 @@ System.register(["app/plugins/sdk", "../beans/aggregators/aggregators", "../bean
                                 var newTags_1 = {};
                                 Object.keys(query.tags)
                                     .filter(function (tag) { return _this.tags.tags.hasOwnProperty(tag); })
-                                    .forEach(function (tag) { return newTags_1[tag] = query.tags[tag].filter(function (value) { return _this.tags.tags[tag].indexOf(value) > -1; }); });
+                                    .forEach(function (tag) {
+                                    newTags_1[tag] = query.tags[tag]
+                                        .filter(function (value) { return _this.tags.tags[tag].indexOf(value) > -1
+                                        || value.charAt(0) === "$"
+                                        || (value.charAt(0) === "[" && value.charAt(value.length - 1) === "]"); });
+                                });
                                 Object.keys(_this.tags.tags)
                                     .filter(function (tag) { return !query.tags.hasOwnProperty(tag); })
                                     .forEach(function (tag) { return newTags_1[tag] = []; });

@@ -87,7 +87,12 @@ export class KairosDBQueryCtrl extends QueryCtrl {
                       const newTags: {[key: string]: string[]} = {};
                       Object.keys(query.tags)
                         .filter((tag) => this.tags.tags.hasOwnProperty(tag))
-                        .forEach((tag) => newTags[tag] = query.tags[tag].filter((value) => this.tags.tags[tag].indexOf(value) > -1));
+                        .forEach((tag) => {
+                          newTags[tag] = query.tags[tag]
+                            .filter((value) => this.tags.tags[tag].indexOf(value) > -1
+                              || value.charAt(0) === "$"
+                              || (value.charAt(0) === "[" && value.charAt(value.length - 1) === "]"));
+                        });
                       Object.keys(this.tags.tags)
                         .filter((tag) => !query.tags.hasOwnProperty(tag))
                         .forEach((tag) => newTags[tag] = []);
