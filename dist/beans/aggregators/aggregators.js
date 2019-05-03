@@ -80,7 +80,6 @@ System.register(["./aggregator", "./divide_aggregator", "./filter_aggregator", "
                 new range_aggregator_1.RangeAggregator("least_squares"),
                 new range_aggregator_1.RangeAggregator("max"),
                 new range_aggregator_1.RangeAggregator("min"),
-                new range_aggregator_1.RangeAggregator("gaps"),
                 new range_aggregator_1.RangeAggregator("merge"),
                 new range_aggregator_1.RangeAggregator("movingWindow"),
                 new percentile_aggregator_1.PercentileAggregator(),
