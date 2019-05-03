@@ -2,6 +2,8 @@ import {AggregatorParameter} from "../../../src/beans/aggregators/parameters/agg
 import {AlignmentAggregatorParameter} from "../../../src/beans/aggregators/parameters/alignment_aggregator_parameter";
 import {AnyAggregatorParameter} from "../../../src/beans/aggregators/parameters/any_aggregator_parameter";
 import {SamplingAggregatorParameter} from "../../../src/beans/aggregators/parameters/sampling_aggregator_parameter";
+import {SamplingUnitAggregatorParameter} from "../../../src/beans/aggregators/parameters/sampling_unit_aggregator_parameter";
+import {TimeUnit, UnitValue} from "../../../src/beans/aggregators/utils";
 import {ParameterObjectBuilder} from "../../../src/core/request/parameter_object_builder";
 import {AutoValueSwitch} from "../../../src/directives/auto_value_switch";
 
@@ -9,6 +11,12 @@ describe("ParameterObjectBuilder", () => {
     const INTERVAL_VALUE = "42";
     const INTERVAL_UNIT = "s";
     const INTERVAL = INTERVAL_VALUE + INTERVAL_UNIT;
+    const snapToIntervals: UnitValue[] = [
+        [TimeUnit.MINUTES, 1],
+        [TimeUnit.MINUTES, 5],
+        [TimeUnit.HOURS, 1],
+        [TimeUnit.DAYS, 1]
+    ];
 
     it("should throw on unknown alignment type", () => {
         expect(() => {
@@ -47,5 +55,18 @@ describe("ParameterObjectBuilder", () => {
         const parameterObject = parameterObjectBuilder.build(parameter);
         // then
         parameterObject.sampling.value.should.equal(INTERVAL_VALUE);
+    });
+
+    it("should use interval values snapped to the closes value when auto value is enabled", () => {
+        const samplingParameter = new SamplingAggregatorParameter("every", "1");
+        const samplingUnitParameter = new SamplingUnitAggregatorParameter();
+        const autoValueSwitch = new AutoValueSwitch([samplingParameter, samplingUnitParameter]);
+        autoValueSwitch.enabled = true;
+        const parameterObjectBuilder = new ParameterObjectBuilder("120s", autoValueSwitch, snapToIntervals);
+        const samplingParameterObject = parameterObjectBuilder.build(samplingParameter);
+        const samplingUnitParameterObject = parameterObjectBuilder.build(samplingUnitParameter);
+
+        samplingParameterObject.sampling.value.should.equal("5");
+        samplingUnitParameterObject.sampling.unit.should.equal("MINUTES");
     });
 });

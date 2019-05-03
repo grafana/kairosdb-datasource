@@ -2,7 +2,7 @@ import {KairosDBDatasource} from "../../src/core/datasource";
 import {buildNoopTemplatingSrvMock} from "../mocks";
 
 describe("KairosDBDatasource", () => {
-    const instanceSettings = {type: "type", url: "url", name: "name"};
+    const instanceSettings = {type: "type", url: "url", name: "name", jsonData: {}};
     const promiseUtils = sinon.spy();
 
     it("should handle metric tags response correctly", () => {

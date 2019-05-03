@@ -8,6 +8,7 @@ export declare enum TimeUnit {
     MONTHS = 6,
     YEARS = 7
 }
+export declare type UnitValue = [TimeUnit, number];
 export declare enum Trim {
     first = 0,
     last = 1,

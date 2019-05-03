@@ -1,6 +1,7 @@
 import _ from "lodash";
 
 import {AggregatorParameter} from "../../beans/aggregators/parameters/aggregator_parameter";
+import {TimeUnit, UnitValue} from "../../beans/aggregators/utils";
 import {AutoValueSwitch} from "../../directives/auto_value_switch";
 import {TimeUnitUtils} from "../../utils/time_unit_utils";
 
@@ -10,14 +11,19 @@ export class ParameterObjectBuilder {
     private autoIntervalValue: string;
     private autoIntervalUnit: string;
 
-    constructor(interval: string, autoValueSwitch: AutoValueSwitch) {
+    constructor(interval: string, autoValueSwitch: AutoValueSwitch, snapToIntervals?: UnitValue[]) {
         this.autoValueEnabled = !_.isNil(autoValueSwitch) && autoValueSwitch.enabled;
         if (this.autoValueEnabled) {
             this.autoValueDependentParameters = autoValueSwitch.dependentParameters
                 .map((parameter) => parameter.type);
         }
-        this.autoIntervalValue = TimeUnitUtils.extractValue(interval);
-        this.autoIntervalUnit = TimeUnitUtils.convertTimeUnit(TimeUnitUtils.extractUnit(interval));
+        if (snapToIntervals && snapToIntervals.length > 0) {
+          [this.autoIntervalUnit, this.autoIntervalValue] = TimeUnitUtils.ceilingToAvailableUnit(interval, snapToIntervals);
+        } else {
+          const [unit, value] = TimeUnitUtils.intervalToUnitValue(interval);
+          this.autoIntervalValue = value.toString();
+          this.autoIntervalUnit = TimeUnit[unit];
+        }
     }
 
     public build(parameter: AggregatorParameter): any {

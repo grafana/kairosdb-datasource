@@ -4,6 +4,8 @@ export enum TimeUnit {
     MILLISECONDS, SECONDS, MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS
 }
 
+export type UnitValue = [TimeUnit, number];
+
 export enum Trim {
     first, last, both
 }

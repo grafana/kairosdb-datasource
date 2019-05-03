@@ -1,5 +1,5 @@
 import forEach from "mocha-each";
-import {TimeUnit} from "../../src/beans/aggregators/utils";
+import {TimeUnit, UnitValue} from "../../src/beans/aggregators/utils";
 import {TimeUnitUtils} from "../../src/utils/time_unit_utils";
 
 describe("TimeUnitUtils", () => {
@@ -93,6 +93,90 @@ describe("TimeUnitUtils", () => {
             ["YEARS", "y"]
         ]).it("should use %s and get %s", (timeUnit, expected) => {
             TimeUnitUtils.getShortUnit(timeUnit).should.be.equal(expected);
+        });
+    });
+    describe("intervalToUnitValue", () => {
+        forEach([
+            ["1ms", [TimeUnit.MILLISECONDS, 1]],
+            ["2.5s", [TimeUnit.SECONDS, 2.5]],
+            ["3m", [TimeUnit.MINUTES, 3]],
+            ["4h", [TimeUnit.HOURS, 4]],
+            ["1d", [TimeUnit.DAYS, 1]],
+            ["1w", [TimeUnit.WEEKS, 1]],
+            ["1M", [TimeUnit.MONTHS, 1]],
+            ["1y", [TimeUnit.YEARS, 1]]
+        ]).it("should use %s and get %s", (interval, expected) => {
+            TimeUnitUtils.intervalToUnitValue(interval).should.be.eql(expected);
+        });
+    });
+
+    describe("intervalsToUnitValues", () => {
+        forEach([
+            ["1ms,2.5s,3m", [[TimeUnit.MILLISECONDS, 1], [TimeUnit.SECONDS, 2.5], [TimeUnit.MINUTES, 3]]],
+            ["4h,1d, 1w", [[TimeUnit.HOURS, 4], [TimeUnit.DAYS, 1], [TimeUnit.WEEKS, 1]]]
+        ]).it("should use %s and get %s", (interval, expected) => {
+            TimeUnitUtils.intervalsToUnitValues(interval).should.be.eql(expected);
+        });
+    });
+
+    describe("unitValueToMillis", () => {
+        forEach([
+            [[TimeUnit.MILLISECONDS, 10], 10],
+            [[TimeUnit.SECONDS, 10], 10000],
+            [[TimeUnit.MINUTES, 1], 60000],
+            [[TimeUnit.HOURS, 1], 60 * 60 * 1000],
+            [[TimeUnit.DAYS, 1], 24 * 60 * 60 * 1000],
+            [[TimeUnit.WEEKS, 1], 7 * 24 * 60 * 60 * 1000]
+        ]).it("should use %s and get %s", (unitValue, expected) => {
+            TimeUnitUtils.unitValueToMillis(unitValue).should.be.equal(expected);
+        });
+    });
+
+    describe("intervalToMillis", () => {
+        forEach([
+            ["10ms", 10],
+            ["10s", 10000],
+            ["1m", 60000],
+            ["1h", 60 * 60 * 1000],
+            ["1d", 24 * 60 * 60 * 1000],
+            ["1w", 7 * 24 * 60 * 60 * 1000]
+        ]).it("should use %s and get %s", (interval, expected) => {
+            TimeUnitUtils.intervalToMillis(interval).should.be.equal(expected);
+        });
+    });
+
+    describe("timeUnitToMillis", () => {
+        forEach([
+            [TimeUnit.MILLISECONDS, 1],
+            [TimeUnit.SECONDS, 1000],
+            [TimeUnit.MINUTES, 60 * 1000],
+            [TimeUnit.HOURS, 60 * 60 * 1000],
+            [TimeUnit.DAYS, 24 * 60 * 60 * 1000],
+            [TimeUnit.WEEKS, 7 * 24 * 60 * 60 * 1000]
+        ]).it("should use %s and get %s", (unit, expected) => {
+            TimeUnitUtils.timeUnitToMillis(unit).should.be.equal(expected);
+        });
+    });
+
+    describe("ceilingToAvailableUnit", () => {
+        const availableUnits: UnitValue[] = [
+            [TimeUnit.MINUTES, 1],
+            [TimeUnit.MINUTES, 5],
+            [TimeUnit.HOURS, 1],
+            [TimeUnit.DAYS, 1]
+        ];
+
+        forEach([
+            ["1ms", [TimeUnitUtils.getString(TimeUnit.MINUTES), "1"]],
+            ["1s", [TimeUnitUtils.getString(TimeUnit.MINUTES), "1"]],
+            ["1m", [TimeUnitUtils.getString(TimeUnit.MINUTES), "1"]],
+            ["2m", [TimeUnitUtils.getString(TimeUnit.MINUTES), "5"]],
+            ["5m", [TimeUnitUtils.getString(TimeUnit.MINUTES), "5"]],
+            ["10m", [TimeUnitUtils.getString(TimeUnit.HOURS), "1"]],
+            ["10h", [TimeUnitUtils.getString(TimeUnit.DAYS), "1"]],
+            ["10d", [TimeUnitUtils.getString(TimeUnit.DAYS), "1"]],
+        ]).it("should use %s and get %s", (interval, expected) => {
+           TimeUnitUtils.ceilingToAvailableUnit(interval, availableUnits).should.be.eql(expected);
         });
     });
 });

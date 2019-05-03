@@ -16,6 +16,7 @@ export declare class KairosDBDatasource {
     private templateSrv;
     private legacyTargetConverter;
     private templatingUtils;
+    private snapToIntervals?;
     constructor(instanceSettings: any, $q: any, backendSrv: any, templateSrv: any);
     initialize(): void;
     testDatasource(): any;
