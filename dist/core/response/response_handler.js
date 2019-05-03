@@ -23,7 +23,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                         return {
                             datapoints: lodash_1.default.flatMap(result.values, function (value) {
                                 var v = value[1];
-                                if (typeof (v) === "object" && v.bins) {
+                                if (v !== null && typeof (v) === "object" && v.bins) {
                                     var bins_1 = v.bins;
                                     return lodash_1.default.map(Object.keys(bins_1), function (k) { return [parseFloat(k), value[0], bins_1[k]]; });
                                 }

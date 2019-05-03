@@ -34,14 +34,14 @@ describe("KairosDBResponseHandler", () => {
                             }
                         ],
                         name: "name",
-                        values: [[1, 1512405294], [234, 1512405294]]
+                        values: [[1, 1512405294], [234, 1512405294], [500, null]]
                     }
                 ]
             }
             ]
         };
         const aliases = ["result1"];
-        const expectedDatapoints = [[1512405294, 1], [1512405294, 234]];
+        const expectedDatapoints = [[1512405294, 1], [1512405294, 234], [null, 500]];
         // when
         const datapoints = responseHandler.convertToDatapoints(data, aliases);
         // then

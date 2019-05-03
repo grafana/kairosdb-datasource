@@ -17,7 +17,7 @@ export class KairosDBResponseHandler {
                 return {
                     datapoints: _.flatMap(result.values, (value) => {
                       const v = value[1];
-                      if (typeof(v) === "object" && v.bins) {
+                      if (v !== null && typeof(v) === "object" && v.bins) {
                         const bins = v.bins;
                         return _.map(Object.keys(bins), (k) => [parseFloat(k), value[0], bins[k]]);
                       } else {
