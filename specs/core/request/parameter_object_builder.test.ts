@@ -57,7 +57,7 @@ describe("ParameterObjectBuilder", () => {
         parameterObject.sampling.value.should.equal(INTERVAL_VALUE);
     });
 
-    it("should use interval values snapped to the closes value when auto value is enabled", () => {
+    it("should use interval values snapped to the closest value when auto value is enabled", () => {
         const samplingParameter = new SamplingAggregatorParameter("every", "1");
         const samplingUnitParameter = new SamplingUnitAggregatorParameter();
         const autoValueSwitch = new AutoValueSwitch([samplingParameter, samplingUnitParameter]);

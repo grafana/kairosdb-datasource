@@ -104,7 +104,9 @@ describe("TimeUnitUtils", () => {
             ["1d", [TimeUnit.DAYS, 1]],
             ["1w", [TimeUnit.WEEKS, 1]],
             ["1M", [TimeUnit.MONTHS, 1]],
-            ["1y", [TimeUnit.YEARS, 1]]
+            ["1y", [TimeUnit.YEARS, 1]],
+            ["3b", [undefined, 3]],
+            ["h", [TimeUnit.HOURS, NaN]]
         ]).it("should use %s and get %s", (interval, expected) => {
             TimeUnitUtils.intervalToUnitValue(interval).should.be.eql(expected);
         });
@@ -113,7 +115,8 @@ describe("TimeUnitUtils", () => {
     describe("intervalsToUnitValues", () => {
         forEach([
             ["1ms,2.5s,3m", [[TimeUnit.MILLISECONDS, 1], [TimeUnit.SECONDS, 2.5], [TimeUnit.MINUTES, 3]]],
-            ["4h,1d, 1w", [[TimeUnit.HOURS, 4], [TimeUnit.DAYS, 1], [TimeUnit.WEEKS, 1]]]
+            ["4h,1d, 1w", [[TimeUnit.HOURS, 4], [TimeUnit.DAYS, 1], [TimeUnit.WEEKS, 1]]],
+            ["1w,1d, 4h,3b,h", [[TimeUnit.HOURS, 4], [TimeUnit.DAYS, 1], [TimeUnit.WEEKS, 1]]]
         ]).it("should use %s and get %s", (interval, expected) => {
             TimeUnitUtils.intervalsToUnitValues(interval).should.be.eql(expected);
         });
