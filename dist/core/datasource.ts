@@ -1,4 +1,5 @@
 import _ from "lodash";
+import {UnitValue} from "../beans/aggregators/utils";
 import {TemplatingFunction} from "../beans/function";
 import {LegacyTargetConverter} from "../beans/request/legacy_target_converter";
 import {KairosDBTarget} from "../beans/request/target";
@@ -6,6 +7,7 @@ import {TemplatingFunctionsCtrl} from "../controllers/templating_functions_ctrl"
 import {PromiseUtils} from "../utils/promise_utils";
 import {TemplatingFunctionResolver} from "../utils/templating_function_resolver";
 import {TemplatingUtils} from "../utils/templating_utils";
+import {TimeUnitUtils} from "../utils/time_unit_utils";
 import {MetricNamesStore} from "./metric_names_store";
 import {KairosDBQueryBuilder} from "./request/query_builder";
 import {TargetValidator} from "./request/target_validator";
@@ -29,6 +31,7 @@ export class KairosDBDatasource {
     private templateSrv: any;
     private legacyTargetConverter: LegacyTargetConverter;
     private templatingUtils: TemplatingUtils;
+    private snapToIntervals?: UnitValue[];
 
     constructor(instanceSettings, $q, backendSrv, templateSrv) {
         this.type = instanceSettings.type;
@@ -45,6 +48,7 @@ export class KairosDBDatasource {
         this.templatingFunctionsCtrl = new TemplatingFunctionsCtrl(new TemplatingFunctionResolver(this.templatingUtils));
         this.targetValidator = new TargetValidator();
         this.legacyTargetConverter = new LegacyTargetConverter();
+        this.snapToIntervals = TimeUnitUtils.intervalsToUnitValues(instanceSettings.jsonData.snapToIntervals);
         this.registerTemplatingFunctions();
     }
 
@@ -103,7 +107,7 @@ export class KairosDBDatasource {
     }
 
     private getRequestBuilder(scopedVars: any = {}): KairosDBQueryBuilder {
-        return new KairosDBQueryBuilder(this.withCredentials, this.url, "/api/v1", this.templateSrv, scopedVars);
+        return new KairosDBQueryBuilder(this.withCredentials, this.url, "/api/v1", this.templateSrv, scopedVars, this.snapToIntervals);
     }
 
     private executeRequest(request) {

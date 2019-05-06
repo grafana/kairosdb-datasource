@@ -34,7 +34,7 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
         ],
         execute: function () {
             KairosDBQueryBuilder = (function () {
-                function KairosDBQueryBuilder(withCredentials, url, apiPath, templateSrv, scopedVars) {
+                function KairosDBQueryBuilder(withCredentials, url, apiPath, templateSrv, scopedVars, snapToIntervals) {
                     this.withCredentials = withCredentials;
                     this.url = url;
                     this.apiPath = apiPath;
@@ -43,6 +43,7 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
                     var samplingConverter = new sampling_converter_1.SamplingConverter();
                     this.groupBysBuilder = new group_bys_builder_1.GroupBysBuilder(this.templatingUtils, samplingConverter);
                     this.samplingParameterConverter = new sampling_parameter_converter_1.SamplingParameterConverter(samplingConverter);
+                    this.snapToIntervals = snapToIntervals;
                 }
                 KairosDBQueryBuilder.prototype.buildHealthStatusQuery = function () {
                     return this.buildRequest({
@@ -92,7 +93,7 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
                     return lodash_1.default.extend({ name: convertedAggregator.name }, this.convertParameters(convertedAggregator, defaultInterval));
                 };
                 KairosDBQueryBuilder.prototype.convertParameters = function (aggregatorDefinition, defaultInterval) {
-                    var parameterObjectBuilder = new parameter_object_builder_1.ParameterObjectBuilder(defaultInterval, aggregatorDefinition.autoValueSwitch);
+                    var parameterObjectBuilder = new parameter_object_builder_1.ParameterObjectBuilder(defaultInterval, aggregatorDefinition.autoValueSwitch, this.snapToIntervals);
                     return aggregatorDefinition.parameters.map(function (parameter) { return parameterObjectBuilder.build(parameter); })
                         .reduce(function (param1, param2) { return lodash_1.default.merge(param1, param2); }, {});
                 };

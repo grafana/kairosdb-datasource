@@ -1,5 +1,6 @@
 import _ from "lodash";
 import {Aggregator} from "../../beans/aggregators/aggregator";
+import {UnitValue} from "../../beans/aggregators/utils";
 import {DatapointsQuery} from "../../beans/request/datapoints_query";
 import {MetricQuery} from "../../beans/request/metric_query";
 import {KairosDBTarget} from "../../beans/request/target";
@@ -17,8 +18,9 @@ export class KairosDBQueryBuilder {
     private groupBysBuilder: GroupBysBuilder;
     private templatingUtils: TemplatingUtils;
     private samplingParameterConverter: SamplingParameterConverter;
+    private snapToIntervals: UnitValue[];
 
-    constructor(withCredentials: boolean, url: string, apiPath: string, templateSrv: any, scopedVars: any) {
+    constructor(withCredentials: boolean, url: string, apiPath: string, templateSrv: any, scopedVars: any, snapToIntervals?: UnitValue[]) {
         this.withCredentials = withCredentials;
         this.url = url;
         this.apiPath = apiPath;
@@ -27,6 +29,7 @@ export class KairosDBQueryBuilder {
         const samplingConverter = new SamplingConverter();
         this.groupBysBuilder = new GroupBysBuilder(this.templatingUtils, samplingConverter);
         this.samplingParameterConverter = new SamplingParameterConverter(samplingConverter);
+        this.snapToIntervals = snapToIntervals;
     }
 
     public buildHealthStatusQuery() {
@@ -93,7 +96,7 @@ export class KairosDBQueryBuilder {
 
     private convertParameters(aggregatorDefinition: Aggregator, defaultInterval: string) {
         const parameterObjectBuilder =
-            new ParameterObjectBuilder(defaultInterval, aggregatorDefinition.autoValueSwitch);
+            new ParameterObjectBuilder(defaultInterval, aggregatorDefinition.autoValueSwitch, this.snapToIntervals);
         return aggregatorDefinition.parameters.map((parameter) => parameterObjectBuilder.build(parameter))
             .reduce((param1, param2) => _.merge(param1, param2), {});
     }

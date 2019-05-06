@@ -1,3 +1,4 @@
+import { UnitValue } from "../../beans/aggregators/utils";
 export declare class KairosDBQueryBuilder {
     private withCredentials;
     private url;
@@ -6,7 +7,8 @@ export declare class KairosDBQueryBuilder {
     private groupBysBuilder;
     private templatingUtils;
     private samplingParameterConverter;
-    constructor(withCredentials: boolean, url: string, apiPath: string, templateSrv: any, scopedVars: any);
+    private snapToIntervals;
+    constructor(withCredentials: boolean, url: string, apiPath: string, templateSrv: any, scopedVars: any, snapToIntervals?: UnitValue[]);
     buildHealthStatusQuery(): any;
     buildMetricNameQuery(): any;
     buildMetricTagsQuery(metricName: string, filters?: {}): any;

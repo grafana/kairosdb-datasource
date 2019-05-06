@@ -1,6 +1,6 @@
-System.register(["lodash", "../beans/function", "../beans/request/legacy_target_converter", "../beans/request/target", "../controllers/templating_functions_ctrl", "../utils/promise_utils", "../utils/templating_function_resolver", "../utils/templating_utils", "./metric_names_store", "./request/query_builder", "./request/target_validator", "./response/response_handler", "./response/series_name_builder"], function (exports_1, context_1) {
+System.register(["lodash", "../beans/function", "../beans/request/legacy_target_converter", "../beans/request/target", "../controllers/templating_functions_ctrl", "../utils/promise_utils", "../utils/templating_function_resolver", "../utils/templating_utils", "../utils/time_unit_utils", "./metric_names_store", "./request/query_builder", "./request/target_validator", "./response/response_handler", "./response/series_name_builder"], function (exports_1, context_1) {
     "use strict";
-    var lodash_1, function_1, legacy_target_converter_1, target_1, templating_functions_ctrl_1, promise_utils_1, templating_function_resolver_1, templating_utils_1, metric_names_store_1, query_builder_1, target_validator_1, response_handler_1, series_name_builder_1, KairosDBDatasource;
+    var lodash_1, function_1, legacy_target_converter_1, target_1, templating_functions_ctrl_1, promise_utils_1, templating_function_resolver_1, templating_utils_1, time_unit_utils_1, metric_names_store_1, query_builder_1, target_validator_1, response_handler_1, series_name_builder_1, KairosDBDatasource;
     var __moduleName = context_1 && context_1.id;
     return {
         setters: [
@@ -27,6 +27,9 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
             },
             function (templating_utils_1_1) {
                 templating_utils_1 = templating_utils_1_1;
+            },
+            function (time_unit_utils_1_1) {
+                time_unit_utils_1 = time_unit_utils_1_1;
             },
             function (metric_names_store_1_1) {
                 metric_names_store_1 = metric_names_store_1_1;
@@ -63,6 +66,7 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     this.templatingFunctionsCtrl = new templating_functions_ctrl_1.TemplatingFunctionsCtrl(new templating_function_resolver_1.TemplatingFunctionResolver(this.templatingUtils));
                     this.targetValidator = new target_validator_1.TargetValidator();
                     this.legacyTargetConverter = new legacy_target_converter_1.LegacyTargetConverter();
+                    this.snapToIntervals = time_unit_utils_1.TimeUnitUtils.intervalsToUnitValues(instanceSettings.jsonData.snapToIntervals);
                     this.registerTemplatingFunctions();
                 }
                 KairosDBDatasource.prototype.initialize = function () {
@@ -120,7 +124,7 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                 };
                 KairosDBDatasource.prototype.getRequestBuilder = function (scopedVars) {
                     if (scopedVars === void 0) { scopedVars = {}; }
-                    return new query_builder_1.KairosDBQueryBuilder(this.withCredentials, this.url, "/api/v1", this.templateSrv, scopedVars);
+                    return new query_builder_1.KairosDBQueryBuilder(this.withCredentials, this.url, "/api/v1", this.templateSrv, scopedVars, this.snapToIntervals);
                 };
                 KairosDBDatasource.prototype.executeRequest = function (request) {
                     return this.backendSrv.datasourceRequest(request);
