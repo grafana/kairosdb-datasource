@@ -10,7 +10,7 @@ System.register(["./parameters/any_aggregator_parameter", "./range_aggregator"],
             d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
         };
     })();
-    var any_aggregator_parameter_1, range_aggregator_1, PercentileAggregator;
+    var any_aggregator_parameter_1, range_aggregator_1, ApdexAggregator;
     var __moduleName = context_1 && context_1.id;
     return {
         setters: [
@@ -22,24 +22,24 @@ System.register(["./parameters/any_aggregator_parameter", "./range_aggregator"],
             }
         ],
         execute: function () {
-            PercentileAggregator = (function (_super) {
-                __extends(PercentileAggregator, _super);
-                function PercentileAggregator() {
-                    var _this = _super.call(this, PercentileAggregator.NAME) || this;
-                    _this.parameters = _this.parameters.concat([new any_aggregator_parameter_1.AnyAggregatorParameter(PercentileAggregator.NAME, "percentile (0,1]")]);
+            ApdexAggregator = (function (_super) {
+                __extends(ApdexAggregator, _super);
+                function ApdexAggregator() {
+                    var _this = _super.call(this, ApdexAggregator.NAME) || this;
+                    _this.parameters = _this.parameters.concat([new any_aggregator_parameter_1.AnyAggregatorParameter("target")]);
                     return _this;
                 }
-                PercentileAggregator.fromObject = function (object) {
-                    var rval = new PercentileAggregator();
+                ApdexAggregator.fromObject = function (object) {
+                    var rval = new ApdexAggregator();
                     var rangeObj = range_aggregator_1.RangeAggregator.fromObject(object);
                     rval.parameters = rangeObj.parameters.concat([any_aggregator_parameter_1.AnyAggregatorParameter.fromObject(object.parameters[3])]);
                     return rval;
                 };
-                PercentileAggregator.NAME = "percentile";
-                return PercentileAggregator;
+                ApdexAggregator.NAME = "apdex";
+                return ApdexAggregator;
             }(range_aggregator_1.RangeAggregator));
-            exports_1("PercentileAggregator", PercentileAggregator);
+            exports_1("ApdexAggregator", ApdexAggregator);
         }
     };
 });
-//# sourceMappingURL=percentile_aggregator.js.map
+//# sourceMappingURL=apdex_aggregator.js.map

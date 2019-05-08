@@ -1,18 +1,18 @@
 import {AnyAggregatorParameter} from "./parameters/any_aggregator_parameter";
 import {RangeAggregator} from "./range_aggregator";
 
-export class PercentileAggregator extends RangeAggregator {
-    public static NAME = "percentile";
+export class ApdexAggregator extends RangeAggregator {
+    public static NAME = "apdex";
 
     public static fromObject(object: any) {
-        const rval = new PercentileAggregator();
+        const rval = new ApdexAggregator();
         const rangeObj = RangeAggregator.fromObject(object);
         rval.parameters = rangeObj.parameters.concat([AnyAggregatorParameter.fromObject(object.parameters[3])]);
         return rval;
     }
 
     constructor() {
-        super(PercentileAggregator.NAME);
-        this.parameters = this.parameters.concat([new AnyAggregatorParameter(PercentileAggregator.NAME, "percentile (0,1]")]);
+        super(ApdexAggregator.NAME);
+        this.parameters = this.parameters.concat([new AnyAggregatorParameter("target")]);
     }
 }

@@ -1,6 +1,6 @@
-System.register(["./aggregator", "./divide_aggregator", "./filter_aggregator", "./percentile_aggregator", "./range_aggregator", "./rate_aggregator", "./sampler_aggregator", "./scale_aggregator", "./sma_aggregator", "./trim_aggregator"], function (exports_1, context_1) {
+System.register(["./aggregator", "./apdex_aggregator", "./divide_aggregator", "./filter_aggregator", "./percentile_aggregator", "./range_aggregator", "./rate_aggregator", "./sampler_aggregator", "./scale_aggregator", "./sma_aggregator", "./trim_aggregator"], function (exports_1, context_1) {
     "use strict";
-    var aggregator_1, divide_aggregator_1, filter_aggregator_1, percentile_aggregator_1, range_aggregator_1, rate_aggregator_1, sampler_aggregator_1, scale_aggregator_1, sma_aggregator_1, trim_aggregator_1, AGGREGATORS, RANGE_AGGREGATORS;
+    var aggregator_1, apdex_aggregator_1, divide_aggregator_1, filter_aggregator_1, percentile_aggregator_1, range_aggregator_1, rate_aggregator_1, sampler_aggregator_1, scale_aggregator_1, sma_aggregator_1, trim_aggregator_1, AGGREGATORS, RANGE_AGGREGATORS;
     var __moduleName = context_1 && context_1.id;
     function fromObject(object) {
         if (object.name in RANGE_AGGREGATORS) {
@@ -8,6 +8,9 @@ System.register(["./aggregator", "./divide_aggregator", "./filter_aggregator", "
         }
         else if (object.name === percentile_aggregator_1.PercentileAggregator.NAME) {
             return percentile_aggregator_1.PercentileAggregator.fromObject(object);
+        }
+        else if (object.name === apdex_aggregator_1.ApdexAggregator.NAME) {
+            return apdex_aggregator_1.ApdexAggregator.fromObject(object);
         }
         else if (object.name === sma_aggregator_1.SmaAggregator.NAME) {
             return sma_aggregator_1.SmaAggregator.fromObject(object);
@@ -40,6 +43,9 @@ System.register(["./aggregator", "./divide_aggregator", "./filter_aggregator", "
         setters: [
             function (aggregator_1_1) {
                 aggregator_1 = aggregator_1_1;
+            },
+            function (apdex_aggregator_1_1) {
+                apdex_aggregator_1 = apdex_aggregator_1_1;
             },
             function (divide_aggregator_1_1) {
                 divide_aggregator_1 = divide_aggregator_1_1;
@@ -83,6 +89,7 @@ System.register(["./aggregator", "./divide_aggregator", "./filter_aggregator", "
                 new range_aggregator_1.RangeAggregator("merge"),
                 new range_aggregator_1.RangeAggregator("movingWindow"),
                 new percentile_aggregator_1.PercentileAggregator(),
+                new apdex_aggregator_1.ApdexAggregator(),
                 new sma_aggregator_1.SmaAggregator(),
                 new range_aggregator_1.RangeAggregator("sum"),
                 new aggregator_1.Aggregator("diff"),

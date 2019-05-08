@@ -1,4 +1,5 @@
 import {Aggregator} from "./aggregator";
+import {ApdexAggregator} from "./apdex_aggregator";
 import {DivideAggregator} from "./divide_aggregator";
 import {FilterAggregator} from "./filter_aggregator";
 import {PercentileAggregator} from "./percentile_aggregator";
@@ -22,6 +23,7 @@ export const AGGREGATORS = [
     new RangeAggregator("merge"),
     new RangeAggregator("movingWindow"),
     new PercentileAggregator(),
+    new ApdexAggregator(),
     new SmaAggregator(),
     new RangeAggregator("sum"),
     new Aggregator("diff"),
@@ -41,6 +43,8 @@ export function fromObject(object: any): Aggregator {
       return RangeAggregator.fromObject(object);
   } else if (object.name === PercentileAggregator.NAME) {
       return PercentileAggregator.fromObject(object);
+  } else if (object.name === ApdexAggregator.NAME) {
+      return ApdexAggregator.fromObject(object);
   } else if (object.name === SmaAggregator.NAME) {
       return SmaAggregator.fromObject(object);
   } else if (object.name === DivideAggregator.NAME) {

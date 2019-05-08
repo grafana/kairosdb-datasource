@@ -13,6 +13,6 @@ export class PercentileAggregator extends RangeAggregator {
 
     constructor() {
         super(PercentileAggregator.NAME);
-        this.parameters = this.parameters.concat([new AnyAggregatorParameter(PercentileAggregator.NAME)]);
+        this.parameters = this.parameters.concat([new AnyAggregatorParameter(PercentileAggregator.NAME, "percentile (0,1]")]);
     }
 }
