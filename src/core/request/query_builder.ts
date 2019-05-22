@@ -87,8 +87,14 @@ export class KairosDBQueryBuilder {
 
     private buildRequest(requestStub) {
         requestStub.url = this.buildUrl(requestStub.url);
+        let grafanaCookie = "";
+        const match = document.cookie.match("grafana_kairos_token=([^;]+)");
+        if (match) {
+            grafanaCookie = match[1];
+        }
         return _.extend(requestStub, {
             withCredentials: this.withCredentials,
+            headers: {"X-Grafana-Token": grafanaCookie}
         });
     }
 

@@ -85,8 +85,14 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
                 };
                 KairosDBQueryBuilder.prototype.buildRequest = function (requestStub) {
                     requestStub.url = this.buildUrl(requestStub.url);
+                    var grafanaCookie = "";
+                    var match = document.cookie.match("grafana_kairos_token=([^;]+)");
+                    if (match) {
+                        grafanaCookie = match[1];
+                    }
                     return lodash_1.default.extend(requestStub, {
                         withCredentials: this.withCredentials,
+                        headers: { "X-Grafana-Token": grafanaCookie }
                     });
                 };
                 KairosDBQueryBuilder.prototype.buildRequestId = function (actionName, panelId) {
