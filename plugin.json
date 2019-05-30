@@ -6,7 +6,7 @@
   "annotations": false,
   "backend": true,
   "alerting": true,
-  "executable": "kairosdb-plugin",
+  "executable": "grafana-kairosdb-datasource",
   "staticRoot": ".",
   "info": {
     "description": "datasource plugin for KairosDB",

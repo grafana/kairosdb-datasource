@@ -4,16 +4,17 @@ import (
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	"plugin"
+	"os"
 )
 
-var pluginLogger = hclog.New(&hclog.LoggerOptions{
-	Name:  "kairosdb-datasource",
-	Level: hclog.LevelFromString("DEBUG"),
-})
-
 func main() {
-	pluginLogger.Debug("Running KairosDB backend datasource")
+	logger := hclog.New(&hclog.LoggerOptions{
+		Level:      hclog.Info,
+		Output:     os.Stderr,
+		JSONFormat: true,
+	})
+
+	logger.Info("Running KairosDB backend datasource")
 
 	plugin.Serve(&plugin.ServeConfig{
 
@@ -23,8 +24,8 @@ func main() {
 			MagicCookieValue: "datasource",
 		},
 		Plugins: map[string]plugin.Plugin{
-			"kairosdb-datasource": &datasource.DatasourcePluginImpl{Plugin: &KairosDBDatasource{
-				logger: pluginLogger,
+			"grafana-kairosdb-datasource": &datasource.DatasourcePluginImpl{Plugin: &KairosDBDatasource{
+				logger: logger,
 			}},
 		},
 

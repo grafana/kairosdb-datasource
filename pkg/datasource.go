@@ -13,7 +13,8 @@ type KairosDBDatasource struct {
 }
 
 func (ds *KairosDBDatasource) Query(ctx context.Context, request *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
-	ds.logger.Debug("Query", "datasource", request.Datasource.Name, "TimeRange", request.TimeRange)
+	ds.logger.Info("Query", "datasource", request.Datasource.Name, "TimeRange", request.TimeRange)
+	ds.logger.Info("Request", request.String())
 
 	response := &datasource.DatasourceResponse{}
 
