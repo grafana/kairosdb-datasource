@@ -4,6 +4,9 @@
   "type": "datasource",
   "metrics": true,
   "annotations": false,
+  "backend": true,
+  "alerting": true,
+  "executable": "kairosdb-plugin",
   "staticRoot": ".",
   "info": {
     "description": "datasource plugin for KairosDB",
