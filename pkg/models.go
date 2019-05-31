@@ -21,6 +21,18 @@ type QueryResult struct {
 
 type DataPoint [2]float64
 
+type DatasourceRequest struct {
+	Query DatasourceQuery `json:"query"`
+}
+
+type DatasourceQuery struct {
+	MetricName string `json:"metricName"`
+	RefId      string `json:"refId"`
+	//Aggregators
+	//GroupBy
+	//Tags
+}
+
 type RemoteDatasourceRequest struct {
 	req     *http.Request
 	queries []interface{}

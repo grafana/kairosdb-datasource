@@ -83,36 +83,30 @@ func (ds *KairosDBDatasource) CreateQuery(request *datasource.DatasourceRequest)
 	metrics := []interface{}{}
 	queries := []interface{}{}
 	for _, panelQuery := range request.Queries {
-		var i interface{}
-		err1 := json.Unmarshal([]byte(panelQuery.ModelJson), &i)
-		modelJson := i.(map[string]interface{})
+		modelJson := &DatasourceRequest{}
+		err1 := json.Unmarshal([]byte(panelQuery.ModelJson), modelJson)
 
 		ds.logger.Info("error1", err1)
 
-		query := modelJson["query"].(map[string]interface{})
+		query := modelJson.Query
 		queries = append(queries, query)
 
 		metricQuery := map[string]interface{}{
-			"name": query["metricName"],
+			"name": query.MetricName,
 		}
 		metrics = append(metrics, metricQuery)
 	}
 
-	ds.logger.Info("Metrics", "length", len(metrics))
 	payload := map[string]interface{}{
 		"start_absolute": strconv.FormatInt(request.TimeRange.FromEpochMs, 10),
 		"end_absolute":   strconv.FormatInt(request.TimeRange.ToEpochMs, 10),
 		"metrics":        metrics,
 	}
 
-	ds.logger.Info("Query", "metric name", metrics[0].(map[string]interface{})["name"])
-
 	rbody, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
-
-	ds.logger.Info("RBody", rbody)
 
 	url := request.Datasource.Url + "api/v1/datapoints/query"
 	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(string(rbody)))
