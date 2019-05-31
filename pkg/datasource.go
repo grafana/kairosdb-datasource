@@ -23,12 +23,13 @@ type KairosDBDatasource struct {
 }
 
 func (ds *KairosDBDatasource) Query(ctx context.Context, request *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
+	ds.logger.Info("DatasourceRequest", "value", request)
+
 	remoteRequest, err := ds.CreateQuery(request)
 	if err != nil {
 		ds.logger.Error("Error", err)
 		return nil, err
 	}
-	ds.logger.Info("Remote Request", remoteRequest.req)
 
 	bytes, err := ds.MakeHttpRequest(ctx, remoteRequest.req)
 	if err != nil {
@@ -91,8 +92,34 @@ func (ds *KairosDBDatasource) CreateQuery(request *datasource.DatasourceRequest)
 		query := modelJson.Query
 		queries = append(queries, query)
 
+		aggregators := []interface{}{}
+		for _, aggregator := range query.Aggregators {
+			var timeValue int
+			var unit string
+
+			for _, param := range aggregator.Parameters {
+				if param.Name == "value" {
+					timeValue, _ = strconv.Atoi(param.Value)
+				} else if param.Name == "unit" {
+					unit = param.Value
+				}
+			}
+
+			aggregators = append(aggregators, map[string]interface{}{
+				"name":             aggregator.Name,
+				"align_sampling":   true,
+				"align_start_time": true,
+				"align_end_time":   false,
+				"sampling": map[string]interface{}{
+					"value": timeValue,
+					"unit":  unit,
+				},
+			})
+		}
+
 		metricQuery := map[string]interface{}{
-			"name": query.MetricName,
+			"name":        query.MetricName,
+			"aggregators": aggregators,
 		}
 		metrics = append(metrics, metricQuery)
 	}

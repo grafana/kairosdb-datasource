@@ -26,11 +26,23 @@ type DatasourceRequest struct {
 }
 
 type DatasourceQuery struct {
-	MetricName string `json:"metricName"`
-	RefId      string `json:"refId"`
-	//Aggregators
+	MetricName  string       `json:"metricName"`
+	RefId       string       `json:"refId"`
+	Aggregators []Aggregator `json:"aggregators"`
 	//GroupBy
 	//Tags
+}
+
+type Aggregator struct {
+	Name       string                `json:"name"`
+	Parameters []AggregatorParameter `json:"parameters"`
+}
+
+type AggregatorParameter struct {
+	Name  string `json:"name"`
+	Text  string `json:"text"`
+	Type  string `json:"type"`
+	Value string `json:"value"`
 }
 
 type RemoteDatasourceRequest struct {
