@@ -23,55 +23,75 @@ type KairosDBDatasource struct {
 }
 
 func (ds *KairosDBDatasource) Query(ctx context.Context, request *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
-	httpReq, err := ds.CreateQuery(request)
+	remoteRequest, err := ds.CreateQuery(request)
+	if err != nil {
+		ds.logger.Error("Error", err)
+		return nil, err
+	}
+	ds.logger.Info("Remote Request", remoteRequest.req)
+
+	bytes, err := ds.MakeHttpRequest(ctx, remoteRequest.req)
+	if err != nil {
+		ds.logger.Error("Error", err)
+		return nil, err
+	}
+
+	datsourceResponse, err := ds.ParseQueryResponse(remoteRequest.queries, bytes)
+	if err != nil {
+		ds.logger.Error("Error", err)
+		return nil, err
+	}
+
+	return datsourceResponse, nil
+}
+
+func (ds *KairosDBDatasource) ParseQueryResponse(queries []interface{}, body []byte) (*datasource.DatasourceResponse, error) {
+	response := &datasource.DatasourceResponse{}
+	responseBody := map[string]interface{}{}
+
+	err := json.Unmarshal(body, &responseBody)
 	if err != nil {
 		return nil, err
 	}
-	bytes, err := ds.MakeHttpRequest(ctx, httpReq)
 
-	ds.logger.Info("Response", "bytes", bytes, "error", err)
+	resultQueries := responseBody["queries"].([]interface{})
 
-	response := &datasource.DatasourceResponse{}
+	queryResult := resultQueries[0].(map[string]interface{})
+	results := queryResult["results"].([]interface{})
+	for _, result := range results {
+		resultMap := result.(map[string]interface{})
+		//refId := queries[0].(map[string]string)["refId"]
+		//ds.logger.Info("RefID", refId)
+		qr := datasource.QueryResult{
+			RefId:  "",
+			Series: make([]*datasource.TimeSeries, 0),
+		}
+		serie := &datasource.TimeSeries{Name: resultMap["name"].(string)}
+
+		for _, p := range resultMap["values"].([]interface{}) {
+			ds.logger.Info("p", "value", p)
+			datapoint := p.([]interface{})
+
+			timestamp := int64(datapoint[0].(float64))
+
+			value := datapoint[1].(float64)
+
+			serie.Points = append(serie.Points, &datasource.Point{
+				Timestamp: timestamp,
+				Value:     value,
+			})
+		}
+
+		qr.Series = append(qr.Series, serie)
+		response.Results = append(response.Results, &qr)
+	}
 
 	return response, nil
 }
 
-//func (ds *KairosDBDatasource) ParseQueryResponse(queries []*simplejson.Json, body []byte) (*datasource.DatasourceResponse, error) {
-//	response := &datasource.DatasourceResponse{}
-//	responseBody := []TargetResponseDTO{}
-//	err := json.Unmarshal(body, &responseBody)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	for i, r := range responseBody {
-//		refId := r.Target
-//
-//		qr := datasource.QueryResult{
-//			RefId:  refId,
-//			Series: make([]*datasource.TimeSeries, 0),
-//			Tables: make([]*datasource.Table, 0),
-//		}
-//
-//		serie := &datasource.TimeSeries{Name: r.Target}
-//
-//		for _, p := range r.DataPoints {
-//			serie.Points = append(serie.Points, &datasource.Point{
-//				Timestamp: int64(p[1]),
-//				Value:     p[0],
-//			})
-//		}
-//
-//		qr.Series = append(qr.Series, serie)
-//
-//		response.Results = append(response.Results, &qr)
-//	}
-//
-//	return response, nil
-//}
-
-func (ds *KairosDBDatasource) CreateQuery(request *datasource.DatasourceRequest) (*http.Request, error) {
+func (ds *KairosDBDatasource) CreateQuery(request *datasource.DatasourceRequest) (*RemoteDatasourceRequest, error) {
 	metrics := []interface{}{}
+	queries := []interface{}{}
 	for _, panelQuery := range request.Queries {
 		var i interface{}
 		err1 := json.Unmarshal([]byte(panelQuery.ModelJson), &i)
@@ -80,6 +100,7 @@ func (ds *KairosDBDatasource) CreateQuery(request *datasource.DatasourceRequest)
 		ds.logger.Info("error1", err1)
 
 		query := modelJson["query"].(map[string]interface{})
+		queries = append(queries, query)
 
 		metricQuery := map[string]interface{}{
 			"name": query["metricName"],
@@ -94,10 +115,14 @@ func (ds *KairosDBDatasource) CreateQuery(request *datasource.DatasourceRequest)
 		"metrics":        metrics,
 	}
 
+	ds.logger.Info("Query", "metric name", metrics[0].(map[string]interface{})["name"])
+
 	rbody, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
+
+	ds.logger.Info("RBody", rbody)
 
 	url := request.Datasource.Url + "api/v1/datapoints/query"
 	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(string(rbody)))
@@ -107,7 +132,10 @@ func (ds *KairosDBDatasource) CreateQuery(request *datasource.DatasourceRequest)
 
 	req.Header.Add("Content-Type", "application/json")
 
-	return req, nil
+	return &RemoteDatasourceRequest{
+		req:     req,
+		queries: queries,
+	}, nil
 }
 
 func (ds *KairosDBDatasource) MakeHttpRequest(ctx context.Context, httpRequest *http.Request) ([]byte, error) {
