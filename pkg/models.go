@@ -1,14 +1,25 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+)
 
-type TargetResponseDTO struct {
-	Target     string           `json:"target,omitempty"`
-	DataPoints TimeSeriesPoints `json:"datapoints,omitempty"`
+type KairosResponse struct {
+	Queries []QueryResponse `json:"queries"`
 }
 
-type TimePoint [2]float64
-type TimeSeriesPoints []TimePoint
+type QueryResponse struct {
+	Results []QueryResult `json:"results"`
+}
+
+type QueryResult struct {
+	Name string `json:"name"`
+	//GroupBy []interface{}     `json:"group_by,omitempty"`
+	//Tags    map[string]string `json:"tags,omitempty"`
+	Values []DataPoint `json:"values"`
+}
+
+type DataPoint [2]float64
 
 type RemoteDatasourceRequest struct {
 	req     *http.Request

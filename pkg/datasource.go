@@ -47,35 +47,25 @@ func (ds *KairosDBDatasource) Query(ctx context.Context, request *datasource.Dat
 
 func (ds *KairosDBDatasource) ParseQueryResponse(queries []interface{}, body []byte) (*datasource.DatasourceResponse, error) {
 	response := &datasource.DatasourceResponse{}
-	responseBody := map[string]interface{}{}
+	responseBody := &KairosResponse{}
 
 	err := json.Unmarshal(body, &responseBody)
 	if err != nil {
 		return nil, err
 	}
 
-	resultQueries := responseBody["queries"].([]interface{})
-
-	queryResult := resultQueries[0].(map[string]interface{})
-	results := queryResult["results"].([]interface{})
-	for _, result := range results {
-		resultMap := result.(map[string]interface{})
+	for _, result := range responseBody.Queries[0].Results {
 		//refId := queries[0].(map[string]string)["refId"]
 		//ds.logger.Info("RefID", refId)
 		qr := datasource.QueryResult{
 			RefId:  "",
 			Series: make([]*datasource.TimeSeries, 0),
 		}
-		serie := &datasource.TimeSeries{Name: resultMap["name"].(string)}
+		serie := &datasource.TimeSeries{Name: result.Name}
 
-		for _, p := range resultMap["values"].([]interface{}) {
-			ds.logger.Info("p", "value", p)
-			datapoint := p.([]interface{})
-
-			timestamp := int64(datapoint[0].(float64))
-
-			value := datapoint[1].(float64)
-
+		for _, datapoint := range result.Values {
+			timestamp := int64(datapoint[0])
+			value := datapoint[1]
 			serie.Points = append(serie.Points, &datasource.Point{
 				Timestamp: timestamp,
 				Value:     value,
