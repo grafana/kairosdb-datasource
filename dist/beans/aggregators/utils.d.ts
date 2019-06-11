@@ -17,7 +17,8 @@ export declare enum Trim {
 export declare enum Alignment {
     NONE = 0,
     START_TIME = 1,
-    SAMPLING = 2
+    SAMPLING = 2,
+    PERIOD = 3
 }
 export declare enum Filter {
     GT = 0,

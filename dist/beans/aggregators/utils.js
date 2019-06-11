@@ -34,6 +34,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                 Alignment[Alignment["NONE"] = 0] = "NONE";
                 Alignment[Alignment["START_TIME"] = 1] = "START_TIME";
                 Alignment[Alignment["SAMPLING"] = 2] = "SAMPLING";
+                Alignment[Alignment["PERIOD"] = 3] = "PERIOD";
             })(Alignment || (Alignment = {}));
             exports_1("Alignment", Alignment);
             (function (Filter) {

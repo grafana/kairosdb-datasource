@@ -142,7 +142,8 @@ describe("LegacyTargetConverter", () => {
                             allowedValues: {
                                 0: "NONE",
                                 1: "START_TIME",
-                                2: "SAMPLING"
+                                2: "SAMPLING",
+                                3: "PERIOD"
                             },
                             name: "sampling",
                             text: "align by",

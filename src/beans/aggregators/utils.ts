@@ -11,7 +11,7 @@ export enum Trim {
 }
 
 export enum Alignment {
-    NONE, START_TIME, SAMPLING
+    NONE, START_TIME, SAMPLING, PERIOD
 }
 
 export enum Filter {

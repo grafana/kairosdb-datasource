@@ -57,6 +57,11 @@ System.register(["lodash", "../../beans/aggregators/utils", "../../utils/time_un
                             return {
                                 align_sampling: true
                             };
+                        case "PERIOD":
+                            return {
+                                align_sampling: true,
+                                align_start_time: true
+                            };
                         default:
                             throw new Error("Unknown alignment type");
                     }
