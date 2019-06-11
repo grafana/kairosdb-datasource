@@ -9,7 +9,7 @@ export class AlignmentAggregatorParameter extends EnumAggregatorParameter {
     }
 
     constructor() {
-        super("sampling", Alignment, "align by", "NONE");
+        super("sampling", Alignment, "align by", "PERIOD");
         this.type = "alignment";
     }
 }

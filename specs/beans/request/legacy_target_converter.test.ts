@@ -148,7 +148,7 @@ describe("LegacyTargetConverter", () => {
                             name: "sampling",
                             text: "align by",
                             type: "alignment",
-                            value: "NONE"
+                            value: "PERIOD"
                         },
                         {
                             name: "value",

@@ -25,7 +25,7 @@ System.register(["../utils", "./enum_aggregator_parameter"], function (exports_1
             AlignmentAggregatorParameter = (function (_super) {
                 __extends(AlignmentAggregatorParameter, _super);
                 function AlignmentAggregatorParameter() {
-                    var _this = _super.call(this, "sampling", utils_1.Alignment, "align by", "NONE") || this;
+                    var _this = _super.call(this, "sampling", utils_1.Alignment, "align by", "PERIOD") || this;
                     _this.type = "alignment";
                     return _this;
                 }
