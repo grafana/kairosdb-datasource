@@ -81,7 +81,12 @@ export class KairosDBDatasource {
                 this.cacheResponse(hashedQuery, response.data);
                 return this.responseHandler.convertToDatapoints(response.data, aliases);
             })
-            .catch(() => this.responseHandler.convertToDatapoints(this.lastResult[hashedQuery], aliases));
+            .catch((resp) => {
+                if (this.lastResult[hashedQuery]) {
+                    return this.responseHandler.convertToDatapoints(this.lastResult[hashedQuery], aliases);
+                }
+                throw {message: resp.data.errors[0]};
+            });
     }
 
     public getMetricTags(metricNameTemplate, filters = {}) {
