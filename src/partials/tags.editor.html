@@ -9,13 +9,16 @@
             <label class="gf-form-label" ng-show="!ctrl.tags.initialized">
                 Loading tags... <span class="fa fa-spinner fa-spin"></span>
             </label>
+            <!--<label class="gf-form-label" ng-if="ctrl.tagsInitializationError" style="color: red">
+                <strong>Unable to load tags: {{ctrl.tagsInitializationError}}</strong>
+            </label>-->
             <label class="gf-form-label" ng-show="ctrl.tags.initialized">
                 <b>{{ctrl.tags.size}} tags, {{ctrl.tags.combinations}} combinations</b>
             </label>
         </div>
         <div class="gf-form" ng-if="ctrl.tagsInitializationError">
             <label class="gf-form-label" style="color: red">
-                <strong>Unable to load tags: {{ctrl.tagsInitializationError}}</strong>
+                <strong>Unable to load tags: {{ctrl.tagsInitializationError}} . Using default tags</strong>
             </label>
         </div>
         <div class="gf-form gf-form--grow">
