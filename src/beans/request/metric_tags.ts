@@ -4,7 +4,7 @@ export class MetricTags {
     public tags: {[key: string]: string[]} = {};
     public size: number;
     public initialized: boolean = false;
-    public combinations: number;
+    public combinations: number = 0;
     public multiValuedTags: string[];
 
     public updateTags(tags) {
