@@ -75,7 +75,18 @@ System.register(["app/plugins/sdk", "../beans/aggregators/aggregators", "../bean
                     if (metricName) {
                         this.tags = new metric_tags_1.MetricTags();
                         this.datasource.getMetricTags(metricName)
-                            .then(function (tags) { return _this.tags.updateTags(tags); }, function (error) { return _this.tagsInitializationError = error.data.message; });
+                            .then(function (tags) { return _this.tags.updateTags(tags); }, function (error) {
+                            _this.tagsInitializationError = error.data.errors[0];
+                            var defaultTags = {
+                                key: ["", ""],
+                                entity: ["", ""],
+                                application_id: ["", ""],
+                                stack_name: ["", ""],
+                                application: ["", ""],
+                                namespace: ["", ""],
+                            };
+                            _this.tags.updateTags(defaultTags);
+                        });
                     }
                 };
                 KairosDBQueryCtrl.prototype.isTargetChanged = function (newTarget, oldTarget) {

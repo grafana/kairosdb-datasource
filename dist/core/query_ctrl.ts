@@ -62,7 +62,18 @@ export class KairosDBQueryCtrl extends QueryCtrl {
             this.datasource.getMetricTags(metricName)
                 .then(
                     (tags) => this.tags.updateTags(tags),
-                    (error) => this.tagsInitializationError = error.data.message
+                    (error) => {
+                        this.tagsInitializationError = error.data.errors[0];
+                        const defaultTags = {
+                            key: ["", ""],
+                            entity: ["", ""],
+                            application_id: ["", ""],
+                            stack_name: ["", ""],
+                            application: ["", ""],
+                            namespace : ["", ""],
+                        };
+                        this.tags.updateTags(defaultTags);
+                    }
                 );
         }
     }

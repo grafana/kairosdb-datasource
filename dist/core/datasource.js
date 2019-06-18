@@ -92,7 +92,12 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                         _this.cacheResponse(hashedQuery, response.data);
                         return _this.responseHandler.convertToDatapoints(response.data, aliases);
                     })
-                        .catch(function () { return _this.responseHandler.convertToDatapoints(_this.lastResult[hashedQuery], aliases); });
+                        .catch(function (resp) {
+                        if (_this.lastResult[hashedQuery]) {
+                            return _this.responseHandler.convertToDatapoints(_this.lastResult[hashedQuery], aliases);
+                        }
+                        throw { message: resp.data.errors[0] };
+                    });
                 };
                 KairosDBDatasource.prototype.getMetricTags = function (metricNameTemplate, filters) {
                     if (filters === void 0) { filters = {}; }
@@ -135,6 +140,11 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                         .then(function (tags) { return lodash_1.default.keys(tags); });
                 };
                 KairosDBDatasource.prototype.getMetricTagValues = function (metricName, tagName, filters) {
+                    if (typeof filters === "string") {
+                        var value = "*" + filters + "*";
+                        filters = {};
+                        filters[tagName] = [value];
+                    }
                     return this.getMetricTags(metricName, filters)
                         .then(function (tags) {
                         return lodash_1.default.values(tags[tagName]);
