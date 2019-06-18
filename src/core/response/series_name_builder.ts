@@ -8,14 +8,26 @@ export class SeriesNameBuilder {
             tagGroupBysValues = this.getTagGroupBys(tagGroupBys),
             valueGroupBysValues = this.getValueGroupBys(groupBys),
             timeGroupBysValues = this.getTimeGroupBys(groupBys);
-        return alias ? this.buildAlias(alias, tagGroupBys, valueGroupBysValues, timeGroupBysValues) :
-            this.buildDefault(metricName, tagGroupBysValues, valueGroupBysValues, timeGroupBysValues);
+        if (_.isEmpty(alias)) {
+            // return "tag1=value1 tag2=value2" or simply "metricName"
+            const groupBysName = this.buildDefault(tagGroupBysValues, valueGroupBysValues, timeGroupBysValues);
+            return _.isEmpty(groupBysName) ? metricName : groupBysName;
+        } else if (alias.indexOf("$_") >= 0 ) {
+            // evaluate expressions in alias
+            return this.buildAlias(alias, tagGroupBys, valueGroupBysValues, timeGroupBysValues);
+        } else {
+            // return "alias (tag1=value1 tag2=value2)" or simply "alias"
+            const groupBysName = this.buildDefault(tagGroupBysValues, valueGroupBysValues, timeGroupBysValues);
+            return _.isEmpty(groupBysName) ? alias : alias + " (" + groupBysName + ")";
+        }
     }
 
-    private buildDefault(metricName, tagGroupBysValues, valueGroupBysValues, timeGroupBysValues): string {
-        return _.flatten([metricName, tagGroupBysValues, valueGroupBysValues, timeGroupBysValues])
-            .filter((part) => !_.isEmpty(part))
-            .join(SeriesNameBuilder.SEPARATOR);
+    private buildDefault(tagGroupBysValues, valueGroupBysValues, timeGroupBysValues): string {
+        return _.chain([tagGroupBysValues, valueGroupBysValues, timeGroupBysValues])
+            .flattenDeep()
+            .compact()
+            .join(" ")
+            .value();
     }
 
     private buildAlias(alias, tagGroupBys, valueGroupBysValues, timeGroupBysValues): string {
@@ -38,19 +50,19 @@ export class SeriesNameBuilder {
     }
 
     private getTagGroupBys(groupBys): string[] {
-        return _.isNil(groupBys) ? [] : _.values(groupBys.group);
+        return _.isNil(groupBys) ? [] : _.map(groupBys.group, (value, tag) => tag + "=" + value);
     }
 
     private getValueGroupBys(groupBys): string[] {
         return groupBys
             .filter((groupBy) => groupBy.name === "value")
-            .map((groupBy) => "G" + groupBy.group.group_number);
+            .map((groupBy) => "value_group=" + groupBy.group.group_number);
     }
 
     private getTimeGroupBys(groupBys): string[] {
         return groupBys
             .filter((groupBy) => groupBy.name === "time")
-            .map((groupBy) => "G" + groupBy.group.group_number + SeriesNameBuilder.SEPARATOR + groupBy.group_count);
+            .map((groupBy) => "time_group=" + groupBy.group.group_number);
     }
 
     private getGroupByExpression(type: string, value: string) {

@@ -13,13 +13,27 @@ System.register(["lodash"], function(exports_1) {
                 SeriesNameBuilder.prototype.build = function (metricName, alias, groupBys) {
                     if (groupBys === void 0) { groupBys = []; }
                     var tagGroupBys = lodash_1.default.find(groupBys, function (groupBy) { return groupBy.name === "tag"; }), tagGroupBysValues = this.getTagGroupBys(tagGroupBys), valueGroupBysValues = this.getValueGroupBys(groupBys), timeGroupBysValues = this.getTimeGroupBys(groupBys);
-                    return alias ? this.buildAlias(alias, tagGroupBys, valueGroupBysValues, timeGroupBysValues) :
-                        this.buildDefault(metricName, tagGroupBysValues, valueGroupBysValues, timeGroupBysValues);
+                    if (lodash_1.default.isEmpty(alias)) {
+                        // return "tag1=value1 tag2=value2" or simply "metricName"
+                        var groupBysName = this.buildDefault(tagGroupBysValues, valueGroupBysValues, timeGroupBysValues);
+                        return lodash_1.default.isEmpty(groupBysName) ? metricName : groupBysName;
+                    }
+                    else if (alias.indexOf("$_") >= 0) {
+                        // evaluate expressions in alias
+                        return this.buildAlias(alias, tagGroupBys, valueGroupBysValues, timeGroupBysValues);
+                    }
+                    else {
+                        // return "alias (tag1=value1 tag2=value2)" or simply "alias"
+                        var groupBysName = this.buildDefault(tagGroupBysValues, valueGroupBysValues, timeGroupBysValues);
+                        return lodash_1.default.isEmpty(groupBysName) ? alias : alias + " (" + groupBysName + ")";
+                    }
                 };
-                SeriesNameBuilder.prototype.buildDefault = function (metricName, tagGroupBysValues, valueGroupBysValues, timeGroupBysValues) {
-                    return lodash_1.default.flatten([metricName, tagGroupBysValues, valueGroupBysValues, timeGroupBysValues])
-                        .filter(function (part) { return !lodash_1.default.isEmpty(part); })
-                        .join(SeriesNameBuilder.SEPARATOR);
+                SeriesNameBuilder.prototype.buildDefault = function (tagGroupBysValues, valueGroupBysValues, timeGroupBysValues) {
+                    return lodash_1.default.chain([tagGroupBysValues, valueGroupBysValues, timeGroupBysValues])
+                        .flattenDeep()
+                        .compact()
+                        .join(" ")
+                        .value();
                 };
                 SeriesNameBuilder.prototype.buildAlias = function (alias, tagGroupBys, valueGroupBysValues, timeGroupBysValues) {
                     var _this = this;
@@ -38,17 +52,17 @@ System.register(["lodash"], function(exports_1) {
                     return replacedAlias;
                 };
                 SeriesNameBuilder.prototype.getTagGroupBys = function (groupBys) {
-                    return lodash_1.default.isNil(groupBys) ? [] : lodash_1.default.values(groupBys.group);
+                    return lodash_1.default.isNil(groupBys) ? [] : lodash_1.default.map(groupBys.group, function (value, tag) { return tag + "=" + value; });
                 };
                 SeriesNameBuilder.prototype.getValueGroupBys = function (groupBys) {
                     return groupBys
                         .filter(function (groupBy) { return groupBy.name === "value"; })
-                        .map(function (groupBy) { return "G" + groupBy.group.group_number; });
+                        .map(function (groupBy) { return "value_group=" + groupBy.group.group_number; });
                 };
                 SeriesNameBuilder.prototype.getTimeGroupBys = function (groupBys) {
                     return groupBys
                         .filter(function (groupBy) { return groupBy.name === "time"; })
-                        .map(function (groupBy) { return "G" + groupBy.group.group_number + SeriesNameBuilder.SEPARATOR + groupBy.group_count; });
+                        .map(function (groupBy) { return "time_group=" + groupBy.group.group_number; });
                 };
                 SeriesNameBuilder.prototype.getGroupByExpression = function (type, value) {
                     return "$_" + type + "_group_" + value;
