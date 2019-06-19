@@ -39,7 +39,7 @@ const RANGE_AGGREGATORS = ["avg", "dev", "count", "first", "gaps",
     "last", "least_squares", "max", "min", "gaps", "merge", "sum", "movingWindow"];
 
 export function fromObject(object: any): Aggregator {
-  if (object.name in RANGE_AGGREGATORS) {
+  if (RANGE_AGGREGATORS.indexOf(object.name) >= 0) {
       return RangeAggregator.fromObject(object);
   } else if (object.name === PercentileAggregator.NAME) {
       return PercentileAggregator.fromObject(object);

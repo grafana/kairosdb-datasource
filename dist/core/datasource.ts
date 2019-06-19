@@ -66,7 +66,7 @@ export class KairosDBDatasource {
         const convertedTargets = _.map(enabledTargets, (target) => {
             if (this.legacyTargetConverter.isApplicable(target)) {
               return {query: this.legacyTargetConverter.convert(target)};
-            } else if (target.query instanceof KairosDBTarget) {
+            } else if (!(target.query instanceof KairosDBTarget)) {
               return {query: KairosDBTarget.fromObject(target.query)};
             } else {
               return target;

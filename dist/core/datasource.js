@@ -84,7 +84,7 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                         if (_this.legacyTargetConverter.isApplicable(target)) {
                             return { query: _this.legacyTargetConverter.convert(target) };
                         }
-                        else if (target.query instanceof target_1.KairosDBTarget) {
+                        else if (!(target.query instanceof target_1.KairosDBTarget)) {
                             return { query: target_1.KairosDBTarget.fromObject(target.query) };
                         }
                         else {

@@ -3,7 +3,7 @@ System.register(["./aggregator", "./apdex_aggregator", "./divide_aggregator", ".
     var aggregator_1, apdex_aggregator_1, divide_aggregator_1, filter_aggregator_1, percentile_aggregator_1, range_aggregator_1, rate_aggregator_1, sampler_aggregator_1, scale_aggregator_1, sma_aggregator_1, trim_aggregator_1, AGGREGATORS, RANGE_AGGREGATORS;
     var __moduleName = context_1 && context_1.id;
     function fromObject(object) {
-        if (object.name in RANGE_AGGREGATORS) {
+        if (RANGE_AGGREGATORS.indexOf(object.name) >= 0) {
             return range_aggregator_1.RangeAggregator.fromObject(object);
         }
         else if (object.name === percentile_aggregator_1.PercentileAggregator.NAME) {
