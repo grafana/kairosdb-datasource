@@ -144,6 +144,11 @@ export class KairosDBDatasource {
     }
 
     private getMetricTagValues(metricName: string, tagName: string, filters: any) {
+        if (typeof filters === "string") {
+            const value = "*" + filters + "*";
+            filters = {};
+            filters[tagName] = [value];
+        }
         return this.getMetricTags(metricName, filters)
             .then((tags) => {
                 return _.values(tags[tagName]);

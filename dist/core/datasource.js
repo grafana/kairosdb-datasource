@@ -151,6 +151,11 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                         .then(function (tags) { return lodash_1.default.keys(tags); });
                 };
                 KairosDBDatasource.prototype.getMetricTagValues = function (metricName, tagName, filters) {
+                    if (typeof filters === "string") {
+                        var value = "*" + filters + "*";
+                        filters = {};
+                        filters[tagName] = [value];
+                    }
                     return this.getMetricTags(metricName, filters)
                         .then(function (tags) {
                         return lodash_1.default.values(tags[tagName]);
