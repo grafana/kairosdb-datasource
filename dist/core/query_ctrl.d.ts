@@ -4,6 +4,7 @@ export declare class KairosDBQueryCtrl extends QueryCtrl {
     static templateUrl: string;
     aggregators: Aggregator[];
     tagsInitializationError: string;
+    customTagName: string;
     private targetValidator;
     private tags;
     private legacyTargetConverter;
@@ -11,8 +12,10 @@ export declare class KairosDBQueryCtrl extends QueryCtrl {
     constructor($scope: any, $injector: any);
     private onTargetChange(newTarget, oldTarget);
     private onMetricNameChanged(newMetricName, oldMetricName);
+    private onTagsChange(newTags, oldTags);
     private buildNewTarget(metricName);
     private initializeTags(metricName);
     private isTargetChanged(newTarget, oldTarget);
     private clear();
+    private addCustomTag();
 }

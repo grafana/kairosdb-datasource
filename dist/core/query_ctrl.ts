@@ -18,6 +18,7 @@ export class KairosDBQueryCtrl extends QueryCtrl {
 
     public aggregators: Aggregator[] = AGGREGATORS;
     public tagsInitializationError: string = undefined;
+    public customTagName: string = "";
     private targetValidator: TargetValidator = new TargetValidator();
     private tags: MetricTags;
     private legacyTargetConverter: LegacyTargetConverter = new LegacyTargetConverter();
@@ -27,6 +28,7 @@ export class KairosDBQueryCtrl extends QueryCtrl {
         super($scope, $injector);
         this.datasource.initialize();
         $scope.$watch("ctrl.target.query", this.onTargetChange.bind(this), true);
+        $scope.$watch("ctrl.tags.tags", this.onTagsChange.bind(this), true);
         $scope.$watch("ctrl.target.query.metricName", this.onMetricNameChanged.bind(this));
         if (this.legacyTargetConverter.isApplicable(this.target)) {
             this.target.query = this.legacyTargetConverter.convert(this.target);
@@ -49,6 +51,10 @@ export class KairosDBQueryCtrl extends QueryCtrl {
         this.initializeTags(newMetricName);
     }
 
+    private onTagsChange(newTags, oldTags) {
+        this.tags.updateTags(newTags);
+    }
+
     private buildNewTarget(metricName) {
         const target = new KairosDBTarget();
         target.metricName = metricName;
@@ -61,8 +67,23 @@ export class KairosDBQueryCtrl extends QueryCtrl {
             this.tags = new MetricTags();
             this.datasource.getMetricTags(metricName)
                 .then(
-                    (tags) => this.tags.updateTags(tags),
-                    (error) => this.tagsInitializationError = error.data.message
+                    (tags) => {
+                        Object.keys(this.target.query.tags).map((key) => {
+                            tags[key] = tags[key] || [];
+                        });
+                        this.tags.updateTags(tags);
+                    },
+                    (error) => {
+                        if (error && error.data && error.data.message) {
+                            this.tagsInitializationError = error.data.message;
+                        } else if (error.cancelled) {
+                            this.tagsInitializationError = "Query was cancelled";
+                        } else {
+                            this.tagsInitializationError = "Unknown error";
+                        }
+
+                        this.tags.updateTags(this.target.query.tags);
+                    }
                 );
         }
     }
@@ -73,5 +94,14 @@ export class KairosDBQueryCtrl extends QueryCtrl {
 
     private clear(): void {
         this.tagsInitializationError = undefined;
+    }
+
+    private addCustomTag(): void {
+        const tags = this.tags.tags;
+        if (!tags[this.customTagName]) {
+            tags[this.customTagName] = [];
+            this.tags.updateTags(tags);
+        }
+        this.customTagName = "";
     }
 }

@@ -11,6 +11,7 @@ System.register(["lodash"], function(exports_1) {
                 function MetricTags() {
                     this.tags = {};
                     this.initialized = false;
+                    this.combinations = 0;
                 }
                 MetricTags.prototype.updateTags = function (tags) {
                     this.tags = tags;
