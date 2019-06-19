@@ -145,7 +145,7 @@ export class KairosDBDatasource {
 
     private getMetricTagValues(metricName: string, tagName: string, filters: any) {
         if (typeof filters === "string") {
-            const value = "*" + filters + "*";
+            const value = "*" + this.templatingUtils.replace(filters)[0] + "*";
             filters = {};
             filters[tagName] = [value];
         }
