@@ -68,7 +68,7 @@ export class KairosDBQueryCtrl extends QueryCtrl {
             this.datasource.getMetricTags(metricName)
                 .then(
                     (tags) => {
-                        Object.keys(this.target.query.tags).map((key) => {
+                        Object.keys(this.target.query.tags || {}).map((key) => {
                             tags[key] = tags[key] || [];
                         });
                         this.tags.updateTags(tags);
@@ -98,7 +98,7 @@ export class KairosDBQueryCtrl extends QueryCtrl {
 
     private addCustomTag(): void {
         const tags = this.tags.tags;
-        if (!tags[this.customTagName]) {
+        if (this.customTagName && !tags[this.customTagName]) {
             tags[this.customTagName] = [];
             this.tags.updateTags(tags);
         }

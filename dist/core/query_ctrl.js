@@ -81,7 +81,7 @@ System.register(["app/plugins/sdk", "../beans/aggregators/aggregators", "../bean
                         this.tags = new metric_tags_1.MetricTags();
                         this.datasource.getMetricTags(metricName)
                             .then(function (tags) {
-                            Object.keys(_this.target.query.tags).map(function (key) {
+                            Object.keys(_this.target.query.tags || {}).map(function (key) {
                                 tags[key] = tags[key] || [];
                             });
                             _this.tags.updateTags(tags);
@@ -107,7 +107,7 @@ System.register(["app/plugins/sdk", "../beans/aggregators/aggregators", "../bean
                 };
                 KairosDBQueryCtrl.prototype.addCustomTag = function () {
                     var tags = this.tags.tags;
-                    if (!tags[this.customTagName]) {
+                    if (this.customTagName && !tags[this.customTagName]) {
                         tags[this.customTagName] = [];
                         this.tags.updateTags(tags);
                     }
