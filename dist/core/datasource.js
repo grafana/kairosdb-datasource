@@ -152,7 +152,7 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                 };
                 KairosDBDatasource.prototype.getMetricTagValues = function (metricName, tagName, filters) {
                     if (typeof filters === "string") {
-                        var value = "*" + filters + "*";
+                        var value = "*" + this.templatingUtils.replace(filters)[0] + "*";
                         filters = {};
                         filters[tagName] = [value];
                     }
