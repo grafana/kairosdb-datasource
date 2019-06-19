@@ -98,7 +98,6 @@ describe("SeriesNameBuilder", () => {
             // when
             const seriesName = seriesNameBuilder.build(metricName, null, groupBys);
             // then
-            seriesName.should.contain(metricName);
             groupBys.forEach((groupBy) => {
                 switch (groupBy.name) {
                     case "tag":
@@ -107,11 +106,11 @@ describe("SeriesNameBuilder", () => {
                         });
                         break;
                     case "value":
-                        seriesName.should.contain(groupBy.group.group_number);
+                        seriesName.should.contain("value_group=" + groupBy.group.group_number);
                         break;
                     case "time":
-                        seriesName.should.contain(groupBy.group.group_number);
-                        seriesName.should.contain(groupBy.group_count);
+                        seriesName.should.contain("time_group=" + groupBy.group.group_number);
+                        // seriesName.should.contain(groupBy.group_count);
                         break;
                 }
             });
@@ -165,6 +164,6 @@ describe("SeriesNameBuilder", () => {
         // when
         const seriesName = seriesNameBuilder.build(metricName, alias, groupBys);
         // then
-        seriesName.should.be.equal("kairosdb_some_text_G2_other_text_G1_3");
+        seriesName.should.be.equal("kairosdb_some_text_value_group=2_other_text_time_group=1");
     });
 });
