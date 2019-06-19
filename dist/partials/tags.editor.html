@@ -15,12 +15,33 @@
         </div>
         <div class="gf-form" ng-if="ctrl.tagsInitializationError">
             <label class="gf-form-label" style="color: red">
-                <strong>Unable to load tags: {{ctrl.tagsInitializationError}}</strong>
+                <strong>Unable to load tags: {{ctrl.tagsInitializationError}} . Using default tags</strong>
             </label>
         </div>
         <div class="gf-form gf-form--grow">
             <div class="gf-form-label gf-form-label--grow"></div>
         </div>
     </div>
-    <tags-select selected-values="ctrl.target.query.tags[tagName]" tag-name="tagName" tag-values="tagValues" ng-repeat="(tagName, tagValues) in ctrl.tags.tags"></tags-select>
+    <tags-select
+        ng-if="ctrl.tags.tags !== null"
+        ng-repeat="(tagName, tagValues) in ctrl.tags.tags"
+        selected-values="ctrl.target.query.tags[tagName]"
+        tag-name="tagName"
+        tag-values="tagValues"
+        tags="ctrl.tags.tags"
+    >
+    </tags-select>
+
+    <div class="gf-form">
+        <input
+            type="text"
+            class="gf-form-input offset-width-8 width-10"
+            ng-model="ctrl.customTagName"
+        />
+        <label class="gf-form-label">
+            <a ng-click="ctrl.addCustomTag(); ctrl.onChange()">
+                <i class="fa fa-plus" bs-tooltip="'Add custom value'"></i>
+            </a>
+        </label>
+    </div>
 </div>

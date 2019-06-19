@@ -81,7 +81,20 @@ export class KairosDBDatasource {
                 this.cacheResponse(hashedQuery, response.data);
                 return this.responseHandler.convertToDatapoints(response.data, aliases);
             })
-            .catch(() => this.responseHandler.convertToDatapoints(this.lastResult[hashedQuery], aliases));
+            .catch((error) => {
+                if (this.lastResult[hashedQuery]) {
+                    return this.responseHandler.convertToDatapoints(this.lastResult[hashedQuery], aliases);
+                }
+                if (error && error.data && error.data.errors && error.data.errors.length() > 0) {
+                    throw {message: error.data.errors[0]};
+                } else if (error && error.data && error.data.message) {
+                    throw {message: error.data.message};
+                } else if (error && error.cancelled) {
+                    throw {message: "query cancelled"};
+                } else {
+                    throw {message: "Unknown error"};
+                }
+            });
     }
 
     public getMetricTags(metricNameTemplate, filters = {}) {

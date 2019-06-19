@@ -1,25 +1,16 @@
-<div class="gf-form-inline" ng-if="ctrl.tagValues.length == 1">
-    <div class="gf-form">
-        <label class="gf-form-label offset-width-8 width-10" ng-class="{'inactiveTag': ctrl.tagValues.length === 1}">
-            <a bs-tooltip="'Values: ' + ctrl.tagValues.join(', ')">{{ctrl.tagName}}</a>
-        </label>
-    </div>
-
-    <div ng-if="ctrl.tagValues.length == 1" class="gf-form">
-        <label class="gf-form-label inactiveTag">
-            {{ctrl.tagValues[0]}}
-        </label>
-    </div>
-
-    <div class="gf-form gf-form--grow">
-        <div class="gf-form-label gf-form-label--grow"></div>
-    </div>
-</div>
-
-<div class="gf-form-inline" ng-repeat="segment in ctrl.segments" ng-if="ctrl.tagValues.length > 1">
+<div class="gf-form-inline" ng-repeat="segment in ctrl.segments">
     <div class="gf-form" ng-if="$first">
-        <label class="gf-form-label offset-width-8 width-10" ng-class="{'inactiveTag': ctrl.tagValues.length === 1}">
-            <a bs-tooltip="'Values: ' + ctrl.tagValues.join(', ')">{{ctrl.tagName}}</a>
+        <label class="gf-form-label offset-width-8 width-8" ng-class="{'inactiveTag': ctrl.tagValues.length === 1}">
+            <a ng-if="ctrl.tagValues.length > 0">{{ctrl.tagName}}</a>
+            <a ng-if="ctrl.tagValues.length === 0">{{ctrl.tagName}}</a>
+        </label>
+    </div>
+
+    <div class="gf-form">
+        <label class="gf-form-label" ng-if="$first">
+            <a ng-click="ctrl.removeTag()">
+                <i class="fa fa-times"></i>
+            </a>
         </label>
     </div>
 

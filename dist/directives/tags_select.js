@@ -10,7 +10,8 @@ System.register(["lodash"], function(exports_1) {
             scope: {
                 selectedValues: "=",
                 tagName: "=",
-                tagValues: "="
+                tagValues: "=",
+                tags: "=",
             },
             templateUrl: "public/plugins/grafana-kairosdb-datasource/partials/tags.select.html"
         };
@@ -28,11 +29,11 @@ System.register(["lodash"], function(exports_1) {
                     var _this = this;
                     this.uiSegmentSrv = uiSegmentSrv;
                     this.selectedValues = this.selectedValues || [];
-                    if (this.tagValues.length > 1) {
-                        this.segments = this.selectedValues
-                            .map(function (tagValue) { return _this.uiSegmentSrv.newSegment(tagValue); });
-                        this.segments.push(this.uiSegmentSrv.newPlusButton());
+                    if (this.tagValues.length === 1 && lodash_1.default.isEmpty(this.selectedValues)) {
+                        this.selectedValues = this.tagValues;
                     }
+                    this.segments = this.selectedValues.map(function (tagValue) { return _this.uiSegmentSrv.newSegment({ value: tagValue, cssClass: "query-part" }); });
+                    this.segments.push(this.uiSegmentSrv.newPlusButton());
                 }
                 TagsSelectCtrl.prototype.onChange = function () {
                     if (!lodash_1.default.isNil(lodash_1.default.last(this.segments).value)) {
@@ -43,6 +44,9 @@ System.register(["lodash"], function(exports_1) {
                 TagsSelectCtrl.prototype.remove = function (segment) {
                     this.segments = lodash_1.default.without(this.segments, segment);
                     this.update();
+                };
+                TagsSelectCtrl.prototype.removeTag = function () {
+                    delete this.tags[this.tagName];
                 };
                 TagsSelectCtrl.prototype.update = function () {
                     this.selectedValues = this.segments

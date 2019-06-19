@@ -92,7 +92,23 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                         _this.cacheResponse(hashedQuery, response.data);
                         return _this.responseHandler.convertToDatapoints(response.data, aliases);
                     })
-                        .catch(function () { return _this.responseHandler.convertToDatapoints(_this.lastResult[hashedQuery], aliases); });
+                        .catch(function (error) {
+                        if (_this.lastResult[hashedQuery]) {
+                            return _this.responseHandler.convertToDatapoints(_this.lastResult[hashedQuery], aliases);
+                        }
+                        if (error && error.data && error.data.errors && error.data.errors.length() > 0) {
+                            throw { message: error.data.errors[0] };
+                        }
+                        else if (error && error.data && error.data.message) {
+                            throw { message: error.data.message };
+                        }
+                        else if (error && error.cancelled) {
+                            throw { message: "query cancelled" };
+                        }
+                        else {
+                            throw { message: "Unknown error" };
+                        }
+                    });
                 };
                 KairosDBDatasource.prototype.getMetricTags = function (metricNameTemplate, filters) {
                     if (filters === void 0) { filters = {}; }

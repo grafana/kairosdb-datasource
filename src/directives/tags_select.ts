@@ -1,18 +1,21 @@
 import _ from "lodash";
+import { MetricTags } from "../beans/request/metric_tags";
 
 export class TagsSelectCtrl {
     public tagValues: string[];
     public selectedValues: string[];
     public segments: any[];
+    public tags: MetricTags;
+    public tagName: string;
 
     /** @ngInject **/
     constructor(private uiSegmentSrv) {
         this.selectedValues = this.selectedValues || [];
-        if (this.tagValues.length > 1) {
-            this.segments = this.selectedValues
-                .map((tagValue) => this.uiSegmentSrv.newSegment(tagValue));
-            this.segments.push(this.uiSegmentSrv.newPlusButton());
+        if (this.tagValues.length === 1 && _.isEmpty(this.selectedValues)) {
+            this.selectedValues = this.tagValues;
         }
+        this.segments = this.selectedValues.map((tagValue) => this.uiSegmentSrv.newSegment({value: tagValue, cssClass: "query-part"}));
+        this.segments.push(this.uiSegmentSrv.newPlusButton());
     }
 
     public onChange(): void {
@@ -25,6 +28,10 @@ export class TagsSelectCtrl {
     public remove(segment): void {
         this.segments = _.without(this.segments, segment);
         this.update();
+    }
+
+    public removeTag(): void {
+        delete this.tags[this.tagName];
     }
 
     private update(): void {
@@ -43,7 +50,8 @@ export function TagsSelectDirective() {
         scope: {
             selectedValues: "=",
             tagName: "=",
-            tagValues: "="
+            tagValues: "=",
+            tags: "=",
         },
         templateUrl: "public/plugins/grafana-kairosdb-datasource/partials/tags.select.html"
     };
