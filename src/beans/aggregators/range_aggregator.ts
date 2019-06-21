@@ -11,7 +11,7 @@ export class RangeAggregator extends Aggregator {
         const sampleAgg = SamplingAggregatorParameter.fromObject(object.parameters[1]);
         const sampleUnit = SamplingUnitAggregatorParameter.fromObject(object.parameters[2]);
         rval.parameters = [alignment, sampleAgg, sampleUnit];
-        rval.autoValueSwitch = new AutoValueSwitch([sampleAgg, sampleUnit]);
+        rval.autoValueSwitch = AutoValueSwitch.fromObject(object.autoValueSwitch, [sampleAgg, sampleUnit]);
         return rval;
     }
 

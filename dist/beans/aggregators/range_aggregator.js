@@ -51,7 +51,7 @@ System.register(["../../directives/auto_value_switch", "./aggregator", "./parame
                     var sampleAgg = sampling_aggregator_parameter_1.SamplingAggregatorParameter.fromObject(object.parameters[1]);
                     var sampleUnit = sampling_unit_aggregator_parameter_1.SamplingUnitAggregatorParameter.fromObject(object.parameters[2]);
                     rval.parameters = [alignment, sampleAgg, sampleUnit];
-                    rval.autoValueSwitch = new auto_value_switch_1.AutoValueSwitch([sampleAgg, sampleUnit]);
+                    rval.autoValueSwitch = auto_value_switch_1.AutoValueSwitch.fromObject(object.autoValueSwitch, [sampleAgg, sampleUnit]);
                     return rval;
                 };
                 return RangeAggregator;
