@@ -63,8 +63,8 @@ export class KairosDBQueryCtrl extends QueryCtrl {
 
     private initializeTags(metricName: string) {
         this.clear();
+        this.tags = new MetricTags();
         if (metricName) {
-            this.tags = new MetricTags();
             this.datasource.getMetricTags(metricName)
                 .then(
                     (tags) => {

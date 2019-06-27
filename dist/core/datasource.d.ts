@@ -20,6 +20,7 @@ export declare class KairosDBDatasource {
     constructor(instanceSettings: any, $q: any, backendSrv: any, templateSrv: any);
     initialize(): void;
     query(options: any): any;
+    testDatasource(): Promise<any>;
     getMetricTags(metricNameTemplate: any, filters?: {}): any;
     metricFindQuery(query: string): Promise<{
         text: any;
