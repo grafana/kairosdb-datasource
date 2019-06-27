@@ -74,7 +74,8 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                             { query: _this.legacyTargetConverter.convert(target) } : target;
                     });
                     if (!this.targetValidator.areValidTargets(convertedTargets)) {
-                        return; // todo: target validation, throw message to grafana with detailed info
+                        // todo: target validation, throw message to grafana with detailed info
+                        return Promise.reject(new Error("Query contains invalid targets"));
                     }
                     var aliases = convertedTargets.map(function (target) { return target.query.alias; });
                     var unpackedTargets = lodash_1.default.flatten(convertedTargets.map(function (target) {
@@ -109,6 +110,9 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                             throw { message: "Unknown error" };
                         }
                     });
+                };
+                KairosDBDatasource.prototype.testDatasource = function () {
+                    return Promise.resolve({ status: "success", message: "Data source is working" });
                 };
                 KairosDBDatasource.prototype.getMetricTags = function (metricNameTemplate, filters) {
                     if (filters === void 0) { filters = {}; }

@@ -63,7 +63,8 @@ export class KairosDBDatasource {
         });
 
         if (!this.targetValidator.areValidTargets(convertedTargets)) {
-            return; // todo: target validation, throw message to grafana with detailed info
+            // todo: target validation, throw message to grafana with detailed info
+            return Promise.reject(new Error("Query contains invalid targets"));
         }
         const aliases = convertedTargets.map((target) => target.query.alias);
         const unpackedTargets = _.flatten(convertedTargets.map((target) => {
@@ -95,6 +96,10 @@ export class KairosDBDatasource {
                     throw {message: "Unknown error"};
                 }
             });
+    }
+
+    public testDatasource(): Promise<any> {
+        return Promise.resolve({ status: "success", message: "Data source is working" });
     }
 
     public getMetricTags(metricNameTemplate, filters = {}) {

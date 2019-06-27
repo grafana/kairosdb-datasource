@@ -77,8 +77,8 @@ System.register(["app/plugins/sdk", "../beans/aggregators/aggregators", "../bean
                 KairosDBQueryCtrl.prototype.initializeTags = function (metricName) {
                     var _this = this;
                     this.clear();
+                    this.tags = new metric_tags_1.MetricTags();
                     if (metricName) {
-                        this.tags = new metric_tags_1.MetricTags();
                         this.datasource.getMetricTags(metricName)
                             .then(function (tags) {
                             Object.keys(_this.target.query.tags || {}).map(function (key) {
