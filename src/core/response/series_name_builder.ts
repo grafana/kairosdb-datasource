@@ -8,17 +8,14 @@ export class SeriesNameBuilder {
             tagGroupBysValues = this.getTagGroupBys(tagGroupBys),
             valueGroupBysValues = this.getValueGroupBys(groupBys),
             timeGroupBysValues = this.getTimeGroupBys(groupBys);
-        if (_.isEmpty(alias)) {
-            // return "tag1=value1 tag2=value2" or simply "metricName"
-            const groupBysName = this.buildDefault(tagGroupBysValues, valueGroupBysValues, timeGroupBysValues);
-            return _.isEmpty(groupBysName) ? metricName : groupBysName;
-        } else if (alias.indexOf("$_") >= 0 ) {
+        if (alias.indexOf("$_") >= 0 ) {
             // evaluate expressions in alias
             return this.buildAlias(alias, tagGroupBys, valueGroupBysValues, timeGroupBysValues);
         } else {
-            // return "alias (tag1=value1 tag2=value2)" or simply "alias"
+            // "alias ( tag1=value1 tag2=value2 )" or simply "alias"
             const groupBysName = this.buildDefault(tagGroupBysValues, valueGroupBysValues, timeGroupBysValues);
-            return _.isEmpty(groupBysName) ? alias : alias + " (" + groupBysName + ")";
+            const prefix = _.isEmpty(alias) ? metricName : alias;
+            return _.isEmpty(groupBysName) ? prefix : prefix + " ( " + groupBysName + " )";
         }
     }
 
