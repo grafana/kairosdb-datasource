@@ -8,7 +8,7 @@ export class SeriesNameBuilder {
             tagGroupBysValues = this.getTagGroupBys(tagGroupBys),
             valueGroupBysValues = this.getValueGroupBys(groupBys),
             timeGroupBysValues = this.getTimeGroupBys(groupBys);
-        if (alias.indexOf("$_") >= 0 ) {
+        if (!_.isEmpty(alias) && alias.indexOf("$_") >= 0 ) {
             // evaluate expressions in alias
             return this.buildAlias(alias, tagGroupBys, valueGroupBysValues, timeGroupBysValues);
         } else {
