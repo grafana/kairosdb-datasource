@@ -13,19 +13,15 @@ System.register(["lodash"], function(exports_1) {
                 SeriesNameBuilder.prototype.build = function (metricName, alias, groupBys) {
                     if (groupBys === void 0) { groupBys = []; }
                     var tagGroupBys = lodash_1.default.find(groupBys, function (groupBy) { return groupBy.name === "tag"; }), tagGroupBysValues = this.getTagGroupBys(tagGroupBys), valueGroupBysValues = this.getValueGroupBys(groupBys), timeGroupBysValues = this.getTimeGroupBys(groupBys);
-                    if (lodash_1.default.isEmpty(alias)) {
-                        // return "tag1=value1 tag2=value2" or simply "metricName"
-                        var groupBysName = this.buildDefault(tagGroupBysValues, valueGroupBysValues, timeGroupBysValues);
-                        return lodash_1.default.isEmpty(groupBysName) ? metricName : groupBysName;
-                    }
-                    else if (alias.indexOf("$_") >= 0) {
+                    if (!lodash_1.default.isEmpty(alias) && alias.indexOf("$_") >= 0) {
                         // evaluate expressions in alias
                         return this.buildAlias(alias, tagGroupBys, valueGroupBysValues, timeGroupBysValues);
                     }
                     else {
-                        // return "alias (tag1=value1 tag2=value2)" or simply "alias"
+                        // "alias ( tag1=value1 tag2=value2 )" or simply "alias"
                         var groupBysName = this.buildDefault(tagGroupBysValues, valueGroupBysValues, timeGroupBysValues);
-                        return lodash_1.default.isEmpty(groupBysName) ? alias : alias + " (" + groupBysName + ")";
+                        var prefix = lodash_1.default.isEmpty(alias) ? metricName : alias;
+                        return lodash_1.default.isEmpty(groupBysName) ? prefix : prefix + " ( " + groupBysName + " )";
                     }
                 };
                 SeriesNameBuilder.prototype.buildDefault = function (tagGroupBysValues, valueGroupBysValues, timeGroupBysValues) {
