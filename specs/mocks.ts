@@ -1,3 +1,4 @@
+import moment from "moment";
 import {SamplingConverter} from "../src/core/request/sampling_converter";
 
 export const buildTemplatingSrvMock = (variables) => {
@@ -10,13 +11,15 @@ export const buildTemplatingSrvMock = (variables) => {
                 replacedExpression = replacedExpression.replace("[[" + key + "]]", templatedValue);
             });
             return replacedExpression;
-        }
+        },
+        timeRange: { to: moment(), from: moment() }
     };
 };
 
 export const buildNoopTemplatingSrvMock = () => {
     return {
-        replace: (expression) => expression
+        replace: (expression) => expression,
+        timeRange: {to: moment(), from: moment()}
     };
 };
 

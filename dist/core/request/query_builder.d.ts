@@ -3,6 +3,7 @@ export declare class KairosDBQueryBuilder {
     private url;
     private apiPath;
     private scopedVars;
+    private templateSrv;
     private groupBysBuilder;
     private templatingUtils;
     private samplingParameterConverter;

@@ -34,6 +34,7 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
                     this.url = url;
                     this.apiPath = apiPath;
                     this.scopedVars = scopedVars;
+                    this.templateSrv = templateSrv;
                     this.templatingUtils = new templating_utils_1.TemplatingUtils(templateSrv, this.scopedVars);
                     var samplingConverter = new sampling_converter_1.SamplingConverter();
                     this.groupBysBuilder = new group_bys_builder_1.GroupBysBuilder(this.templatingUtils, samplingConverter);
@@ -106,7 +107,8 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
                     return {
                         cache_time: 0,
                         metrics: [{ name: metricName, tags: filters }],
-                        start_absolute: 0
+                        start_absolute: this.templateSrv.timeRange.from.unix() * 1000,
+                        end_absolute: this.templateSrv.timeRange.to.unix() * 1000,
                     };
                 };
                 return KairosDBQueryBuilder;

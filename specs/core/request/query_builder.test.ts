@@ -5,7 +5,7 @@ import {buildTemplatingSrvMock} from "../../mocks";
 describe("QueryBuilder", () => {
     const templatingSrvMock = buildTemplatingSrvMock({
         ping: ["pong"],
-        vars: ["variable_1", "variable_2", "variable_3"]
+        vars: ["variable_1", "variable_2", "variable_3"],
     });
 
     const queryBuilder: KairosDBQueryBuilder =

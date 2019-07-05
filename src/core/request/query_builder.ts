@@ -14,6 +14,7 @@ export class KairosDBQueryBuilder {
     private url: string;
     private apiPath: string;
     private scopedVars: any;
+    private templateSrv: any;
     private groupBysBuilder: GroupBysBuilder;
     private templatingUtils: TemplatingUtils;
     private samplingParameterConverter: SamplingParameterConverter;
@@ -23,6 +24,7 @@ export class KairosDBQueryBuilder {
         this.url = url;
         this.apiPath = apiPath;
         this.scopedVars = scopedVars;
+        this.templateSrv = templateSrv;
         this.templatingUtils = new TemplatingUtils(templateSrv, this.scopedVars);
         const samplingConverter = new SamplingConverter();
         this.groupBysBuilder = new GroupBysBuilder(this.templatingUtils, samplingConverter);
@@ -110,7 +112,8 @@ export class KairosDBQueryBuilder {
         return {
             cache_time: 0,
             metrics: [{name: metricName, tags: filters}],
-            start_absolute: 0
+            start_absolute: this.templateSrv.timeRange.from.unix() * 1000,
+            end_absolute: this.templateSrv.timeRange.to.unix() * 1000,
         };
     }
 }
