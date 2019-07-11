@@ -29,9 +29,6 @@ System.register(["lodash"], function(exports_1) {
                     var _this = this;
                     this.uiSegmentSrv = uiSegmentSrv;
                     this.selectedValues = this.selectedValues || [];
-                    if (this.tagValues.length === 1 && lodash_1.default.isEmpty(this.selectedValues)) {
-                        this.selectedValues = this.tagValues;
-                    }
                     this.segments = this.selectedValues.map(function (tagValue) { return _this.uiSegmentSrv.newSegment({ value: tagValue, cssClass: "query-part" }); });
                     this.segments.push(this.uiSegmentSrv.newPlusButton());
                 }

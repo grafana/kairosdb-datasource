@@ -11,9 +11,6 @@ export class TagsSelectCtrl {
     /** @ngInject **/
     constructor(private uiSegmentSrv) {
         this.selectedValues = this.selectedValues || [];
-        if (this.tagValues.length === 1 && _.isEmpty(this.selectedValues)) {
-            this.selectedValues = this.tagValues;
-        }
         this.segments = this.selectedValues.map((tagValue) => this.uiSegmentSrv.newSegment({value: tagValue, cssClass: "query-part"}));
         this.segments.push(this.uiSegmentSrv.newPlusButton());
     }
