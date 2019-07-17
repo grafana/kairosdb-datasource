@@ -32,6 +32,7 @@ export class MetricNameFieldCtrl {
         const query = this.$scope.getMetricInputValue();
         return this.promiseUtils.resolvedPromise(this.metricNames
             .filter((metricName) => _.includes(metricName, query))
+            .sort(this.sortForZmon)
             .slice(0, METRIC_NAMES_SUGGESTIONS_LIMIT)
             .map((metricName) => {
                 return this.uiSegmentSrv.newSegment(metricName);
@@ -44,6 +45,17 @@ export class MetricNameFieldCtrl {
             this.aliasAddedVisible = true;
         }
         this.aliasInputVisible = false;
+    }
+
+    private sortForZmon(left, right): number {
+        // prioritize metric names that start with z
+        if (left.charAt(0) === "z" && right.charAt(0) !== "z") {
+            return -1;
+        } else if (left.charAt(0) !== "z" && right.charAt(0) === "z") {
+            return 1;
+        } else {
+            return left.localeCompare(right);
+        }
     }
 }
 
