@@ -13,6 +13,7 @@ export class MetricNameFieldCtrl {
     private $q: any;
     private $scope: any;
     private promiseUtils: PromiseUtils;
+    private checkId: string;
 
     /** @ngInject **/
     constructor($scope, $q, private uiSegmentSrv) {
@@ -26,6 +27,12 @@ export class MetricNameFieldCtrl {
 
     public onChange(segment): void {
         this.value = this.$scope.getMetricInputValue();
+        const match = this.value.match("zmon.check.(\\d+)");
+        if (match) {
+            this.checkId = match[1];
+        } else {
+            this.checkId = null;
+        }
     }
 
     public suggestMetrics(): string[] {

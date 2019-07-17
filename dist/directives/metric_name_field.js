@@ -42,6 +42,13 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
                 }
                 MetricNameFieldCtrl.prototype.onChange = function (segment) {
                     this.value = this.$scope.getMetricInputValue();
+                    var match = this.value.match("zmon.check.(\\d+)");
+                    if (match) {
+                        this.checkId = match[1];
+                    }
+                    else {
+                        this.checkId = null;
+                    }
                 };
                 MetricNameFieldCtrl.prototype.suggestMetrics = function () {
                     var _this = this;

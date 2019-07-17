@@ -2,6 +2,8 @@
     <metric-segment segment="ctrl.segment" get-options="ctrl.suggestMetrics($index)"
                     on-change="ctrl.onChange(segment)"></metric-segment>
 
+    <a href="https://zmon.zalando.net/#/check-definitions/view/{{ctrl.checkId}}" ng-show="ctrl.checkId">check definition</a>
+
     <label class="gf-form-label" ng-show="!(ctrl.aliasInputVisible || ctrl.aliasAddedVisible)">
         <a ng-click="ctrl.aliasInputVisible = true;">
             <i class="fa fa-plus" bs-tooltip="'Add alias'"></i>
