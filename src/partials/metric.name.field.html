@@ -10,6 +10,9 @@
 
     <label class="gf-form-label" ng-show="ctrl.aliasInputVisible || ctrl.alias">
         as
+        <info-popover mode="right-normal" position="top center">
+          Additional group by variables available are $_tag_group_TAG, $_value_group_INDEX and $_time_group_INDEX. If you use these, alias string overwrites the whole series name.
+        </info-popover>
     </label>
 
     <input type="text" placeholder="alias" ng-model="ctrl.aliasInput" class="gf-form-input width-10"
