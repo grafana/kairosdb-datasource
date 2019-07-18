@@ -42,12 +42,20 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
                 }
                 MetricNameFieldCtrl.prototype.onChange = function (segment) {
                     this.value = this.$scope.getMetricInputValue();
+                    var match = this.value.match("zmon.check.(\\d+)");
+                    if (match) {
+                        this.checkId = match[1];
+                    }
+                    else {
+                        this.checkId = null;
+                    }
                 };
                 MetricNameFieldCtrl.prototype.suggestMetrics = function () {
                     var _this = this;
                     var query = this.$scope.getMetricInputValue();
                     return this.promiseUtils.resolvedPromise(this.metricNames
                         .filter(function (metricName) { return lodash_1.default.includes(metricName, query); })
+                        .sort(this.sortForZmon)
                         .slice(0, METRIC_NAMES_SUGGESTIONS_LIMIT)
                         .map(function (metricName) {
                         return _this.uiSegmentSrv.newSegment(metricName);
@@ -59,6 +67,18 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
                         this.aliasAddedVisible = true;
                     }
                     this.aliasInputVisible = false;
+                };
+                MetricNameFieldCtrl.prototype.sortForZmon = function (left, right) {
+                    // prioritize metric names that start with z
+                    if (left.charAt(0) === "z" && right.charAt(0) !== "z") {
+                        return -1;
+                    }
+                    else if (left.charAt(0) !== "z" && right.charAt(0) === "z") {
+                        return 1;
+                    }
+                    else {
+                        return left.localeCompare(right);
+                    }
                 };
                 return MetricNameFieldCtrl;
             })();

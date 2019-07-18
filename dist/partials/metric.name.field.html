@@ -2,6 +2,8 @@
     <metric-segment segment="ctrl.segment" get-options="ctrl.suggestMetrics($index)"
                     on-change="ctrl.onChange(segment)"></metric-segment>
 
+    <a href="https://zmon.zalando.net/#/check-definitions/view/{{ctrl.checkId}}" ng-show="ctrl.checkId" class='gf-form-label' target='_blank'><i class='fa fa-external-link'></i></a>
+
     <label class="gf-form-label" ng-show="!(ctrl.aliasInputVisible || ctrl.aliasAddedVisible)">
         <a ng-click="ctrl.aliasInputVisible = true;">
             <i class="fa fa-plus" bs-tooltip="'Add alias'"></i>
@@ -10,6 +12,9 @@
 
     <label class="gf-form-label" ng-show="ctrl.aliasInputVisible || ctrl.alias">
         as
+        <info-popover mode="right-normal" position="top center">
+          Additional group by variables available are $_tag_group_TAG, $_value_group_INDEX and $_time_group_INDEX. If you use these, alias string overwrites the whole series name.
+        </info-popover>
     </label>
 
     <input type="text" placeholder="alias" ng-model="ctrl.aliasInput" class="gf-form-input width-10"

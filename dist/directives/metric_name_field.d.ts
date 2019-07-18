@@ -9,11 +9,13 @@ export declare class MetricNameFieldCtrl {
     private $q;
     private $scope;
     private promiseUtils;
+    private checkId;
     /** @ngInject **/
     constructor($scope: any, $q: any, uiSegmentSrv: any);
     onChange(segment: any): void;
     suggestMetrics(): string[];
     setAlias(alias: any): void;
+    private sortForZmon(left, right);
 }
 export declare class MetricNameFieldLink {
     constructor(scope: any, element: any);
