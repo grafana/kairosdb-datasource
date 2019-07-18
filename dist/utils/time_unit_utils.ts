@@ -12,7 +12,7 @@ export class TimeUnitUtils {
     }
 
     public static convertTimeUnit(unit: string): string {
-        return TimeUnitUtils.SHORT_UNITS[unit] || TimeUnitUtils.LONG_UNITS[unit];
+        return TimeUnitUtils.SHORT_UNITS[unit] || TimeUnitUtils.LONG_UNITS[unit] || TimeUnitUtils.MEDIUM_UNITS[unit];
     }
 
     public static getShortUnit(unit: string): string {
@@ -29,5 +29,8 @@ export class TimeUnitUtils {
         TimeUnitUtils.TIME_UNIT_STRINGS);
     private static LONG_UNITS = _.zipObject(
         ["millisecond", "second", "minute", "hour", "day", "week", "month", "year"],
+        TimeUnitUtils.TIME_UNIT_STRINGS);
+    private static MEDIUM_UNITS = _.zipObject(
+        ["msec", "sec", "min", "hr", "dy", "wk", "mth", "yr"],
         TimeUnitUtils.TIME_UNIT_STRINGS);
 }
