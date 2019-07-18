@@ -8,4 +8,5 @@ export declare class TimeUnitUtils {
     private static TIME_UNIT_STRINGS;
     private static SHORT_UNITS;
     private static LONG_UNITS;
+    private static MEDIUM_UNITS;
 }
