@@ -39,16 +39,11 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
                     this.promiseUtils = new promise_utils_1.PromiseUtils($q);
                     this.segment = this.value ? uiSegmentSrv.newSegment(this.value) : uiSegmentSrv.newSelectMetric();
                     this.aliasAddedVisible = !lodash_1.default.isNil(this.alias);
+                    this.checkId = this.getZmonCheck(this.value);
                 }
                 MetricNameFieldCtrl.prototype.onChange = function (segment) {
                     this.value = this.$scope.getMetricInputValue();
-                    var match = this.value.match("zmon.check.(\\d+)");
-                    if (match) {
-                        this.checkId = match[1];
-                    }
-                    else {
-                        this.checkId = null;
-                    }
+                    this.checkId = this.getZmonCheck(this.value);
                 };
                 MetricNameFieldCtrl.prototype.suggestMetrics = function () {
                     var _this = this;
@@ -67,6 +62,18 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
                         this.aliasAddedVisible = true;
                     }
                     this.aliasInputVisible = false;
+                };
+                MetricNameFieldCtrl.prototype.getZmonCheck = function (value) {
+                    if (!value) {
+                        return null;
+                    }
+                    var match = value.match("zmon.check.(\\d+)");
+                    if (match) {
+                        return match[1];
+                    }
+                    else {
+                        return null;
+                    }
                 };
                 MetricNameFieldCtrl.prototype.sortForZmon = function (left, right) {
                     // prioritize metric names that start with z
