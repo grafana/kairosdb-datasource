@@ -39,11 +39,11 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
                     this.promiseUtils = new promise_utils_1.PromiseUtils($q);
                     this.segment = this.value ? uiSegmentSrv.newSegment(this.value) : uiSegmentSrv.newSelectMetric();
                     this.aliasAddedVisible = !lodash_1.default.isNil(this.alias);
-                    this.checkIfZmonCheck();
+                    this.checkId = this.getZmonCheck(this.value);
                 }
                 MetricNameFieldCtrl.prototype.onChange = function (segment) {
                     this.value = this.$scope.getMetricInputValue();
-                    this.checkIfZmonCheck();
+                    this.checkId = this.getZmonCheck(this.value);
                 };
                 MetricNameFieldCtrl.prototype.suggestMetrics = function () {
                     var _this = this;
@@ -63,17 +63,16 @@ System.register(["lodash", "../utils/promise_utils"], function(exports_1) {
                     }
                     this.aliasInputVisible = false;
                 };
-                MetricNameFieldCtrl.prototype.checkIfZmonCheck = function () {
-                    if (!this.value) {
-                        this.checkId = null;
-                        return;
+                MetricNameFieldCtrl.prototype.getZmonCheck = function (value) {
+                    if (!value) {
+                        return null;
                     }
-                    var match = this.value.match("zmon.check.(\\d+)");
+                    var match = value.match("zmon.check.(\\d+)");
                     if (match) {
-                        this.checkId = match[1];
+                        return match[1];
                     }
                     else {
-                        this.checkId = null;
+                        return null;
                     }
                 };
                 MetricNameFieldCtrl.prototype.sortForZmon = function (left, right) {

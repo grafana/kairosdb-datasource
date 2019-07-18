@@ -23,12 +23,12 @@ export class MetricNameFieldCtrl {
         this.promiseUtils = new PromiseUtils($q);
         this.segment = this.value ? uiSegmentSrv.newSegment(this.value) : uiSegmentSrv.newSelectMetric();
         this.aliasAddedVisible = !_.isNil(this.alias);
-        this.checkIfZmonCheck();
+        this.checkId = this.getZmonCheck(this.value);
     }
 
     public onChange(segment): void {
         this.value = this.$scope.getMetricInputValue();
-        this.checkIfZmonCheck();
+        this.checkId = this.getZmonCheck(this.value);
     }
 
     public suggestMetrics(): string[] {
@@ -50,16 +50,15 @@ export class MetricNameFieldCtrl {
         this.aliasInputVisible = false;
     }
 
-    private checkIfZmonCheck(): void {
-        if (!this.value) {
-            this.checkId = null;
-            return;
+    private getZmonCheck(value): string {
+        if (!value) {
+            return null;
         }
-        const match = this.value.match("zmon.check.(\\d+)");
+        const match = value.match("zmon.check.(\\d+)");
         if (match) {
-            this.checkId = match[1];
+            return match[1];
         } else {
-            this.checkId = null;
+            return null;
         }
     }
 

@@ -15,7 +15,7 @@ export declare class MetricNameFieldCtrl {
     onChange(segment: any): void;
     suggestMetrics(): string[];
     setAlias(alias: any): void;
-    private checkIfZmonCheck();
+    private getZmonCheck(value);
     private sortForZmon(left, right);
 }
 export declare class MetricNameFieldLink {
