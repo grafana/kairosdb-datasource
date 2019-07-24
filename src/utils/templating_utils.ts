@@ -14,21 +14,27 @@ export class TemplatingUtils {
 
     public replace(expression: string): string[] {
         const replacedExpression = this.templateSrv.replace(expression, this.scopedVars);
-        const matchedMultiValues = replacedExpression.match(TemplatingUtils.MULTI_VALUE_REGEX);
+        // When the value of a tag is being processed in order to build a query
+        // the following code strips of "{" and "}" characters.
+        // Problem is: when querying for prometheus values like: go_gc_duration_seconds{quantile_\"0.25\"}
+        // results in "go_gc_duration_secondsquantile_\"0.25\""
+        // which is not valid and will not return any datapoints.
 
-        if (!_.isNil(matchedMultiValues)) {
-            let replacedValues = [replacedExpression];
-            matchedMultiValues.forEach((multiValue) => {
-                const values = multiValue.replace(TemplatingUtils.MULTI_VALUE_BOUNDARIES, "")
-                    .split(TemplatingUtils.MULTI_VALUE_SEPARATOR);
-                replacedValues = _.flatMap(values, (value) => {
-                    return replacedValues.map((replacedValue) => {
-                        return replacedValue.replace(multiValue, value);
-                    });
-                });
-            });
-            return replacedValues;
-        }
+        // const matchedMultiValues = replacedExpression.match(TemplatingUtils.MULTI_VALUE_REGEX);
+
+        // if (!_.isNil(matchedMultiValues)) {
+        //     let replacedValues = [replacedExpression];
+        //     matchedMultiValues.forEach((multiValue) => {
+        //         const values = multiValue.replace(TemplatingUtils.MULTI_VALUE_BOUNDARIES, "")
+        //             .split(TemplatingUtils.MULTI_VALUE_SEPARATOR);
+        //         replacedValues = _.flatMap(values, (value) => {
+        //             return replacedValues.map((replacedValue) => {
+        //                 return replacedValue.replace(multiValue, value);
+        //             });
+        //         });
+        //     });
+        //     return replacedValues;
+        // }
         return [replacedExpression];
     }
 
