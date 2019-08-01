@@ -7,4 +7,5 @@ export declare class TemplatingUtils {
     constructor(templateSrv: any, scopedVars: any);
     replace(expression: string): string[];
     replaceAll(expressions: string[]): string[];
+    private formatValue(value, variable, originalFormatValueFunc);
 }

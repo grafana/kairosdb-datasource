@@ -6,7 +6,7 @@ export const buildTemplatingSrvMock = (variables) => {
         replace: (expression) => {
             let replacedExpression = expression;
             _.forOwn(variables, (values, key) => {
-                const templatedValue = values.length > 1 ? "{" + _.join(values, ",") + "}" : values[0];
+                const templatedValue = values.length > 1 ? "##[" + _.join(values, ",") + "]##" : values[0];
                 replacedExpression = replacedExpression.replace("$" + key, templatedValue);
                 replacedExpression = replacedExpression.replace("[[" + key + "]]", templatedValue);
             });

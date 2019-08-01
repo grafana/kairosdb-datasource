@@ -45,6 +45,7 @@ describe("TemplatingUtils", () => {
         // when
         const values = templatingUtils.replace(expression);
         // then
+
         values.length.should.be.equal(3);
         values[0].should.be.equal("prefix_value1_suffix");
         values[1].should.be.equal("prefix_value2_suffix");
