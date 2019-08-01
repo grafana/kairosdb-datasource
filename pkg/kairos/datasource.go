@@ -60,6 +60,10 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Reque
 		rawQuery := rawRequest.Query
 		//queries = append(queries, query)
 
+		metricQuery := &MetricQuery{
+			Name: rawQuery.Name,
+		}
+
 		aggregators := make([]*Aggregator, 0)
 		for _, aggregator := range rawQuery.Aggregators {
 			var timeValue int
@@ -86,10 +90,23 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Reque
 			})
 		}
 
-		metricQuery := &MetricQuery{
-			Name:        rawQuery.Name,
-			Aggregators: aggregators,
+		if len(aggregators) > 0 {
+			metricQuery.Aggregators = aggregators
 		}
+
+		groupby := rawQuery.GroupBy
+		if groupby != nil {
+			tagGroups := groupby.Tags
+			if len(tagGroups) > 0 {
+				metricQuery.GroupBy = []*Grouper{
+					{
+						Name: "tag",
+						Tags: tagGroups,
+					},
+				}
+			}
+		}
+
 		queries = append(queries, metricQuery)
 	}
 

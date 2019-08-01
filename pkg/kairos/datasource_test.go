@@ -9,12 +9,11 @@ import (
 	"testing"
 )
 
-func TestCreateQuery_NoAggregators(t *testing.T) {
+func TestCreateQuery_MinimalQuery(t *testing.T) {
 	ds := &kairos.Datasource{}
 
 	panelQuery := &panel.MetricQuery{
-		Name:        "MetricA",
-		Aggregators: make([]*panel.Aggregator, 0),
+		Name: "MetricA",
 	}
 
 	dsRequest := &datasource.DatasourceRequest{
@@ -29,13 +28,12 @@ func TestCreateQuery_NoAggregators(t *testing.T) {
 		},
 	}
 
-	expectedRequestBody := &kairos.Request{
+	expectedRequest := &kairos.Request{
 		StartAbsolute: "0",
 		EndAbsolute:   "100",
 		Metrics: []*kairos.MetricQuery{
 			{
-				Name:        "MetricA",
-				Aggregators: make([]*kairos.Aggregator, 0),
+				Name: "MetricA",
 			},
 		},
 	}
@@ -43,7 +41,7 @@ func TestCreateQuery_NoAggregators(t *testing.T) {
 	request, err := ds.CreateQuery(dsRequest)
 
 	assert.Nil(t, err)
-	assert.Equal(t, expectedRequestBody, request)
+	assert.Equal(t, expectedRequest, request)
 }
 
 //TODO test multiple aggregators
@@ -81,7 +79,7 @@ func TestCreateQuery_WithAggregator(t *testing.T) {
 		},
 	}
 
-	expectedRequestBody := &kairos.Request{
+	expectedRequest := &kairos.Request{
 		StartAbsolute: "0",
 		EndAbsolute:   "100",
 		Metrics: []*kairos.MetricQuery{
@@ -106,7 +104,51 @@ func TestCreateQuery_WithAggregator(t *testing.T) {
 	request, err := ds.CreateQuery(dsRequest)
 
 	assert.Nil(t, err)
-	assert.Equal(t, expectedRequestBody, request)
+	assert.Equal(t, expectedRequest, request)
+}
+
+func TestCreateQuery_WithGroupBy(t *testing.T) {
+	ds := &kairos.Datasource{}
+
+	panelQuery := &panel.MetricQuery{
+		Name: "MetricA",
+		GroupBy: &panel.GroupBy{
+			Tags: []string{"host", "pool"},
+		},
+	}
+
+	dsRequest := &datasource.DatasourceRequest{
+		TimeRange: &datasource.TimeRange{
+			FromEpochMs: 0,
+			ToEpochMs:   100,
+		},
+		Queries: []*datasource.Query{
+			{
+				ModelJson: getModelJson(panelQuery),
+			},
+		},
+	}
+
+	expectedRequest := &kairos.Request{
+		StartAbsolute: "0",
+		EndAbsolute:   "100",
+		Metrics: []*kairos.MetricQuery{
+			{
+				Name: "MetricA",
+				GroupBy: []*kairos.Grouper{
+					{
+						Name: "tag",
+						Tags: []string{"host", "pool"},
+					},
+				},
+			},
+		},
+	}
+
+	request, err := ds.CreateQuery(dsRequest)
+
+	assert.Nil(t, err)
+	assert.Equal(t, expectedRequest, request)
 }
 
 func getModelJson(query *panel.MetricQuery) string {

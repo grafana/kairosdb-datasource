@@ -8,7 +8,8 @@ type Request struct {
 
 type MetricQuery struct {
 	Name        string        `json:"name"`
-	Aggregators []*Aggregator `json:"aggregators"`
+	Aggregators []*Aggregator `json:"aggregators,omitempty"`
+	GroupBy     []*Grouper    `json:"group_by,omitempty"`
 }
 
 type Aggregator struct {
@@ -34,9 +35,14 @@ type QueryResponse struct {
 
 type QueryResult struct {
 	Name string `json:"name"`
-	//GroupBy []interface{}     `json:"group_by,omitempty"`
 	//Tags    map[string]string `json:"tags,omitempty"`
 	Values []*DataPoint `json:"values"`
+}
+
+//TODO support group by time and value
+type Grouper struct {
+	Name string   `json:"name"`
+	Tags []string `json:"tags"`
 }
 
 type DataPoint [2]float64
