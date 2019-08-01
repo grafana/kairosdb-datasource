@@ -35,7 +35,7 @@ System.register(["lodash"], function(exports_1) {
                     return lodash_1.default.flatten(expressions.map(function (expression) { return _this.replace(expression); }));
                 };
                 TemplatingUtils.prototype.formatValue = function (value, variable, originalFormatValueFunc) {
-                    if (!Array.isArray(value)) {
+                    if (Array.isArray(value)) {
                         return "##[" + value.join(",") + "]##";
                     }
                     return value;

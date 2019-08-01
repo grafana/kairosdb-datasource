@@ -37,7 +37,7 @@ export class TemplatingUtils {
     }
 
     private formatValue(value: any, variable: any, originalFormatValueFunc: any): any {
-        if (!Array.isArray(value)) {
+        if (Array.isArray(value)) {
             return "##[" + value.join(",") + "]##";
         }
         return value;
