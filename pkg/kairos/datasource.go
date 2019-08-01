@@ -172,18 +172,13 @@ func (ds *Datasource) ParseResponse(body []byte) (*datasource.DatasourceResponse
 	responseBody := &Response{}
 	err := json.Unmarshal(body, &responseBody)
 	if err != nil {
+		ds.Logger.Debug("Failed to unmarshall response", "response", string(body))
 		return nil, err
 	}
 
 	results := make([]*datasource.QueryResult, 0)
-	//TODO handle responses with multiple queries
-	for _, result := range responseBody.Queries[0].Results {
-		r, err := ds.ParseQueryResult(result)
-		if err != nil {
-			return nil, err
-		}
-
-		results = append(results, r)
+	for _, query := range responseBody.Queries {
+		results = append(results, ds.ParseQueryResults(query.Results))
 	}
 
 	return &datasource.DatasourceResponse{
@@ -191,26 +186,40 @@ func (ds *Datasource) ParseResponse(body []byte) (*datasource.DatasourceResponse
 	}, nil
 }
 
-//TODO handle multiple series
-func (ds *Datasource) ParseQueryResult(result *QueryResult) (*datasource.QueryResult, error) {
+func (ds *Datasource) ParseQueryResults(results []*QueryResult) *datasource.QueryResult {
 	//refId := queries[0].(map[string]string)["refId"]
 	//ds.logger.Info("RefID", refId)
 
-	series := &datasource.TimeSeries{Name: result.Name}
+	seriesSet := make([]*datasource.TimeSeries, 0)
 
-	for _, datapoint := range result.Values {
-		timestamp := int64(datapoint[0])
-		value := datapoint[1]
-		series.Points = append(series.Points, &datasource.Point{
-			Timestamp: timestamp,
-			Value:     value,
-		})
+	for _, result := range results {
+		series := &datasource.TimeSeries{
+			Name: result.Name,
+		}
+
+		if result.GroupInfo != nil {
+			for _, groupInfo := range result.GroupInfo {
+				if groupInfo.Name == "tag" {
+					series.Tags = groupInfo.Group
+				}
+			}
+		}
+
+		for _, datapoint := range result.Values {
+			timestamp := int64(datapoint[0])
+			value := datapoint[1]
+			series.Points = append(series.Points, &datasource.Point{
+				Timestamp: timestamp,
+				Value:     value,
+			})
+		}
+		seriesSet = append(seriesSet, series)
 	}
 
 	//TODO add refID
 	//TODO add any errors
 	return &datasource.QueryResult{
 		RefId:  "",
-		Series: []*datasource.TimeSeries{series},
-	}, nil
+		Series: seriesSet,
+	}
 }

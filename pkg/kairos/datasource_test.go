@@ -214,3 +214,93 @@ func TestParseQuery_SingleQuery(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, result)
 }
+
+func TestParseQuery_MultipleSeries(t *testing.T) {
+	ds := &kairos.Datasource{}
+
+	response := &kairos.Response{
+		Queries: []*kairos.QueryResponse{
+			{
+				Results: []*kairos.QueryResult{
+					{
+						Name: "MetricA",
+						GroupInfo: []*kairos.GroupInfo{
+							{
+								Name: "tag",
+								Tags: []string{"host", "pool"},
+								Group: map[string]string{
+									"host":        "server1",
+									"data_center": "dc1",
+								},
+							},
+						},
+						Values: []*kairos.DataPoint{
+							{
+								1564682818000, 10.5,
+							},
+						},
+					},
+					{
+						Name: "MetricA",
+						GroupInfo: []*kairos.GroupInfo{
+							{
+								Name: "tag",
+								Tags: []string{"host", "pool"},
+								Group: map[string]string{
+									"host":        "server2",
+									"data_center": "dc2",
+								},
+							},
+						},
+						Values: []*kairos.DataPoint{
+							{
+								1564682818000, 10.5,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	expectedResult := &datasource.DatasourceResponse{
+		Results: []*datasource.QueryResult{
+			{
+				Series: []*datasource.TimeSeries{
+					{
+						Name: "MetricA",
+						Tags: map[string]string{
+							"host":        "server1",
+							"data_center": "dc1",
+						},
+						Points: []*datasource.Point{
+							{
+								Timestamp: 1564682818000,
+								Value:     10.5,
+							},
+						},
+					},
+					{
+						Name: "MetricA",
+						Tags: map[string]string{
+							"host":        "server2",
+							"data_center": "dc2",
+						},
+						Points: []*datasource.Point{
+							{
+								Timestamp: 1564682818000,
+								Value:     10.5,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	bytes, _ := json.Marshal(response)
+	result, err := ds.ParseResponse(bytes)
+
+	assert.Nil(t, err)
+	assert.Equal(t, expectedResult, result)
+}

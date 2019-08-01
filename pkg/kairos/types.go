@@ -25,6 +25,12 @@ type Sampling struct {
 	Unit  string `json:"unit"`
 }
 
+//TODO support group by time and value
+type Grouper struct {
+	Name string   `json:"name"`
+	Tags []string `json:"tags"`
+}
+
 type Response struct {
 	Queries []*QueryResponse `json:"queries"`
 }
@@ -34,15 +40,15 @@ type QueryResponse struct {
 }
 
 type QueryResult struct {
-	Name string `json:"name"`
-	//Tags    map[string]string `json:"tags,omitempty"`
-	Values []*DataPoint `json:"values"`
+	Name      string       `json:"name"`
+	GroupInfo []*GroupInfo `json:"group_by,omitempty"`
+	Values    []*DataPoint `json:"values"`
 }
 
-//TODO support group by time and value
-type Grouper struct {
-	Name string   `json:"name"`
-	Tags []string `json:"tags"`
+type GroupInfo struct {
+	Name  string            `json:"name"`
+	Tags  []string          `json:"tags"`
+	Group map[string]string `json:"group"`
 }
 
 type DataPoint [2]float64
