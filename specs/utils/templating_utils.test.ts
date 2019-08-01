@@ -1,6 +1,6 @@
 import {TemplatingUtils} from "../../src/utils/templating_utils";
 import {buildTemplatingSrvMock} from "../mocks";
-
+/* tslint:disable */
 describe("TemplatingUtils", () => {
     it("should unpack single variable with single value", () => {
         // given
@@ -28,6 +28,8 @@ describe("TemplatingUtils", () => {
         // when
         const values = templatingUtils.replace(expression);
         // then
+        console.log(values);
+
         values.length.should.be.equal(3);
         values[0].should.be.equal("value1");
         values[1].should.be.equal("value2");
@@ -45,6 +47,9 @@ describe("TemplatingUtils", () => {
         // when
         const values = templatingUtils.replace(expression);
         // then
+
+        console.log(values);
+
         values.length.should.be.equal(3);
         values[0].should.be.equal("prefix_value1_suffix");
         values[1].should.be.equal("prefix_value2_suffix");
@@ -63,6 +68,7 @@ describe("TemplatingUtils", () => {
         // when
         const values = templatingUtils.replace(expression);
         // then
+        console.log(values);
         values.should.contain("datacenter_dc1_ip_127.0.0.1_sth");
         values.should.contain("datacenter_dc2_ip_127.0.0.1_sth");
         values.should.contain("datacenter_dc3_ip_127.0.0.1_sth");

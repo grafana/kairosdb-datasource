@@ -13,12 +13,12 @@ System.register(["lodash"], function(exports_1) {
                     this.scopedVars = scopedVars;
                 }
                 TemplatingUtils.prototype.replace = function (expression) {
-                    var replacedExpression = this.templateSrv.replace(expression, this.scopedVars);
+                    var replacedExpression = this.templateSrv.replace(expression, this.scopedVars, this.formatValue);
                     var matchedMultiValues = replacedExpression.match(TemplatingUtils.MULTI_VALUE_REGEX);
                     if (!lodash_1.default.isNil(matchedMultiValues)) {
                         var replacedValues = [replacedExpression];
                         matchedMultiValues.forEach(function (multiValue) {
-                            var values = multiValue.replace(TemplatingUtils.MULTI_VALUE_BOUNDARIES, "")
+                            var values = multiValue.substring(3, multiValue.length - 3)
                                 .split(TemplatingUtils.MULTI_VALUE_SEPARATOR);
                             replacedValues = lodash_1.default.flatMap(values, function (value) {
                                 return replacedValues.map(function (replacedValue) {
@@ -34,8 +34,14 @@ System.register(["lodash"], function(exports_1) {
                     var _this = this;
                     return lodash_1.default.flatten(expressions.map(function (expression) { return _this.replace(expression); }));
                 };
+                TemplatingUtils.prototype.formatValue = function (value, variable, originalFormatValueFunc) {
+                    if (!Array.isArray(value)) {
+                        return "##[" + value.join(",") + "]##";
+                    }
+                    return value;
+                };
                 TemplatingUtils.MULTI_VALUE_SEPARATOR = ",";
-                TemplatingUtils.MULTI_VALUE_REGEX = /{.*?}/g;
+                TemplatingUtils.MULTI_VALUE_REGEX = /##\[.*?\]##/g;
                 TemplatingUtils.MULTI_VALUE_BOUNDARIES = /[{}]/g;
                 return TemplatingUtils;
             })();
