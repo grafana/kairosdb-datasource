@@ -120,3 +120,55 @@ func getModelJson(query *panel.MetricQuery) string {
 	}
 	return string(bytes)
 }
+
+func TestParseQuery_SingleQuery(t *testing.T) {
+	ds := &kairos.Datasource{}
+
+	response := &kairos.Response{
+		Queries: []*kairos.QueryResponse{
+			{
+				Results: []*kairos.QueryResult{
+					{
+						Name: "MetricA",
+						Values: []*kairos.DataPoint{
+							{
+								1564682818000, 10.5,
+							},
+							{
+								1564682819000, 8.2,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	expectedResult := &datasource.DatasourceResponse{
+		Results: []*datasource.QueryResult{
+			{
+				Series: []*datasource.TimeSeries{
+					{
+						Name: "MetricA",
+						Points: []*datasource.Point{
+							{
+								Timestamp: 1564682818000,
+								Value:     10.5,
+							},
+							{
+								Timestamp: 1564682819000,
+								Value:     8.2,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	bytes, _ := json.Marshal(response)
+	result, err := ds.ParseResponse(bytes)
+
+	assert.Nil(t, err)
+	assert.Equal(t, expectedResult, result)
+}
