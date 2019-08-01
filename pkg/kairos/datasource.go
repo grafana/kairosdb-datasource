@@ -30,7 +30,7 @@ func (ds *Datasource) Query(ctx context.Context, request *datasource.DatasourceR
 		return nil, err
 	}
 
-	bytes, err := ds.MakeHttpRequest(ctx, req)
+	bytes, err := ds.MakeHttpRequest(ctx, req, request.Datasource.Url)
 	if err != nil {
 		ds.Logger.Error("Failed to make HTTP request", "error", err)
 		return nil, err
@@ -45,7 +45,7 @@ func (ds *Datasource) Query(ctx context.Context, request *datasource.DatasourceR
 	return datasourceResponse, nil
 }
 
-func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*http.Request, error) {
+func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Request, error) {
 	var queries []MetricQuery
 	//var queries []panel.MetricQuery
 
@@ -73,9 +73,10 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*http.
 				}
 			}
 
+			//TODO support "align by" param
 			aggregators = append(aggregators, Aggregator{
-				Name:             aggregator.Name,
-				AlignSampling:   true,
+				Name:           aggregator.Name,
+				AlignSampling:  true,
 				AlignStartTime: true,
 				AlignEndTime:   false,
 				Sampling: Sampling{
@@ -92,30 +93,28 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*http.
 		queries = append(queries, metricQuery)
 	}
 
-	payload := Request{
+	return &Request{
 		StartAbsolute: strconv.FormatInt(request.TimeRange.FromEpochMs, 10),
 		EndAbsolute:   strconv.FormatInt(request.TimeRange.ToEpochMs, 10),
 		Metrics:       queries,
-	}
+	}, nil
+}
 
-	rbody, err := json.Marshal(payload)
+func (ds *Datasource) MakeHttpRequest(ctx context.Context, request *Request, url string) ([]byte, error) {
+	rbody, err := json.Marshal(request)
 	if err != nil {
-		ds.Logger.Debug("Failed to marshal JSON", "value", payload)
+		ds.Logger.Debug("Failed to marshal JSON", "value", request)
 		return nil, err
 	}
 
-	url := request.Datasource.Url + "api/v1/datapoints/query"
-	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(string(rbody)))
+	url = url + "api/v1/datapoints/query"
+	httpRequest, err := http.NewRequest(http.MethodPost, url, strings.NewReader(string(rbody)))
 	if err != nil {
-		return nil,  err
+		return nil, err
 	}
 
-	req.Header.Add("Content-Type", "application/json")
+	httpRequest.Header.Add("Content-Type", "application/json")
 
-	return req, nil
-}
-
-func (ds *Datasource) MakeHttpRequest(ctx context.Context, httpRequest *http.Request) ([]byte, error) {
 	res, err := ctxhttp.Do(ctx, httpClient, httpRequest)
 	if err != nil {
 		return nil, err
@@ -159,7 +158,7 @@ func (ds *Datasource) ParseResponse(body []byte) (*datasource.DatasourceResponse
 		return nil, err
 	}
 
-	results := make([]*datasource.QueryResult,0)
+	results := make([]*datasource.QueryResult, 0)
 	//TODO handle responses with multiple queries
 	for _, result := range responseBody.Queries[0].Results {
 		r, err := ds.ParseQueryResult(result)
