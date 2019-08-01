@@ -46,7 +46,7 @@ func (ds *Datasource) Query(ctx context.Context, request *datasource.DatasourceR
 }
 
 func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Request, error) {
-	var queries []MetricQuery
+	var queries []*MetricQuery
 	//var queries []panel.MetricQuery
 
 	for _, dsQuery := range request.Queries {
@@ -60,7 +60,7 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Reque
 		rawQuery := rawRequest.Query
 		//queries = append(queries, query)
 
-		aggregators := make([]Aggregator, 0)
+		aggregators := make([]*Aggregator, 0)
 		for _, aggregator := range rawQuery.Aggregators {
 			var timeValue int
 			var unit string
@@ -74,19 +74,19 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Reque
 			}
 
 			//TODO support "align by" param
-			aggregators = append(aggregators, Aggregator{
+			aggregators = append(aggregators, &Aggregator{
 				Name:           aggregator.Name,
 				AlignSampling:  true,
 				AlignStartTime: true,
 				AlignEndTime:   false,
-				Sampling: Sampling{
+				Sampling: &Sampling{
 					Value: timeValue,
 					Unit:  unit,
 				},
 			})
 		}
 
-		metricQuery := MetricQuery{
+		metricQuery := &MetricQuery{
 			Name:        rawQuery.Name,
 			Aggregators: aggregators,
 		}
@@ -175,7 +175,7 @@ func (ds *Datasource) ParseResponse(body []byte) (*datasource.DatasourceResponse
 }
 
 //TODO handle multiple series
-func (ds *Datasource) ParseQueryResult(result QueryResult) (*datasource.QueryResult, error) {
+func (ds *Datasource) ParseQueryResult(result *QueryResult) (*datasource.QueryResult, error) {
 	//refId := queries[0].(map[string]string)["refId"]
 	//ds.logger.Info("RefID", refId)
 
