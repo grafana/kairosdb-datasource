@@ -7,7 +7,6 @@ type MetricRequest struct {
 
 type MetricQuery struct {
 	Name        string        `json:"metricName"`
-	RefId       string        `json:"refId"`
 	Aggregators []*Aggregator `json:"aggregators"`
 	GroupBy     *GroupBy      `json:"groupBy"`
 	//Tags

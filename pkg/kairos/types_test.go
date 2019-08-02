@@ -45,12 +45,12 @@ func TestKairosDBRequest(t *testing.T) {
 	actual := &kairos.Request{}
 	parseError := json.Unmarshal(bytes, actual)
 
-	assert.Nil(t, parseError, "Failed to unmarshal request: %v", parseError)
+	assert.Nil(t, parseError, "Failed to unmarshal JSON: %v", parseError)
 	assert.Equal(t, expected, actual)
 }
 
 func TestKairosDBResponse(t *testing.T) {
-	expectedResponse := &kairos.Response{
+	expected := &kairos.Response{
 		Queries: []*kairos.QueryResponse{
 			{
 				Results: []*kairos.QueryResult{
@@ -89,9 +89,9 @@ func TestKairosDBResponse(t *testing.T) {
 		panic(readError)
 	}
 
-	response := &kairos.Response{}
-	parseError := json.Unmarshal(bytes, response)
+	actual := &kairos.Response{}
+	parseError := json.Unmarshal(bytes, actual)
 
-	assert.Nil(t, parseError, "Failed to unmarshal response: %v", parseError)
-	assert.Equal(t, expectedResponse, response)
+	assert.Nil(t, parseError, "Failed to unmarshal JSON: %v", parseError)
+	assert.Equal(t, expected, actual)
 }
