@@ -111,8 +111,8 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Reque
 	}
 
 	return &Request{
-		StartAbsolute: strconv.FormatInt(request.TimeRange.FromEpochMs, 10),
-		EndAbsolute:   strconv.FormatInt(request.TimeRange.ToEpochMs, 10),
+		StartAbsolute: request.TimeRange.FromEpochMs,
+		EndAbsolute:   request.TimeRange.ToEpochMs,
 		Metrics:       queries,
 	}, nil
 }

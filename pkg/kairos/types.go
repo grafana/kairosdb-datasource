@@ -1,8 +1,8 @@
 package kairos
 
 type Request struct {
-	StartAbsolute string         `json:"start_absolute"`
-	EndAbsolute   string         `json:"end_absolute"`
+	StartAbsolute int64          `json:"start_absolute"`
+	EndAbsolute   int64          `json:"end_absolute"`
 	Metrics       []*MetricQuery `json:"metrics"`
 }
 
@@ -47,8 +47,8 @@ type QueryResult struct {
 
 type GroupInfo struct {
 	Name  string            `json:"name"`
-	Tags  []string          `json:"tags"`
-	Group map[string]string `json:"group"`
+	Tags  []string          `json:"tags,omitempty"`
+	Group map[string]string `json:"group,omitempty"`
 }
 
 type DataPoint [2]float64

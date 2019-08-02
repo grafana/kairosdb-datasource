@@ -29,8 +29,8 @@ func TestCreateQuery_MinimalQuery(t *testing.T) {
 	}
 
 	expectedRequest := &kairos.Request{
-		StartAbsolute: "0",
-		EndAbsolute:   "100",
+		StartAbsolute: 0,
+		EndAbsolute:   100,
 		Metrics: []*kairos.MetricQuery{
 			{
 				Name: "MetricA",
@@ -80,8 +80,8 @@ func TestCreateQuery_WithAggregator(t *testing.T) {
 	}
 
 	expectedRequest := &kairos.Request{
-		StartAbsolute: "0",
-		EndAbsolute:   "100",
+		StartAbsolute: 0,
+		EndAbsolute:   100,
 		Metrics: []*kairos.MetricQuery{
 			{
 				Name: "MetricA",
@@ -130,8 +130,8 @@ func TestCreateQuery_WithGroupBy(t *testing.T) {
 	}
 
 	expectedRequest := &kairos.Request{
-		StartAbsolute: "0",
-		EndAbsolute:   "100",
+		StartAbsolute: 0,
+		EndAbsolute:   100,
 		Metrics: []*kairos.MetricQuery{
 			{
 				Name: "MetricA",

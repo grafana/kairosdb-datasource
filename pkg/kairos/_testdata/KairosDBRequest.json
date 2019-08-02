@@ -1,0 +1,25 @@
+{
+  "start_absolute": 1357023600000,
+  "end_absolute": 1357024600000,
+  "metrics": [
+    {
+      "name": "abc.123",
+      "limit": 10000,
+      "aggregators": [
+        {
+          "name": "sum",
+          "sampling": {
+            "value": 10,
+            "unit": "minutes"
+          }
+        }
+      ],
+      "group_by": [
+        {
+          "name": "tag",
+          "tags": ["data_center", "host"]
+        }
+      ]
+    }
+  ]
+}
