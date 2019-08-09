@@ -50,22 +50,33 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Reque
 	//var queries []panel.MetricQuery
 
 	for _, dsQuery := range request.Queries {
-		rawRequest := &panel.MetricRequest{}
-		err := json.Unmarshal([]byte(dsQuery.ModelJson), rawRequest)
+		panelRequest := &panel.MetricRequest{}
+		err := json.Unmarshal([]byte(dsQuery.ModelJson), panelRequest)
 		if err != nil {
 			ds.Logger.Debug("Failed to unmarshal JSON", "value", dsQuery.ModelJson)
 			return nil, fmt.Errorf("failed to unmarshal query JSON: %v", err)
 		}
 
-		rawQuery := rawRequest.Query
+		panelQuery := panelRequest.Query
 		//queries = append(queries, query)
 
 		metricQuery := &MetricQuery{
-			Name: rawQuery.Name,
+			Name: panelQuery.Name,
+		}
+
+		tags := map[string][]string{}
+		for name, values := range panelQuery.Tags {
+			if len(values) > 0 {
+				tags[name] = values
+			}
+		}
+
+		if len(tags) > 0 {
+			metricQuery.Tags = tags
 		}
 
 		aggregators := make([]*Aggregator, 0)
-		for _, aggregator := range rawQuery.Aggregators {
+		for _, aggregator := range panelQuery.Aggregators {
 			var timeValue int
 			var unit string
 
@@ -94,7 +105,7 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Reque
 			metricQuery.Aggregators = aggregators
 		}
 
-		groupby := rawQuery.GroupBy
+		groupby := panelQuery.GroupBy
 		if groupby != nil {
 			tagGroups := groupby.Tags
 			if len(tagGroups) > 0 {

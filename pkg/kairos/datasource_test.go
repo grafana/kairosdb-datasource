@@ -44,6 +44,48 @@ func TestCreateQuery_MinimalQuery(t *testing.T) {
 	assert.Equal(t, expectedRequest, request)
 }
 
+func TestCreateQuery_WithTags(t *testing.T) {
+	ds := &kairos.Datasource{}
+
+	panelQuery := &panel.MetricQuery{
+		Name: "MetricA",
+		Tags: map[string][]string{
+			"foo":  {"bar", "baz"},
+			"foo1": {},
+		},
+	}
+
+	dsRequest := &datasource.DatasourceRequest{
+		TimeRange: &datasource.TimeRange{
+			FromEpochMs: 0,
+			ToEpochMs:   100,
+		},
+		Queries: []*datasource.Query{
+			{
+				ModelJson: getModelJson(panelQuery),
+			},
+		},
+	}
+
+	expectedRequest := &kairos.Request{
+		StartAbsolute: 0,
+		EndAbsolute:   100,
+		Metrics: []*kairos.MetricQuery{
+			{
+				Name: "MetricA",
+				Tags: map[string][]string{
+					"foo": {"bar", "baz"},
+				},
+			},
+		},
+	}
+
+	request, err := ds.CreateQuery(dsRequest)
+
+	assert.Nil(t, err)
+	assert.Equal(t, expectedRequest, request)
+}
+
 //TODO test multiple aggregators
 func TestCreateQuery_WithAggregator(t *testing.T) {
 	ds := &kairos.Datasource{}
@@ -163,7 +205,7 @@ func getModelJson(query *panel.MetricQuery) string {
 	return string(bytes)
 }
 
-func TestParseQuery_SingleQuery(t *testing.T) {
+func TestParseResponse_SingleSeries(t *testing.T) {
 	ds := &kairos.Datasource{}
 
 	response := &kairos.Response{
@@ -215,7 +257,7 @@ func TestParseQuery_SingleQuery(t *testing.T) {
 	assert.Equal(t, expectedResult, result)
 }
 
-func TestParseQuery_MultipleSeries(t *testing.T) {
+func TestParseResponse_MultipleSeries(t *testing.T) {
 	ds := &kairos.Datasource{}
 
 	response := &kairos.Response{

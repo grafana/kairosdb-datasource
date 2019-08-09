@@ -5,6 +5,15 @@
     {
       "name": "abc.123",
       "limit": 10000,
+      "tags": {
+        "host": [
+          "foo",
+          "foo2"
+        ],
+        "customer": [
+          "bar"
+        ]
+      },
       "aggregators": [
         {
           "name": "sum",
@@ -17,7 +26,10 @@
       "group_by": [
         {
           "name": "tag",
-          "tags": ["data_center", "host"]
+          "tags": [
+            "data_center",
+            "host"
+          ]
         }
       ]
     }

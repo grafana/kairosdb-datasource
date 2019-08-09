@@ -6,10 +6,10 @@ type MetricRequest struct {
 }
 
 type MetricQuery struct {
-	Name        string        `json:"metricName"`
-	Aggregators []*Aggregator `json:"aggregators"`
-	GroupBy     *GroupBy      `json:"groupBy"`
-	//Tags
+	Name        string              `json:"metricName"`
+	Aggregators []*Aggregator       `json:"aggregators"`
+	GroupBy     *GroupBy            `json:"groupBy"`
+	Tags        map[string][]string `json:"tags"`
 }
 
 type GroupBy struct {

@@ -38,6 +38,11 @@ func TestPanelMetricRequest(t *testing.T) {
 					},
 				},
 			},
+			Tags: map[string][]string{
+				"datacenter": {},
+				"host":       {"foo", "foo2"},
+				"customer":   {"bar"},
+			},
 			GroupBy: &panel.GroupBy{
 				Tags: []string{
 					"host",

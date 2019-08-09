@@ -24,6 +24,10 @@ func TestKairosDBRequest(t *testing.T) {
 						},
 					},
 				},
+				Tags: map[string][]string{
+					"host":     {"foo", "foo2"},
+					"customer": {"bar"},
+				},
 				GroupBy: []*kairos.Grouper{
 					{
 						Name: "tag",
@@ -67,6 +71,10 @@ func TestKairosDBResponse(t *testing.T) {
 									"host": "server1",
 								},
 							},
+						},
+						Tags: map[string][]string{
+							"host":     {"server1"},
+							"customer": {"bar"},
 						},
 						Values: []*kairos.DataPoint{
 							{

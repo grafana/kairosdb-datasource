@@ -7,9 +7,10 @@ type Request struct {
 }
 
 type MetricQuery struct {
-	Name        string        `json:"name"`
-	Aggregators []*Aggregator `json:"aggregators,omitempty"`
-	GroupBy     []*Grouper    `json:"group_by,omitempty"`
+	Name        string              `json:"name"`
+	Aggregators []*Aggregator       `json:"aggregators,omitempty"`
+	GroupBy     []*Grouper          `json:"group_by,omitempty"`
+	Tags        map[string][]string `json:"tags,omitempty"`
 }
 
 type Aggregator struct {
@@ -40,9 +41,10 @@ type QueryResponse struct {
 }
 
 type QueryResult struct {
-	Name      string       `json:"name"`
-	GroupInfo []*GroupInfo `json:"group_by,omitempty"`
-	Values    []*DataPoint `json:"values"`
+	Name      string              `json:"name"`
+	GroupInfo []*GroupInfo        `json:"group_by,omitempty"`
+	Tags      map[string][]string `json:"tags,omitempty"`
+	Values    []*DataPoint        `json:"values"`
 }
 
 type GroupInfo struct {

@@ -77,13 +77,14 @@
     },
     "metricName": "abc.123",
     "tags": {
-      "application": [],
       "datacenter": [],
-      "environment": [],
-      "host": [],
-      "k8s-cluster": [],
-      "k8s-namespace": [],
-      "pool": []
+      "customer": [
+        "bar"
+      ],
+      "host": [
+        "foo",
+        "foo2"
+      ]
     }
   },
   "refId": "A"
