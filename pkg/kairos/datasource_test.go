@@ -91,8 +91,7 @@ func TestCreateQuery_WithTags(t *testing.T) {
 	assert.Equal(t, expectedRequest, request)
 }
 
-//TODO test multiple aggregators
-func TestCreateQuery_WithAggregator(t *testing.T) {
+func TestCreateQuery_WithAggregators(t *testing.T) {
 	ds := &kairos.Datasource{}
 
 	panelQuery := &panel.MetricQuery{
@@ -108,6 +107,44 @@ func TestCreateQuery_WithAggregator(t *testing.T) {
 					{
 						Name:  "unit",
 						Value: "MINUTES",
+					},
+					{
+						Name:  "sampling",
+						Value: "NONE",
+					},
+				},
+			},
+			{
+				Name: "avg",
+				Parameters: []*panel.AggregatorParameter{
+					{
+						Name:  "value",
+						Value: "1",
+					},
+					{
+						Name:  "unit",
+						Value: "MINUTES",
+					},
+					{
+						Name:  "sampling",
+						Value: "SAMPLING",
+					},
+				},
+			},
+			{
+				Name: "max",
+				Parameters: []*panel.AggregatorParameter{
+					{
+						Name:  "value",
+						Value: "1",
+					},
+					{
+						Name:  "unit",
+						Value: "MINUTES",
+					},
+					{
+						Name:  "sampling",
+						Value: "START_TIME",
 					},
 				},
 			},
@@ -135,7 +172,27 @@ func TestCreateQuery_WithAggregator(t *testing.T) {
 				Aggregators: []*kairos.Aggregator{
 					{
 						Name:           "sum",
+						AlignSampling:  false,
+						AlignStartTime: false,
+						AlignEndTime:   false,
+						Sampling: &kairos.Sampling{
+							Value: 1,
+							Unit:  "MINUTES",
+						},
+					},
+					{
+						Name:           "avg",
 						AlignSampling:  true,
+						AlignStartTime: false,
+						AlignEndTime:   false,
+						Sampling: &kairos.Sampling{
+							Value: 1,
+							Unit:  "MINUTES",
+						},
+					},
+					{
+						Name:           "max",
+						AlignSampling:  false,
 						AlignStartTime: true,
 						AlignEndTime:   false,
 						Sampling: &kairos.Sampling{

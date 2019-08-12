@@ -77,20 +77,22 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Reque
 		for _, aggregator := range panelQuery.Aggregators {
 			var timeValue int
 			var unit string
+			alignBy := "NONE"
 
 			for _, param := range aggregator.Parameters {
 				if param.Name == "value" {
 					timeValue, _ = strconv.Atoi(param.Value)
+				} else if param.Name == "sampling" {
+					alignBy = param.Value
 				} else if param.Name == "unit" {
 					unit = param.Value
 				}
 			}
 
-			//TODO support "align by" param
 			aggregators = append(aggregators, &Aggregator{
 				Name:           aggregator.Name,
-				AlignSampling:  true,
-				AlignStartTime: true,
+				AlignSampling:  alignBy == "SAMPLING",
+				AlignStartTime: alignBy == "START_TIME",
 				AlignEndTime:   false,
 				Sampling: &Sampling{
 					Value: timeValue,
