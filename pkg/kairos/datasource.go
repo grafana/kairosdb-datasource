@@ -10,6 +10,8 @@ import (
 	"github.com/zsabin/kairosdb-datasource/pkg/panel"
 	"golang.org/x/net/context"
 	"golang.org/x/net/context/ctxhttp"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -26,19 +28,16 @@ type Datasource struct {
 func (ds *Datasource) Query(ctx context.Context, request *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
 	req, err := ds.CreateQuery(request)
 	if err != nil {
-		ds.Logger.Error("Failed to create query", "error", err)
 		return nil, err
 	}
 
 	bytes, err := ds.MakeHttpRequest(ctx, req, request.Datasource.Url)
 	if err != nil {
-		ds.Logger.Error("Failed to make HTTP request", "error", err)
 		return nil, err
 	}
 
 	datasourceResponse, err := ds.ParseResponse(bytes)
 	if err != nil {
-		ds.Logger.Error("Failed to parse datasource response", "error", err)
 		return nil, err
 	}
 
@@ -54,7 +53,7 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Reque
 		err := json.Unmarshal([]byte(dsQuery.ModelJson), panelRequest)
 		if err != nil {
 			ds.Logger.Debug("Failed to unmarshal JSON", "value", dsQuery.ModelJson)
-			return nil, fmt.Errorf("failed to unmarshal query JSON: %v", err)
+			return nil, status.Errorf(codes.InvalidArgument, "failed to unmarshal request model: %v", err)
 		}
 
 		panelQuery := panelRequest.Query
@@ -128,34 +127,37 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Reque
 	}, nil
 }
 
+//TODO support authentication
 func (ds *Datasource) MakeHttpRequest(ctx context.Context, request *Request, url string) ([]byte, error) {
 	rbody, err := json.Marshal(request)
 	if err != nil {
 		ds.Logger.Debug("Failed to marshal JSON", "value", request)
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to marshal request body: %v", err)
 	}
 
 	url = url + "api/v1/datapoints/query"
 	httpRequest, err := http.NewRequest(http.MethodPost, url, strings.NewReader(string(rbody)))
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to create HTTP request: %v", err)
 	}
 
 	httpRequest.Header.Add("Content-Type", "application/json")
 
 	res, err := ctxhttp.Do(ctx, httpClient, httpRequest)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to complete HTTP request: %v", err)
 	}
 	defer res.Body.Close()
 
+	//TODO handle http status codes
+	//TODO log any error messages returned in body of request
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("invalid status code. status: %v", res.Status)
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to read response body: %v", err)
 	}
 	return body, nil
 }
@@ -183,8 +185,8 @@ func (ds *Datasource) ParseResponse(body []byte) (*datasource.DatasourceResponse
 	responseBody := &Response{}
 	err := json.Unmarshal(body, &responseBody)
 	if err != nil {
-		ds.Logger.Debug("Failed to unmarshall response", "response", string(body))
-		return nil, err
+		ds.Logger.Debug("Failed to unmarshal response body", "response", string(body))
+		return nil, status.Errorf(codes.Internal, "failed to unmarshal response body: %v", err)
 	}
 
 	results := make([]*datasource.QueryResult, 0)
