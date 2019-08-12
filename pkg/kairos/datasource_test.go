@@ -1,11 +1,16 @@
 package kairos_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/stretchr/testify/assert"
 	"github.com/zsabin/kairosdb-datasource/pkg/kairos"
 	"github.com/zsabin/kairosdb-datasource/pkg/panel"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"io/ioutil"
+	"net/http"
 	"testing"
 )
 
@@ -198,14 +203,14 @@ func getModelJson(query *panel.MetricQuery) string {
 		RefID: "",
 		Query: query,
 	}
-	bytes, err := json.Marshal(req)
+	rBytes, err := json.Marshal(req)
 	if err != nil {
 		panic("Failed to marshall metric request")
 	}
-	return string(bytes)
+	return string(rBytes)
 }
 
-func TestParseResponse_SingleSeries(t *testing.T) {
+func TestParseQueryResponse_SingleSeries(t *testing.T) {
 	ds := &kairos.Datasource{}
 
 	response := &kairos.Response{
@@ -250,14 +255,14 @@ func TestParseResponse_SingleSeries(t *testing.T) {
 		},
 	}
 
-	bytes, _ := json.Marshal(response)
-	result, err := ds.ParseResponse(bytes)
+	rBytes, _ := json.Marshal(response)
+	result, err := ds.ParseQueryResponse(rBytes)
 
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, result)
 }
 
-func TestParseResponse_MultipleSeries(t *testing.T) {
+func TestParseQueryResponse_MultipleSeries(t *testing.T) {
 	ds := &kairos.Datasource{}
 
 	response := &kairos.Response{
@@ -340,9 +345,50 @@ func TestParseResponse_MultipleSeries(t *testing.T) {
 		},
 	}
 
-	bytes, _ := json.Marshal(response)
-	result, err := ds.ParseResponse(bytes)
+	rBytes, _ := json.Marshal(response)
+	result, err := ds.ParseQueryResponse(rBytes)
 
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResult, result)
+}
+
+func TestParseResponse_ErrorWithBody(t *testing.T) {
+	ds := &kairos.Datasource{}
+
+	rbody := &kairos.Response{
+		Errors: []string{
+			"error1",
+			"error2",
+		},
+	}
+	rBytes, _ := json.Marshal(rbody)
+
+	response := &http.Response{
+		StatusCode: http.StatusBadRequest,
+		Status:     "400 - Bad Request",
+		Body:       ioutil.NopCloser(bytes.NewReader(rBytes)),
+	}
+
+	result, err := ds.ParseResponse(response)
+
+	assert.Nil(t, result)
+	assert.Equal(t, status.Error(codes.Internal, "query request failed with status: 400 - Bad Request, errors: [error1, error2]"), err)
+}
+
+func TestParseResponse_ErrorWithNoBody(t *testing.T) {
+	ds := &kairos.Datasource{}
+
+	rbody := ""
+	rBytes, _ := json.Marshal(rbody)
+
+	response := &http.Response{
+		StatusCode: http.StatusNotFound,
+		Status:     "404 - Not Found",
+		Body:       ioutil.NopCloser(bytes.NewReader(rBytes)),
+	}
+
+	result, err := ds.ParseResponse(response)
+
+	assert.Nil(t, result)
+	assert.Equal(t, status.Error(codes.Internal, "query request failed with status: 404 - Not Found, errors: []"), err)
 }

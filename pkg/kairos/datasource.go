@@ -3,7 +3,6 @@ package kairos
 import (
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
@@ -31,12 +30,12 @@ func (ds *Datasource) Query(ctx context.Context, request *datasource.DatasourceR
 		return nil, err
 	}
 
-	bytes, err := ds.MakeHttpRequest(ctx, req, request.Datasource.Url)
+	res, err := ds.MakeHttpRequest(ctx, req, request.Datasource.Url)
 	if err != nil {
 		return nil, err
 	}
 
-	datasourceResponse, err := ds.ParseResponse(bytes)
+	datasourceResponse, err := ds.ParseResponse(res)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +127,7 @@ func (ds *Datasource) CreateQuery(request *datasource.DatasourceRequest) (*Reque
 }
 
 //TODO support authentication
-func (ds *Datasource) MakeHttpRequest(ctx context.Context, request *Request, url string) ([]byte, error) {
+func (ds *Datasource) MakeHttpRequest(ctx context.Context, request *Request, url string) (*http.Response, error) {
 	rbody, err := json.Marshal(request)
 	if err != nil {
 		ds.Logger.Debug("Failed to marshal JSON", "value", request)
@@ -147,19 +146,7 @@ func (ds *Datasource) MakeHttpRequest(ctx context.Context, request *Request, url
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to complete HTTP request: %v", err)
 	}
-	defer res.Body.Close()
-
-	//TODO handle http status codes
-	//TODO log any error messages returned in body of request
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("invalid status code. status: %v", res.Status)
-	}
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to read response body: %v", err)
-	}
-	return body, nil
+	return res, nil
 }
 
 var httpClient = &http.Client{
@@ -181,7 +168,33 @@ var httpClient = &http.Client{
 	Timeout: time.Duration(time.Second * 30),
 }
 
-func (ds *Datasource) ParseResponse(body []byte) (*datasource.DatasourceResponse, error) {
+func (ds *Datasource) ParseResponse(res *http.Response) (*datasource.DatasourceResponse, error) {
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to read response body: %v", err)
+	}
+
+	responseBody := &Response{}
+	err = json.Unmarshal(body, &responseBody)
+
+	if res.StatusCode != http.StatusOK {
+		var errorMsgs []string
+		if responseBody != nil {
+			errorMsgs = responseBody.Errors
+		}
+		// TODO should these errors be returned in DatasourceResponse instead?
+		return nil, status.Errorf(codes.Internal, "query request failed with status: %v, errors: [%v]", res.Status, strings.Join(errorMsgs, ", "))
+	}
+
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to unmarshal response body: %v", err)
+	}
+	return ds.ParseQueryResponse(body)
+}
+
+func (ds *Datasource) ParseQueryResponse(body []byte) (*datasource.DatasourceResponse, error) {
 	responseBody := &Response{}
 	err := json.Unmarshal(body, &responseBody)
 	if err != nil {

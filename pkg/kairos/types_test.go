@@ -103,3 +103,23 @@ func TestKairosDBResponse(t *testing.T) {
 	assert.Nil(t, parseError, "Failed to unmarshal JSON: %v", parseError)
 	assert.Equal(t, expected, actual)
 }
+
+func TestKairosDBErrorResponse(t *testing.T) {
+	expected := &kairos.Response{
+		Errors: []string{
+			"metrics[0].aggregate must be one of MIN,SUM,MAX,AVG,DEV",
+			"metrics[0].sampling.unit must be one of  SECONDS,MINUTES,HOURS,DAYS,WEEKS,YEARS",
+		},
+	}
+
+	bytes, readError := ioutil.ReadFile("_testdata/KairosDBErrorResponse.json")
+	if readError != nil {
+		panic(readError)
+	}
+
+	actual := &kairos.Response{}
+	parseError := json.Unmarshal(bytes, actual)
+
+	assert.Nil(t, parseError, "Failed to unmarshal JSON: %v", parseError)
+	assert.Equal(t, expected, actual)
+}

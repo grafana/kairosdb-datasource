@@ -33,7 +33,8 @@ type Grouper struct {
 }
 
 type Response struct {
-	Queries []*QueryResponse `json:"queries"`
+	Queries []*QueryResponse `json:"queries,omitempty"`
+	Errors  []string         `json:"errors,omitempty"`
 }
 
 type QueryResponse struct {
