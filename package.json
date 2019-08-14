@@ -8,7 +8,7 @@
     "url": "git+https://github.com/grafana/kairosdb-datasource"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
+    "@types/chai": "4.1.7",
     "@types/lodash": "^4.14.83",
     "@types/mocha": "^5.2.5",
     "angular-mocks": "^1.6.6",
