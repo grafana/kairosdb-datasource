@@ -32,6 +32,7 @@ System.register(["./parameters/any_aggregator_parameter", "./range_aggregator"],
                 PercentileAggregator.fromObject = function (object) {
                     var rval = new PercentileAggregator();
                     var rangeObj = range_aggregator_1.RangeAggregator.fromObject(object);
+                    rval.autoValueSwitch = rangeObj.autoValueSwitch;
                     rval.parameters = rangeObj.parameters.concat([any_aggregator_parameter_1.AnyAggregatorParameter.fromObject(object.parameters[3])]);
                     return rval;
                 };

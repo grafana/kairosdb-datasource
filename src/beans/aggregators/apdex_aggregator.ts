@@ -7,6 +7,7 @@ export class ApdexAggregator extends RangeAggregator {
     public static fromObject(object: any) {
         const rval = new ApdexAggregator();
         const rangeObj = RangeAggregator.fromObject(object);
+        rval.autoValueSwitch = rangeObj.autoValueSwitch;
         rval.parameters = rangeObj.parameters.concat([AnyAggregatorParameter.fromObject(object.parameters[3])]);
         return rval;
     }
