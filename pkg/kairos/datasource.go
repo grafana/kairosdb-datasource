@@ -1,7 +1,6 @@
 package kairos
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/hashicorp/go-hclog"
@@ -12,16 +11,15 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"io/ioutil"
-	"net"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type Datasource struct {
 	plugin.NetRPCUnsupportedPlugin
-	Logger hclog.Logger
+	HttpClient http.Client
+	Logger     hclog.Logger
 }
 
 func (ds *Datasource) Query(ctx context.Context, request *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
@@ -144,30 +142,11 @@ func (ds *Datasource) MakeHttpRequest(ctx context.Context, request *Request, url
 
 	httpRequest.Header.Add("Content-Type", "application/json")
 
-	res, err := ctxhttp.Do(ctx, httpClient, httpRequest)
+	res, err := ctxhttp.Do(ctx, &ds.HttpClient, httpRequest)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to complete HTTP request: %v", err)
 	}
 	return res, nil
-}
-
-var httpClient = &http.Client{
-	Transport: &http.Transport{
-		TLSClientConfig: &tls.Config{
-			Renegotiation: tls.RenegotiateFreelyAsClient,
-		},
-		Proxy: http.ProxyFromEnvironment,
-		Dial: (&net.Dialer{
-			Timeout:   30 * time.Second,
-			KeepAlive: 30 * time.Second,
-			DualStack: true,
-		}).Dial,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-		MaxIdleConns:          100,
-		IdleConnTimeout:       90 * time.Second,
-	},
-	Timeout: time.Duration(time.Second * 30),
 }
 
 func (ds *Datasource) ParseResponse(res *http.Response) (*datasource.DatasourceResponse, error) {

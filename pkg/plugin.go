@@ -5,7 +5,9 @@ import (
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"github.com/zsabin/kairosdb-datasource/pkg/kairos"
+	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
@@ -17,6 +19,11 @@ func main() {
 
 	logger.Info("Running KairosDB backend datasource")
 
+	// TODO support configuration of http client
+	httpClient := http.Client{
+		Timeout: time.Duration(time.Second * 30),
+	}
+
 	plugin.Serve(&plugin.ServeConfig{
 
 		HandshakeConfig: plugin.HandshakeConfig{
@@ -26,7 +33,8 @@ func main() {
 		},
 		Plugins: map[string]plugin.Plugin{
 			"grafana-kairosdb-datasource": &datasource.DatasourcePluginImpl{Plugin: &kairos.Datasource{
-				Logger: logger,
+				HttpClient: httpClient,
+				Logger:     logger,
 			}},
 		},
 
