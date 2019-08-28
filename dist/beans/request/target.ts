@@ -13,13 +13,15 @@ export interface TimeRange {
 export class KairosDBTarget {
     public static fromObject(object: any): KairosDBTarget {
       const rval = new KairosDBTarget();
-      rval.metricName = object.metricName;
-      rval.alias = object.alias;
-      rval.tags = object.tags || {};
-      rval.groupBy = GroupBy.fromObject(object.groupBy);
-      rval.aggregators = (object.aggregators || []).map(
-          (val) => Aggregators.fromObject(val));
-      rval.timeRange = object.timeRange;
+      if (object) {
+          rval.metricName = object.metricName;
+          rval.alias = object.alias;
+          rval.tags = object.tags || {};
+          rval.groupBy = GroupBy.fromObject(object.groupBy);
+          rval.aggregators = (object.aggregators || []).map(
+              (val) => Aggregators.fromObject(val));
+          rval.timeRange = object.timeRange;
+      }
       return rval;
     }
 

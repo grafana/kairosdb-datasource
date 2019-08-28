@@ -25,12 +25,14 @@ System.register(["app/core/utils/datemath", "../aggregators/aggregators", "./gro
                 }
                 KairosDBTarget.fromObject = function (object) {
                     var rval = new KairosDBTarget();
-                    rval.metricName = object.metricName;
-                    rval.alias = object.alias;
-                    rval.tags = object.tags || {};
-                    rval.groupBy = group_by_1.GroupBy.fromObject(object.groupBy);
-                    rval.aggregators = (object.aggregators || []).map(function (val) { return Aggregators.fromObject(val); });
-                    rval.timeRange = object.timeRange;
+                    if (object) {
+                        rval.metricName = object.metricName;
+                        rval.alias = object.alias;
+                        rval.tags = object.tags || {};
+                        rval.groupBy = group_by_1.GroupBy.fromObject(object.groupBy);
+                        rval.aggregators = (object.aggregators || []).map(function (val) { return Aggregators.fromObject(val); });
+                        rval.timeRange = object.timeRange;
+                    }
                     return rval;
                 };
                 KairosDBTarget.prototype.startTime = function () {

@@ -34,6 +34,20 @@ System.register(["lodash", "./aggregator_editor"], function (exports_1, context_
                 AggregatorsCtrl.prototype.remove = function (entry) {
                     this.entries = lodash_1.default.without(this.entries, entry);
                 };
+                AggregatorsCtrl.prototype.up = function (entry) {
+                    var oldIdx = this.entries.indexOf(entry);
+                    var newIdx = oldIdx - 1;
+                    var currentVal = this.entries[newIdx];
+                    this.entries[newIdx] = entry;
+                    this.entries[oldIdx] = currentVal;
+                };
+                AggregatorsCtrl.prototype.down = function (entry) {
+                    var oldIdx = this.entries.indexOf(entry);
+                    var newIdx = oldIdx + 1;
+                    var currentVal = this.entries[newIdx];
+                    this.entries[newIdx] = entry;
+                    this.entries[oldIdx] = currentVal;
+                };
                 return AggregatorsCtrl;
             }());
             exports_1("AggregatorsCtrl", AggregatorsCtrl);

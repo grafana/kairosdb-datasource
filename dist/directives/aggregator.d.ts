@@ -3,6 +3,8 @@ import { AggregatorParameter } from "../beans/aggregators/parameters/aggregator_
 import "./aggregator_editor";
 export declare class AggregatorCtrl {
     value: Aggregator;
+    isFirst: boolean;
+    isLast: boolean;
     visibleParameters: AggregatorParameter[];
     isAutoValue: boolean;
     constructor();
@@ -15,7 +17,11 @@ export declare function AggregatorDirective(): {
     restrict: string;
     scope: {
         onRemove: string;
+        onUp: string;
+        onDown: string;
         value: string;
+        isFirst: string;
+        isLast: string;
     };
     templateUrl: string;
 };

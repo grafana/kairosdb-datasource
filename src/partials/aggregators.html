@@ -11,5 +11,13 @@
         </div>
     </div>
 
-    <aggregator ng-repeat="aggregator in ctrl.entries" value="aggregator" on-remove="ctrl.remove(aggregator)"></aggregator>
+    <aggregator
+            is-first="$first"
+            is-last="$last"
+            ng-repeat="aggregator in ctrl.entries"
+            value="aggregator"
+            on-remove="ctrl.remove(aggregator)"
+            on-up="ctrl.up(aggregator)"
+            on-down="ctrl.down(aggregator)">
+    </aggregator>
 </div>

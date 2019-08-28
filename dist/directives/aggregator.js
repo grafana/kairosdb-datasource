@@ -10,7 +10,11 @@ System.register(["lodash", "./aggregator_editor"], function (exports_1, context_
             restrict: "E",
             scope: {
                 onRemove: "&",
-                value: "="
+                onUp: "&",
+                onDown: "&",
+                value: "=",
+                isFirst: "=",
+                isLast: "="
             },
             templateUrl: "public/plugins/grafana-kairosdb-datasource/partials/aggregator.html"
         };

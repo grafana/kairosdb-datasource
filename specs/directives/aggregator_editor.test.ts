@@ -1,11 +1,12 @@
 import {Aggregator} from "../../src/beans/aggregators/aggregator";
+import {RangeAggregator} from "../../src/beans/aggregators/range_aggregator";
 import {AggregatorEditorDirective} from "../../src/directives/aggregator_editor";
 
 describe("AggregatorEditorController", () => {
     it("should add picks (clones) aggregator correctly", () => {
         // given
-        const aggregatorName: string = "Aggregator 1";
-        const aggregator: Aggregator = new Aggregator(aggregatorName);
+        const aggregatorName: string = "count";
+        const aggregator: Aggregator = new RangeAggregator(aggregatorName);
         const scope = {
             ctrl: {
                 availableAggregators: [aggregator]

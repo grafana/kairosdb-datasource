@@ -32,3 +32,8 @@
 .tag-switch {
     padding-right: 4px;
 }
+
+a.disabled {
+    pointer-events: none;
+    opacity: .5;
+}

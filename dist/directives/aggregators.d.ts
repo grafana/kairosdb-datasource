@@ -5,6 +5,8 @@ export declare class AggregatorsCtrl {
     availableAggregators: Aggregator[];
     add(entry: any): void;
     remove(entry: any): void;
+    up(entry: any): void;
+    down(entry: any): void;
 }
 export declare function AggregatorsDirective(): {
     bindToController: boolean;

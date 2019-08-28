@@ -16,6 +16,20 @@
     </div>
     <div class="gf-form">
         <label class="gf-form-label">
+            <a ng-click="ctrl.onUp(aggregator)" ng-class="{disabled: ctrl.isFirst}">
+                <i class="fa fa-arrow-up"></i>
+            </a>
+        </label>
+    </div>
+    <div class="gf-form">
+        <label class="gf-form-label">
+            <a ng-click="ctrl.onDown(aggregator)" ng-class="{disabled: ctrl.isLast}">
+                <i class="fa fa-arrow-down"></i>
+            </a>
+        </label>
+    </div>
+    <div class="gf-form">
+        <label class="gf-form-label">
             <a ng-click="ctrl.onRemove(aggregator)">
                 <i class="fa fa-times"></i>
             </a>

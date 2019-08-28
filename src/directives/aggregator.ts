@@ -5,6 +5,8 @@ import "./aggregator_editor";
 
 export class AggregatorCtrl {
     public value: Aggregator;
+    public isFirst: boolean;
+    public isLast: boolean;
     public visibleParameters: AggregatorParameter[];
     public isAutoValue: boolean = false;
 
@@ -28,7 +30,11 @@ export function AggregatorDirective() {
         restrict: "E",
         scope: {
             onRemove: "&",
-            value: "="
+            onUp: "&",
+            onDown: "&",
+            value: "=",
+            isFirst: "=",
+            isLast: "="
         },
         templateUrl: "public/plugins/grafana-kairosdb-datasource/partials/aggregator.html"
     };
