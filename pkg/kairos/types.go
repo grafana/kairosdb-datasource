@@ -1,6 +1,6 @@
 package kairos
 
-type Request struct {
+type MetricQueryRequest struct {
 	StartAbsolute int64          `json:"start_absolute"`
 	EndAbsolute   int64          `json:"end_absolute"`
 	Metrics       []*MetricQuery `json:"metrics"`
@@ -32,20 +32,32 @@ type Grouper struct {
 	Tags []string `json:"tags"`
 }
 
-type Response struct {
-	Queries []*QueryResponse `json:"queries,omitempty"`
-	Errors  []string         `json:"errors,omitempty"`
+type MetricQueryResponse struct {
+	Queries []*MetricQueryResults `json:"queries,omitempty"`
+	Errors  []string              `json:"errors,omitempty"`
 }
 
-type QueryResponse struct {
-	Results []*QueryResult `json:"results"`
+type MetricQueryResults struct {
+	Results []*MetricQueryResult `json:"results"`
 }
 
-type QueryResult struct {
+type MetricQueryResult struct {
 	Name      string              `json:"name"`
 	GroupInfo []*GroupInfo        `json:"group_by,omitempty"`
 	Tags      map[string][]string `json:"tags,omitempty"`
 	Values    []*DataPoint        `json:"values"`
+}
+
+func (r *MetricQueryResult) GetTaggedGroup() map[string]string {
+	if r.GroupInfo != nil {
+		for _, groupInfo := range r.GroupInfo {
+			if groupInfo.Name == "tag" {
+				return groupInfo.Group
+			}
+		}
+	}
+
+	return map[string]string{}
 }
 
 type GroupInfo struct {

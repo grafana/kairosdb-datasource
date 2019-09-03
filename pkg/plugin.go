@@ -20,8 +20,11 @@ func main() {
 	logger.Info("Running KairosDB backend datasource")
 
 	// TODO support configuration of http client
-	httpClient := http.Client{
-		Timeout: time.Duration(time.Second * 30),
+	kairosClient := kairos.ClientImpl{
+		HttpClient: http.Client{
+			Timeout: time.Duration(time.Second * 30),
+		},
+		Logger: logger,
 	}
 
 	plugin.Serve(&plugin.ServeConfig{
@@ -33,8 +36,8 @@ func main() {
 		},
 		Plugins: map[string]plugin.Plugin{
 			"grafana-kairosdb-datasource": &datasource.DatasourcePluginImpl{Plugin: &kairos.Datasource{
-				HttpClient: httpClient,
-				Logger:     logger,
+				KairosDBClient: kairosClient,
+				Logger:         logger,
 			}},
 		},
 

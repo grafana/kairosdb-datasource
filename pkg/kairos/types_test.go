@@ -9,7 +9,7 @@ import (
 )
 
 func TestKairosDBRequest(t *testing.T) {
-	expected := &kairos.Request{
+	expected := &kairos.MetricQueryRequest{
 		StartAbsolute: 1357023600000,
 		EndAbsolute:   1357024600000,
 		Metrics: []*kairos.MetricQuery{
@@ -46,7 +46,7 @@ func TestKairosDBRequest(t *testing.T) {
 		panic(readError)
 	}
 
-	actual := &kairos.Request{}
+	actual := &kairos.MetricQueryRequest{}
 	parseError := json.Unmarshal(bytes, actual)
 
 	assert.Nil(t, parseError, "Failed to unmarshal JSON: %v", parseError)
@@ -54,10 +54,10 @@ func TestKairosDBRequest(t *testing.T) {
 }
 
 func TestKairosDBResponse(t *testing.T) {
-	expected := &kairos.Response{
-		Queries: []*kairos.QueryResponse{
+	expected := &kairos.MetricQueryResponse{
+		Queries: []*kairos.MetricQueryResults{
 			{
-				Results: []*kairos.QueryResult{
+				Results: []*kairos.MetricQueryResult{
 					{
 						Name: "abc.123",
 						GroupInfo: []*kairos.GroupInfo{
@@ -97,7 +97,7 @@ func TestKairosDBResponse(t *testing.T) {
 		panic(readError)
 	}
 
-	actual := &kairos.Response{}
+	actual := &kairos.MetricQueryResponse{}
 	parseError := json.Unmarshal(bytes, actual)
 
 	assert.Nil(t, parseError, "Failed to unmarshal JSON: %v", parseError)
@@ -105,7 +105,7 @@ func TestKairosDBResponse(t *testing.T) {
 }
 
 func TestKairosDBErrorResponse(t *testing.T) {
-	expected := &kairos.Response{
+	expected := &kairos.MetricQueryResponse{
 		Errors: []string{
 			"metrics[0].aggregate must be one of MIN,SUM,MAX,AVG,DEV",
 			"metrics[0].sampling.unit must be one of  SECONDS,MINUTES,HOURS,DAYS,WEEKS,YEARS",
@@ -117,9 +117,43 @@ func TestKairosDBErrorResponse(t *testing.T) {
 		panic(readError)
 	}
 
-	actual := &kairos.Response{}
+	actual := &kairos.MetricQueryResponse{}
 	parseError := json.Unmarshal(bytes, actual)
 
 	assert.Nil(t, parseError, "Failed to unmarshal JSON: %v", parseError)
 	assert.Equal(t, expected, actual)
+}
+
+func TestMetricQueryResult_GetTaggedGroup_nilGroupInfo(t *testing.T) {
+	result := kairos.MetricQueryResult{
+		Name: "Foo",
+		Values: []*kairos.DataPoint{
+			{0, 0},
+		},
+	}
+
+	assert.Equal(t, map[string]string{}, result.GetTaggedGroup())
+}
+
+func TestMetricQueryResult_GetTaggedGroup_withTagGroup(t *testing.T) {
+	expectedGroup := map[string]string{
+		"host":     "server1",
+		"customer": "foo",
+	}
+
+	result := kairos.MetricQueryResult{
+		Name: "Foo",
+		Values: []*kairos.DataPoint{
+			{0, 0},
+		},
+		GroupInfo: []*kairos.GroupInfo{
+			{
+				Name:  "tag",
+				Tags:  []string{"host", "customer"},
+				Group: expectedGroup,
+			},
+		},
+	}
+
+	assert.Equal(t, expectedGroup, result.GetTaggedGroup())
 }
