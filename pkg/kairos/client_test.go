@@ -116,8 +116,39 @@ func TestQueryMetrics_errorResponse(t *testing.T) {
 		Body:       ioutil.NopCloser(bytes.NewBuffer(errorResponsePayload)),
 	}
 
+	expectedError := &kairos.ResponseError{
+		Status: 400,
+		Messages: []string{
+			"metrics[0].aggregate must be one of MIN,SUM,MAX,AVG,DEV",
+			"metrics[0].sampling.unit must be one of  SECONDS,MINUTES,HOURS,DAYS,WEEKS,YEARS",
+		},
+	}
 	results, err := kairosClient.QueryMetrics(context.TODO(), dsInfo, &kairos.MetricQueryRequest{})
 
-	assert.Nil(t, err)
 	assert.Nil(t, results)
+	assert.Equal(t, expectedError, err)
+}
+
+func TestResponseError_Error(t *testing.T) {
+	err := &kairos.ResponseError{
+		Status: 400,
+		Messages: []string{
+			"error1",
+			"error2",
+		},
+	}
+
+	expectedMsg := "KairosDB response error: status=400, messages=[error1, error2]"
+
+	assert.Equal(t, expectedMsg, err.Error())
+}
+
+func TestResponseError_Error_WithNoMessages(t *testing.T) {
+	err := &kairos.ResponseError{
+		Status: 400,
+	}
+
+	expectedMsg := "KairosDB response error: status=400, messages=[]"
+
+	assert.Equal(t, expectedMsg, err.Error())
 }

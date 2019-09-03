@@ -3,6 +3,7 @@ package kairos
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/hashicorp/go-hclog"
 	"github.com/pkg/errors"
@@ -13,6 +14,15 @@ import (
 	"path"
 	"strings"
 )
+
+type ResponseError struct {
+	Messages []string
+	Status   int
+}
+
+func (e *ResponseError) Error() string {
+	return fmt.Sprintf("KairosDB response error: status=%d, messages=[%v]", e.Status, strings.Join(e.Messages, ", "))
+}
 
 type Client interface {
 	QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *MetricQueryRequest) ([]*MetricQueryResults, error)
@@ -45,9 +55,14 @@ func (client ClientImpl) QueryMetrics(ctx context.Context, dsInfo *datasource.Da
 	metricResponse := &MetricQueryResponse{}
 	err = json.Unmarshal(resBody, &metricResponse)
 
-	//TODO return error if status != 200
+	if res.StatusCode >= 200 && res.StatusCode < 300 {
+		return metricResponse.Queries, errors.Wrap(err, "failed to unmarshal metric query response")
+	}
 
-	return metricResponse.Queries, errors.Wrap(err, "failed to unmarshal metric query response")
+	return nil, &ResponseError{
+		Status:   res.StatusCode,
+		Messages: metricResponse.Errors,
+	}
 }
 
 func (client *ClientImpl) buildHTTPRequest(dsInfo *datasource.DatasourceInfo, request *MetricQueryRequest) (*http.Request, error) {
