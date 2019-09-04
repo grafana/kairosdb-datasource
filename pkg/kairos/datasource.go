@@ -18,39 +18,46 @@ type Datasource struct {
 	Logger         hclog.Logger
 }
 
-func (ds *Datasource) Query(ctx context.Context, request *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
-	req, err := ds.CreateMetricQueryRequest(request)
-	if err != nil {
-		return nil, err
+func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
+	var refIds []string
+	for _, query := range dsRequest.Queries {
+		refIds = append(refIds, query.RefId)
 	}
 
-	results, err := ds.KairosDBClient.QueryMetrics(ctx, request.Datasource, req)
-	if err != nil {
-		return nil, err
-	}
-
-	return ds.ParseQueryResults(results), nil
-}
-
-func (ds *Datasource) CreateMetricQueryRequest(request *datasource.DatasourceRequest) (*MetricQueryRequest, error) {
 	var kairosQueries []*MetricQuery
-
-	for _, dsQuery := range request.Queries {
-		query, err := ds.createMetricQuery(dsQuery)
+	for _, dsQuery := range dsRequest.Queries {
+		query, err := ds.CreateMetricQuery(dsQuery)
 		if err != nil {
 			return nil, err
 		}
 		kairosQueries = append(kairosQueries, query)
 	}
 
-	return &MetricQueryRequest{
-		StartAbsolute: request.TimeRange.FromEpochMs,
-		EndAbsolute:   request.TimeRange.ToEpochMs,
+	kairosRequest := &MetricQueryRequest{
+		StartAbsolute: dsRequest.TimeRange.FromEpochMs,
+		EndAbsolute:   dsRequest.TimeRange.ToEpochMs,
 		Metrics:       kairosQueries,
+	}
+
+	results, err := ds.KairosDBClient.QueryMetrics(ctx, dsRequest.Datasource, kairosRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	dsResults := make([]*datasource.QueryResult, 0)
+
+	for i, query := range results {
+		qr := ds.ParseQueryResult(query)
+		qr.RefId = refIds[i]
+		dsResults = append(dsResults, qr)
+	}
+
+	return &datasource.DatasourceResponse{
+		Results: dsResults,
 	}, nil
 }
 
-func (ds *Datasource) createMetricQuery(dsQuery *datasource.Query) (*MetricQuery, error) {
+func (ds *Datasource) CreateMetricQuery(dsQuery *datasource.Query) (*MetricQuery, error) {
 	panelRequest := &panel.MetricRequest{}
 	err := json.Unmarshal([]byte(dsQuery.ModelJson), panelRequest)
 	if err != nil {
@@ -122,37 +129,28 @@ func (ds *Datasource) createMetricQuery(dsQuery *datasource.Query) (*MetricQuery
 	return metricQuery, nil
 }
 
-func (ds *Datasource) ParseQueryResults(queries []*MetricQueryResults) *datasource.DatasourceResponse {
-	dsResults := make([]*datasource.QueryResult, 0)
+func (ds *Datasource) ParseQueryResult(query *MetricQueryResults) *datasource.QueryResult {
 
-	for _, query := range queries {
-		seriesSet := make([]*datasource.TimeSeries, 0)
+	seriesSet := make([]*datasource.TimeSeries, 0)
 
-		for _, result := range query.Results {
-			series := &datasource.TimeSeries{
-				Name: result.Name,
-				Tags: result.GetTaggedGroup(),
-			}
-
-			for _, dataPoint := range result.Values {
-				value := dataPoint[1]
-
-				series.Points = append(series.Points, &datasource.Point{
-					Timestamp: int64(dataPoint[0]),
-					Value:     value,
-				})
-			}
-			seriesSet = append(seriesSet, series)
+	for _, result := range query.Results {
+		series := &datasource.TimeSeries{
+			Name: result.Name,
+			Tags: result.GetTaggedGroup(),
 		}
 
-		//TODO add refID
-		//TODO add any errors
-		dsResults = append(dsResults, &datasource.QueryResult{
-			Series: seriesSet,
-		})
+		for _, dataPoint := range result.Values {
+			value := dataPoint[1]
+
+			series.Points = append(series.Points, &datasource.Point{
+				Timestamp: int64(dataPoint[0]),
+				Value:     value,
+			})
+		}
+		seriesSet = append(seriesSet, series)
 	}
 
-	return &datasource.DatasourceResponse{
-		Results: dsResults,
+	return &datasource.QueryResult{
+		Series: seriesSet,
 	}
 }
