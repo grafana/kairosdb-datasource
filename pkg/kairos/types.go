@@ -7,18 +7,10 @@ type MetricQueryRequest struct {
 }
 
 type MetricQuery struct {
-	Name        string              `json:"name"`
-	Aggregators []*Aggregator       `json:"aggregators,omitempty"`
-	GroupBy     []*Grouper          `json:"group_by,omitempty"`
-	Tags        map[string][]string `json:"tags,omitempty"`
-}
-
-type Aggregator struct {
-	Name           string    `json:"name"`
-	AlignSampling  bool      `json:"align_sampling"`
-	AlignStartTime bool      `json:"align_start_time"`
-	AlignEndTime   bool      `json:"align_end_time"`
-	Sampling       *Sampling `json:"sampling"`
+	Name        string                   `json:"name"`
+	Aggregators []map[string]interface{} `json:"aggregators,omitempty"`
+	GroupBy     []*Grouper               `json:"group_by,omitempty"`
+	Tags        map[string][]string      `json:"tags,omitempty"`
 }
 
 type Sampling struct {

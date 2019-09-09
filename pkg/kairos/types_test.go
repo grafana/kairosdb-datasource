@@ -15,12 +15,12 @@ func TestKairosDBRequest(t *testing.T) {
 		Metrics: []*kairos.MetricQuery{
 			{
 				Name: "abc.123",
-				Aggregators: []*kairos.Aggregator{
+				Aggregators: []map[string]interface{}{
 					{
-						Name: "sum",
-						Sampling: &kairos.Sampling{
-							Value: 10,
-							Unit:  "minutes",
+						"name": "sum",
+						"sampling": map[string]interface{}{
+							"value": 10.0,
+							"unit":  "minutes",
 						},
 					},
 				},

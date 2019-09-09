@@ -82,32 +82,14 @@ func (ds *Datasource) CreateMetricQuery(dsQuery *datasource.Query) (*MetricQuery
 		metricQuery.Tags = tags
 	}
 
-	aggregators := make([]*Aggregator, 0)
+	var aggregators []map[string]interface{}
 	for _, aggregator := range panelQuery.Aggregators {
-		var timeValue int
-		var unit string
-		alignBy := "NONE"
-
-		for _, param := range aggregator.Parameters {
-			if param.Name == "value" {
-				timeValue, _ = strconv.Atoi(param.Value)
-			} else if param.Name == "sampling" {
-				alignBy = param.Value
-			} else if param.Name == "unit" {
-				unit = param.Value
-			}
+		result, err := parseAggregator(aggregator)
+		if err != nil {
+			return nil, err
 		}
 
-		aggregators = append(aggregators, &Aggregator{
-			Name:           aggregator.Name,
-			AlignSampling:  alignBy == "SAMPLING",
-			AlignStartTime: alignBy == "START_TIME",
-			AlignEndTime:   false,
-			Sampling: &Sampling{
-				Value: timeValue,
-				Unit:  unit,
-			},
-		})
+		aggregators = append(aggregators, result)
 	}
 
 	if len(aggregators) > 0 {
@@ -127,6 +109,41 @@ func (ds *Datasource) CreateMetricQuery(dsQuery *datasource.Query) (*MetricQuery
 		}
 	}
 	return metricQuery, nil
+}
+
+func parseAggregator(aggregator *panel.Aggregator) (map[string]interface{}, error) {
+	result := map[string]interface{}{}
+	result["name"] = aggregator.Name
+	sampling := &Sampling{}
+
+	for _, param := range aggregator.Parameters {
+		switch param.Type {
+		case "alignment":
+			result["align_sampling"] = param.Value == "SAMPLING"
+			result["align_start_time"] = param.Value == "START_TIME"
+			result["align_end_time"] = false
+		case "sampling":
+			var err error
+			sampling.Value, err = strconv.Atoi(param.Value)
+			if err != nil {
+				return nil, err
+			}
+		case "sampling_unit":
+			sampling.Unit = param.Value
+		default:
+			var value interface{}
+			value, err := strconv.ParseFloat(param.Value, 64)
+			if err != nil {
+				value = param.Value
+			}
+			result[param.Name] = value
+		}
+	}
+	if sampling.Value != 0 && sampling.Unit != "" {
+		result["sampling"] = sampling
+	}
+
+	return result, nil
 }
 
 func (ds *Datasource) ParseQueryResult(query *MetricQueryResults) *datasource.QueryResult {

@@ -80,49 +80,53 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 				Parameters: []*panel.AggregatorParameter{
 					{
 						Name:  "value",
+						Type:  "sampling",
 						Value: "1",
 					},
 					{
 						Name:  "unit",
+						Type:  "sampling_unit",
 						Value: "MINUTES",
 					},
 					{
 						Name:  "sampling",
+						Type:  "alignment",
 						Value: "NONE",
 					},
 				},
 			},
 			{
-				Name: "avg",
+				Name: "percentile",
 				Parameters: []*panel.AggregatorParameter{
 					{
 						Name:  "value",
+						Type:  "sampling",
 						Value: "1",
 					},
 					{
 						Name:  "unit",
+						Type:  "sampling_unit",
 						Value: "MINUTES",
 					},
 					{
 						Name:  "sampling",
+						Type:  "alignment",
 						Value: "SAMPLING",
+					},
+					{
+						Name:  "percentile",
+						Type:  "any",
+						Value: "0.95",
 					},
 				},
 			},
 			{
-				Name: "max",
+				Name: "scale",
 				Parameters: []*panel.AggregatorParameter{
 					{
-						Name:  "value",
-						Value: "1",
-					},
-					{
-						Name:  "unit",
-						Value: "MINUTES",
-					},
-					{
-						Name:  "sampling",
-						Value: "START_TIME",
+						Name:  "factor",
+						Type:  "any",
+						Value: "2",
 					},
 				},
 			},
@@ -136,36 +140,31 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 
 	expectedQuery := &kairos.MetricQuery{
 		Name: "MetricA",
-		Aggregators: []*kairos.Aggregator{
+		Aggregators: []map[string]interface{}{
 			{
-				Name:           "sum",
-				AlignSampling:  false,
-				AlignStartTime: false,
-				AlignEndTime:   false,
-				Sampling: &kairos.Sampling{
+				"name":             "sum",
+				"align_sampling":   false,
+				"align_start_time": false,
+				"align_end_time":   false,
+				"sampling": &kairos.Sampling{
 					Value: 1,
 					Unit:  "MINUTES",
 				},
 			},
 			{
-				Name:           "avg",
-				AlignSampling:  true,
-				AlignStartTime: false,
-				AlignEndTime:   false,
-				Sampling: &kairos.Sampling{
+				"name":             "percentile",
+				"align_sampling":   true,
+				"align_start_time": false,
+				"align_end_time":   false,
+				"sampling": &kairos.Sampling{
 					Value: 1,
 					Unit:  "MINUTES",
 				},
+				"percentile": 0.95,
 			},
 			{
-				Name:           "max",
-				AlignSampling:  false,
-				AlignStartTime: true,
-				AlignEndTime:   false,
-				Sampling: &kairos.Sampling{
-					Value: 1,
-					Unit:  "MINUTES",
-				},
+				"name":   "scale",
+				"factor": 2.0,
 			},
 		},
 	}
