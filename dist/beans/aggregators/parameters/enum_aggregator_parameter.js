@@ -24,15 +24,15 @@ System.register(["../utils", "./limited_aggregator_parameter"], function (export
         execute: function () {
             EnumAggregatorParameter = (function (_super) {
                 __extends(EnumAggregatorParameter, _super);
-                function EnumAggregatorParameter(name, type, text, value) {
+                function EnumAggregatorParameter(name, enumType, text, value) {
                     if (text === void 0) { text = name; }
                     if (value === void 0) { value = null; }
-                    var _this = _super.call(this, name, utils_1.EnumValues(type), text, value) || this;
+                    var _this = _super.call(this, name, utils_1.EnumValues(enumType), text, value) || this;
                     _this.type = "enum";
                     return _this;
                 }
                 EnumAggregatorParameter.fromObject = function (object) {
-                    return new EnumAggregatorParameter(object.name, object.type, object.text, object.value);
+                    return new EnumAggregatorParameter(object.name, object.allowedValues, object.text, object.value);
                 };
                 return EnumAggregatorParameter;
             }(limited_aggregator_parameter_1.LimitedAggregatorParameter));
