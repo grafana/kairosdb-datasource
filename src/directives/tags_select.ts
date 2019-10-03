@@ -8,7 +8,7 @@ export class TagsSelectCtrl {
     /** @ngInject **/
     constructor(private uiSegmentSrv) {
         this.selectedValues = this.selectedValues || [];
-        if (this.tagValues.length > 1) {
+        if (this.tagValues.length > 0) {
             this.segments = this.selectedValues
                 .map((tagValue) => this.uiSegmentSrv.newSegment(tagValue));
             this.segments.push(this.uiSegmentSrv.newPlusButton());

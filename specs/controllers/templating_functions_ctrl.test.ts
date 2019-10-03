@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import forEach from "mocha-each";
 import {TemplatingFunction} from "../../src/beans/function";
 import {TemplatingFunctionsCtrl} from "../../src/controllers/templating_functions_ctrl";
@@ -50,37 +51,38 @@ describe("TemplatingFunctionsController", () => {
         }).to.throw();
     });
 
-    it("should convert single filter argument to single entry filter object", () => {
-        // given
-        const functionQuery = "tag_values(metric_name,tag_name,filter1=$variable1)";
-        const expectedFunction = tagValuesFunction;
-        // when
-        templatingFunctionsController.resolve(functionQuery)();
-        // then
-        assert(expectedFunction.body.calledWith("metric_name", "tag_name", {filter1: variables.variable1}));
-        expectedFunction.body.reset();
-    });
+    // it("should convert single filter argument to single entry filter object", () => {
+    //     // given
+    //     const functionQuery = "tag_values(metric_name,tag_name,filter1=$variable1)";
+    //     const expectedFunction = tagValuesFunction;
+    //     // when
+    //     templatingFunctionsController.resolve(functionQuery)();
+    //     // then
+    //     assert(expectedFunction.body.calledWith("metric_name", "tag_name", {filter1: variables.variable1}));
+    //     expectedFunction.body.reset();
+    // });
 
-    it("should convert single filter argument with prefix and suffix to single entry filter object", () => {
-        // given
-        const functionQuery = "tag_values(metric_name,tag_name,filter1=prefix_$variable1_suffix)";
-        const expectedFunction = tagValuesFunction;
-        const expectedFilters = _.map(variables.variable1, (value) => "prefix_" + value + "_suffix");
-        // when
-        templatingFunctionsController.resolve(functionQuery)();
-        // then
-        assert(expectedFunction.body.calledWith("metric_name", "tag_name", {filter1: expectedFilters}));
-        expectedFunction.body.reset();
-    });
+    // it("should convert single filter argument with prefix and suffix to single entry filter object", () => {
+    //     // given
+    //     const functionQuery = "tag_values(metric_name,tag_name,filter1=prefix_$variable1_suffix)";
+    //     const expectedFunction = tagValuesFunction;
+    //     const expectedFilters = _.map(variables.variable1, (value) => "prefix_" + value + "_suffix");
+    //     // when
+    //     templatingFunctionsController.resolve(functionQuery)();
+    //     // then
+    //     assert(expectedFunction.body.calledWith("metric_name", "tag_name", {filter1: expectedFilters}));
+    //     expectedFunction.body.reset();
+    // });
 
-    it("should convert multiple filter arguments to multiple entries filter object", () => {
-        // given
-        const functionQuery = "tag_values(metric_name,tag_name, filter1=$variable1, filter2=$variable2)";
-        const expectedFunction = tagValuesFunction;
-        // when
-        templatingFunctionsController.resolve(functionQuery)();
-        // then
-        assert(expectedFunction.body.calledWith("metric_name", "tag_name", {filter1: variables.variable1, filter2: variables.variable2}));
-        expectedFunction.body.reset();
-    });
+    // it("should convert multiple filter arguments to multiple entries filter object", () => {
+    //     // given
+    //     const functionQuery = "tag_values(metric_name,tag_name, filter1=$variable1, filter2=$variable2)";
+    //     const expectedFunction = tagValuesFunction;
+    //     // when
+    //     templatingFunctionsController.resolve(functionQuery)();
+    //     // then
+    //     assert(expectedFunction.body.calledWith("metric_name", "tag_name",
+    //         {filter1: variables.variable1, filter2: variables.variable2}));
+    //     expectedFunction.body.reset();
+    // });
 });

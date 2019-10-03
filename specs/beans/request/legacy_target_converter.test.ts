@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import {LegacyTargetConverter} from "../../../src/beans/request/legacy_target_converter";
 
 function sortNestedJSON(object) {
@@ -113,23 +114,7 @@ describe("LegacyTargetConverter", () => {
                                 name: "value",
                                 text: "every",
                                 type: "sampling",
-                                value: "1"
-                            },
-                            {
-                                allowedValues: {
-                                    0: "MILLISECONDS",
-                                    1: "SECONDS",
-                                    2: "MINUTES",
-                                    3: "HOURS",
-                                    4: "DAYS",
-                                    5: "WEEKS",
-                                    6: "MONTHS",
-                                    7: "YEARS"
-                                },
-                                name: "unit",
-                                text: "unit",
-                                type: "sampling_unit",
-                                value: "HOURS"
+                                value: "1h"
                             }
                         ],
                         enabled: false
@@ -151,23 +136,7 @@ describe("LegacyTargetConverter", () => {
                             name: "value",
                             text: "every",
                             type: "sampling",
-                            value: "1"
-                        },
-                        {
-                            allowedValues: {
-                                0: "MILLISECONDS",
-                                1: "SECONDS",
-                                2: "MINUTES",
-                                3: "HOURS",
-                                4: "DAYS",
-                                5: "WEEKS",
-                                6: "MONTHS",
-                                7: "YEARS"
-                            },
-                            name: "unit",
-                            text: "unit",
-                            type: "sampling_unit",
-                            value: "HOURS"
+                            value: "1h"
                         }
                     ]
                 }
