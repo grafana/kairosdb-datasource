@@ -14,7 +14,7 @@ type MetricQuery struct {
 }
 
 type Sampling struct {
-	Value int    `json:"value"`
+	Value int64  `json:"value"`
 	Unit  string `json:"unit"`
 }
 
