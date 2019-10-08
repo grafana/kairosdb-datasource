@@ -1,25 +1,24 @@
-package kairos_test
+package kairos
 
 import (
 	"context"
 	"encoding/json"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/stretchr/testify/assert"
-	"github.com/zsabin/kairosdb-datasource/pkg/kairos"
 	"github.com/zsabin/kairosdb-datasource/pkg/panel"
 	"testing"
 )
 
 type MockKairosDBClient struct {
-	response []*kairos.MetricQueryResults
+	response []*MetricQueryResults
 }
 
-func (m MockKairosDBClient) QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *kairos.MetricQueryRequest) ([]*kairos.MetricQueryResults, error) {
+func (m MockKairosDBClient) QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *MetricQueryRequest) ([]*MetricQueryResults, error) {
 	return m.response, nil
 }
 
 func TestDatasource_CreateMetricQuery_MinimalQuery(t *testing.T) {
-	ds := &kairos.Datasource{}
+	ds := &Datasource{}
 
 	panelQuery := &panel.MetricQuery{
 		Name: "MetricA",
@@ -30,7 +29,7 @@ func TestDatasource_CreateMetricQuery_MinimalQuery(t *testing.T) {
 		ModelJson: toModelJson(panelQuery),
 	}
 
-	expectedQuery := &kairos.MetricQuery{
+	expectedQuery := &MetricQuery{
 		Name: "MetricA",
 	}
 
@@ -41,7 +40,7 @@ func TestDatasource_CreateMetricQuery_MinimalQuery(t *testing.T) {
 }
 
 func TestDatasource_CreateMetricQuery_WithTags(t *testing.T) {
-	ds := &kairos.Datasource{}
+	ds := &Datasource{}
 
 	panelQuery := &panel.MetricQuery{
 		Name: "MetricA",
@@ -56,7 +55,7 @@ func TestDatasource_CreateMetricQuery_WithTags(t *testing.T) {
 		ModelJson: toModelJson(panelQuery),
 	}
 
-	expectedQuery := &kairos.MetricQuery{
+	expectedQuery := &MetricQuery{
 		Name: "MetricA",
 		Tags: map[string][]string{
 			"foo": {"bar", "baz"},
@@ -70,7 +69,7 @@ func TestDatasource_CreateMetricQuery_WithTags(t *testing.T) {
 }
 
 func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
-	ds := &kairos.Datasource{}
+	ds := &Datasource{}
 
 	panelQuery := &panel.MetricQuery{
 		Name: "MetricA",
@@ -128,7 +127,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 		ModelJson: toModelJson(panelQuery),
 	}
 
-	expectedQuery := &kairos.MetricQuery{
+	expectedQuery := &MetricQuery{
 		Name: "MetricA",
 		Aggregators: []map[string]interface{}{
 			{
@@ -136,7 +135,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 				"align_sampling":   false,
 				"align_start_time": false,
 				"align_end_time":   false,
-				"sampling": &kairos.Sampling{
+				"sampling": &Sampling{
 					Value: 1,
 					Unit:  "minutes",
 				},
@@ -146,7 +145,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 				"align_sampling":   true,
 				"align_start_time": false,
 				"align_end_time":   false,
-				"sampling": &kairos.Sampling{
+				"sampling": &Sampling{
 					Value: 1,
 					Unit:  "minutes",
 				},
@@ -166,7 +165,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 }
 
 func TestDatasource_CreateMetricQuery_WithGroupBy(t *testing.T) {
-	ds := &kairos.Datasource{}
+	ds := &Datasource{}
 
 	panelQuery := &panel.MetricQuery{
 		Name: "MetricA",
@@ -179,9 +178,9 @@ func TestDatasource_CreateMetricQuery_WithGroupBy(t *testing.T) {
 		ModelJson: toModelJson(panelQuery),
 	}
 
-	expectedQuery := &kairos.MetricQuery{
+	expectedQuery := &MetricQuery{
 		Name: "MetricA",
-		GroupBy: []*kairos.Grouper{
+		GroupBy: []*Grouper{
 			{
 				Name: "tag",
 				Tags: []string{"host", "pool"},
@@ -196,13 +195,13 @@ func TestDatasource_CreateMetricQuery_WithGroupBy(t *testing.T) {
 }
 
 func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
-	ds := &kairos.Datasource{}
+	ds := &Datasource{}
 
-	kairosResults := &kairos.MetricQueryResults{
-		Results: []*kairos.MetricQueryResult{
+	kairosResults := &MetricQueryResults{
+		Results: []*MetricQueryResult{
 			{
 				Name: "MetricA",
-				Values: []*kairos.DataPoint{
+				Values: []*DataPoint{
 					{
 						1564682818000, 10.5,
 					},
@@ -238,13 +237,13 @@ func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
 }
 
 func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
-	ds := &kairos.Datasource{}
+	ds := &Datasource{}
 
-	kairosResults := &kairos.MetricQueryResults{
-		Results: []*kairos.MetricQueryResult{
+	kairosResults := &MetricQueryResults{
+		Results: []*MetricQueryResult{
 			{
 				Name: "MetricA",
-				GroupInfo: []*kairos.GroupInfo{
+				GroupInfo: []*GroupInfo{
 					{
 						Name: "tag",
 						Tags: []string{"host", "pool"},
@@ -254,7 +253,7 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 						},
 					},
 				},
-				Values: []*kairos.DataPoint{
+				Values: []*DataPoint{
 					{
 						1564682818000, 10.5,
 					},
@@ -262,7 +261,7 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 			},
 			{
 				Name: "MetricA",
-				GroupInfo: []*kairos.GroupInfo{
+				GroupInfo: []*GroupInfo{
 					{
 						Name: "tag",
 						Tags: []string{"host", "pool"},
@@ -272,7 +271,7 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 						},
 					},
 				},
-				Values: []*kairos.DataPoint{
+				Values: []*DataPoint{
 					{
 						1564682818000, 10.5,
 					},
@@ -319,16 +318,16 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 func TestDatasource_Query(t *testing.T) {
 	mockClient := &MockKairosDBClient{}
 
-	ds := &kairos.Datasource{
+	ds := &Datasource{
 		KairosDBClient: mockClient,
 	}
 
-	mockClient.response = []*kairos.MetricQueryResults{
+	mockClient.response = []*MetricQueryResults{
 		{
-			Results: []*kairos.MetricQueryResult{
+			Results: []*MetricQueryResult{
 				{
 					Name: "MetricA",
-					Values: []*kairos.DataPoint{
+					Values: []*DataPoint{
 						{
 							1564682818000, 5,
 						},
@@ -337,10 +336,10 @@ func TestDatasource_Query(t *testing.T) {
 			},
 		},
 		{
-			Results: []*kairos.MetricQueryResult{
+			Results: []*MetricQueryResult{
 				{
 					Name: "MetricB",
-					Values: []*kairos.DataPoint{
+					Values: []*DataPoint{
 						{
 							1564682818000, 10.5,
 						},

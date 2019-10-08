@@ -1,18 +1,17 @@
-package kairos_test
+package kairos
 
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"github.com/zsabin/kairosdb-datasource/pkg/kairos"
 	"io/ioutil"
 	"testing"
 )
 
 func TestKairosDBRequest(t *testing.T) {
-	expected := &kairos.MetricQueryRequest{
+	expected := &MetricQueryRequest{
 		StartAbsolute: 1357023600000,
 		EndAbsolute:   1357024600000,
-		Metrics: []*kairos.MetricQuery{
+		Metrics: []*MetricQuery{
 			{
 				Name: "abc.123",
 				Aggregators: []map[string]interface{}{
@@ -28,7 +27,7 @@ func TestKairosDBRequest(t *testing.T) {
 					"host":     {"foo", "foo2"},
 					"customer": {"bar"},
 				},
-				GroupBy: []*kairos.Grouper{
+				GroupBy: []*Grouper{
 					{
 						Name: "tag",
 						Tags: []string{
@@ -46,7 +45,7 @@ func TestKairosDBRequest(t *testing.T) {
 		panic(readError)
 	}
 
-	actual := &kairos.MetricQueryRequest{}
+	actual := &MetricQueryRequest{}
 	parseError := json.Unmarshal(bytes, actual)
 
 	assert.Nil(t, parseError, "Failed to unmarshal JSON: %v", parseError)
@@ -54,13 +53,13 @@ func TestKairosDBRequest(t *testing.T) {
 }
 
 func TestKairosDBResponse(t *testing.T) {
-	expected := &kairos.MetricQueryResponse{
-		Queries: []*kairos.MetricQueryResults{
+	expected := &MetricQueryResponse{
+		Queries: []*MetricQueryResults{
 			{
-				Results: []*kairos.MetricQueryResult{
+				Results: []*MetricQueryResult{
 					{
 						Name: "abc.123",
-						GroupInfo: []*kairos.GroupInfo{
+						GroupInfo: []*GroupInfo{
 							{
 								Name: "type",
 							},
@@ -76,7 +75,7 @@ func TestKairosDBResponse(t *testing.T) {
 							"host":     {"server1"},
 							"customer": {"bar"},
 						},
-						Values: []*kairos.DataPoint{
+						Values: []*DataPoint{
 							{
 								1364968800000,
 								11019,
@@ -97,7 +96,7 @@ func TestKairosDBResponse(t *testing.T) {
 		panic(readError)
 	}
 
-	actual := &kairos.MetricQueryResponse{}
+	actual := &MetricQueryResponse{}
 	parseError := json.Unmarshal(bytes, actual)
 
 	assert.Nil(t, parseError, "Failed to unmarshal JSON: %v", parseError)
@@ -105,7 +104,7 @@ func TestKairosDBResponse(t *testing.T) {
 }
 
 func TestKairosDBErrorResponse(t *testing.T) {
-	expected := &kairos.MetricQueryResponse{
+	expected := &MetricQueryResponse{
 		Errors: []string{
 			"metrics[0].aggregate must be one of MIN,SUM,MAX,AVG,DEV",
 			"metrics[0].sampling.unit must be one of  SECONDS,MINUTES,HOURS,DAYS,WEEKS,YEARS",
@@ -117,7 +116,7 @@ func TestKairosDBErrorResponse(t *testing.T) {
 		panic(readError)
 	}
 
-	actual := &kairos.MetricQueryResponse{}
+	actual := &MetricQueryResponse{}
 	parseError := json.Unmarshal(bytes, actual)
 
 	assert.Nil(t, parseError, "Failed to unmarshal JSON: %v", parseError)
@@ -125,9 +124,9 @@ func TestKairosDBErrorResponse(t *testing.T) {
 }
 
 func TestMetricQueryResult_GetTaggedGroup_nilGroupInfo(t *testing.T) {
-	result := kairos.MetricQueryResult{
+	result := MetricQueryResult{
 		Name: "Foo",
-		Values: []*kairos.DataPoint{
+		Values: []*DataPoint{
 			{0, 0},
 		},
 	}
@@ -141,12 +140,12 @@ func TestMetricQueryResult_GetTaggedGroup_withTagGroup(t *testing.T) {
 		"customer": "foo",
 	}
 
-	result := kairos.MetricQueryResult{
+	result := MetricQueryResult{
 		Name: "Foo",
-		Values: []*kairos.DataPoint{
+		Values: []*DataPoint{
 			{0, 0},
 		},
-		GroupInfo: []*kairos.GroupInfo{
+		GroupInfo: []*GroupInfo{
 			{
 				Name:  "tag",
 				Tags:  []string{"host", "customer"},

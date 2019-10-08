@@ -1,22 +1,21 @@
-package panel_test
+package panel
 
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"github.com/zsabin/kairosdb-datasource/pkg/panel"
 	"io/ioutil"
 	"testing"
 )
 
 func TestPanelMetricRequest(t *testing.T) {
-	expected := &panel.MetricRequest{
+	expected := &MetricRequest{
 		RefID: "A",
-		Query: &panel.MetricQuery{
+		Query: &MetricQuery{
 			Name: "abc.123",
-			Aggregators: []*panel.Aggregator{
+			Aggregators: []*Aggregator{
 				{
 					Name: "sum",
-					Parameters: []*panel.AggregatorParameter{
+					Parameters: []*AggregatorParameter{
 						{
 							Name:  "sampling",
 							Text:  "align by",
@@ -43,7 +42,7 @@ func TestPanelMetricRequest(t *testing.T) {
 				"host":       {"foo", "foo2"},
 				"customer":   {"bar"},
 			},
-			GroupBy: &panel.GroupBy{
+			GroupBy: &GroupBy{
 				Tags: []string{
 					"host",
 					"datacenter",
@@ -57,7 +56,7 @@ func TestPanelMetricRequest(t *testing.T) {
 		panic(readError)
 	}
 
-	actual := &panel.MetricRequest{}
+	actual := &MetricRequest{}
 	parseError := json.Unmarshal(bytes, actual)
 
 	assert.Nil(t, parseError, "Failed to unmarshal JSON: %v", parseError)

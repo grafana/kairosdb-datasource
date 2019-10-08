@@ -1,4 +1,4 @@
-package kairos_test
+package kairos
 
 import (
 	"bytes"
@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/stretchr/testify/assert"
-	"github.com/zsabin/kairosdb-datasource/pkg/kairos"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -29,7 +28,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-var kairosClient kairos.Client
+var kairosClient Client
 var mockTransport *MockTransport
 var dsInfo *datasource.DatasourceInfo
 
@@ -62,7 +61,7 @@ func setup() {
 		Transport: mockTransport,
 	}
 
-	kairosClient = kairos.ClientImpl{
+	kairosClient = ClientImpl{
 		HttpClient: httpClient,
 	}
 
@@ -75,7 +74,7 @@ func TestQueryMetrics_urlWithTrailingSlash(t *testing.T) {
 
 	dsInfo.Url = "http://localhost/"
 
-	_, _ = kairosClient.QueryMetrics(context.TODO(), dsInfo, &kairos.MetricQueryRequest{})
+	_, _ = kairosClient.QueryMetrics(context.TODO(), dsInfo, &MetricQueryRequest{})
 
 	request := mockTransport.request
 	assert.Equal(t, http.MethodPost, request.Method)
@@ -86,7 +85,7 @@ func TestQueryMetrics_urlWithNoTrailingSlash(t *testing.T) {
 
 	dsInfo.Url = "http://localhost"
 
-	_, _ = kairosClient.QueryMetrics(context.TODO(), dsInfo, &kairos.MetricQueryRequest{})
+	_, _ = kairosClient.QueryMetrics(context.TODO(), dsInfo, &MetricQueryRequest{})
 
 	request := mockTransport.request
 	assert.Equal(t, http.MethodPost, request.Method)
@@ -100,10 +99,10 @@ func TestQueryMetrics_okResponse(t *testing.T) {
 		Body:       ioutil.NopCloser(bytes.NewBuffer(okResponsePayload)),
 	}
 
-	expectedResponse := &kairos.MetricQueryResponse{}
+	expectedResponse := &MetricQueryResponse{}
 	err := json.Unmarshal(okResponsePayload, &expectedResponse)
 
-	results, err := kairosClient.QueryMetrics(context.TODO(), dsInfo, &kairos.MetricQueryRequest{})
+	results, err := kairosClient.QueryMetrics(context.TODO(), dsInfo, &MetricQueryRequest{})
 
 	assert.Nil(t, err)
 	assert.Equal(t, expectedResponse.Queries, results)
@@ -116,21 +115,21 @@ func TestQueryMetrics_errorResponse(t *testing.T) {
 		Body:       ioutil.NopCloser(bytes.NewBuffer(errorResponsePayload)),
 	}
 
-	expectedError := &kairos.ResponseError{
+	expectedError := &ResponseError{
 		Status: 400,
 		Messages: []string{
 			"metrics[0].aggregate must be one of MIN,SUM,MAX,AVG,DEV",
 			"metrics[0].sampling.unit must be one of  SECONDS,MINUTES,HOURS,DAYS,WEEKS,YEARS",
 		},
 	}
-	results, err := kairosClient.QueryMetrics(context.TODO(), dsInfo, &kairos.MetricQueryRequest{})
+	results, err := kairosClient.QueryMetrics(context.TODO(), dsInfo, &MetricQueryRequest{})
 
 	assert.Nil(t, results)
 	assert.Equal(t, expectedError, err)
 }
 
 func TestResponseError_Error(t *testing.T) {
-	err := &kairos.ResponseError{
+	err := &ResponseError{
 		Status: 400,
 		Messages: []string{
 			"error1",
@@ -144,7 +143,7 @@ func TestResponseError_Error(t *testing.T) {
 }
 
 func TestResponseError_Error_WithNoMessages(t *testing.T) {
-	err := &kairos.ResponseError{
+	err := &ResponseError{
 		Status: 400,
 	}
 
