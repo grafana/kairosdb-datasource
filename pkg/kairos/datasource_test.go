@@ -6,14 +6,15 @@ import (
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/stretchr/testify/assert"
 	"github.com/zsabin/kairosdb-datasource/pkg/panel"
+	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"testing"
 )
 
 type MockKairosDBClient struct {
-	response []*MetricQueryResults
+	response []*remote.MetricQueryResults
 }
 
-func (m MockKairosDBClient) QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *MetricQueryRequest) ([]*MetricQueryResults, error) {
+func (m MockKairosDBClient) QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *remote.MetricQueryRequest) ([]*remote.MetricQueryResults, error) {
 	return m.response, nil
 }
 
@@ -29,7 +30,7 @@ func TestDatasource_CreateMetricQuery_MinimalQuery(t *testing.T) {
 		ModelJson: toModelJson(panelQuery),
 	}
 
-	expectedQuery := &MetricQuery{
+	expectedQuery := &remote.MetricQuery{
 		Name: "MetricA",
 	}
 
@@ -55,7 +56,7 @@ func TestDatasource_CreateMetricQuery_WithTags(t *testing.T) {
 		ModelJson: toModelJson(panelQuery),
 	}
 
-	expectedQuery := &MetricQuery{
+	expectedQuery := &remote.MetricQuery{
 		Name: "MetricA",
 		Tags: map[string][]string{
 			"foo": {"bar", "baz"},
@@ -127,7 +128,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 		ModelJson: toModelJson(panelQuery),
 	}
 
-	expectedQuery := &MetricQuery{
+	expectedQuery := &remote.MetricQuery{
 		Name: "MetricA",
 		Aggregators: []map[string]interface{}{
 			{
@@ -135,7 +136,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 				"align_sampling":   false,
 				"align_start_time": false,
 				"align_end_time":   false,
-				"sampling": &Sampling{
+				"sampling": &remote.Sampling{
 					Value: 1,
 					Unit:  "minutes",
 				},
@@ -145,7 +146,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 				"align_sampling":   true,
 				"align_start_time": false,
 				"align_end_time":   false,
-				"sampling": &Sampling{
+				"sampling": &remote.Sampling{
 					Value: 1,
 					Unit:  "minutes",
 				},
@@ -178,9 +179,9 @@ func TestDatasource_CreateMetricQuery_WithGroupBy(t *testing.T) {
 		ModelJson: toModelJson(panelQuery),
 	}
 
-	expectedQuery := &MetricQuery{
+	expectedQuery := &remote.MetricQuery{
 		Name: "MetricA",
-		GroupBy: []*Grouper{
+		GroupBy: []*remote.Grouper{
 			{
 				Name: "tag",
 				Tags: []string{"host", "pool"},
@@ -197,11 +198,11 @@ func TestDatasource_CreateMetricQuery_WithGroupBy(t *testing.T) {
 func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
 	ds := &Datasource{}
 
-	kairosResults := &MetricQueryResults{
-		Results: []*MetricQueryResult{
+	kairosResults := &remote.MetricQueryResults{
+		Results: []*remote.MetricQueryResult{
 			{
 				Name: "MetricA",
-				Values: []*DataPoint{
+				Values: []*remote.DataPoint{
 					{
 						1564682818000, 10.5,
 					},
@@ -239,11 +240,11 @@ func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
 func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 	ds := &Datasource{}
 
-	kairosResults := &MetricQueryResults{
-		Results: []*MetricQueryResult{
+	kairosResults := &remote.MetricQueryResults{
+		Results: []*remote.MetricQueryResult{
 			{
 				Name: "MetricA",
-				GroupInfo: []*GroupInfo{
+				GroupInfo: []*remote.GroupInfo{
 					{
 						Name: "tag",
 						Tags: []string{"host", "pool"},
@@ -253,7 +254,7 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 						},
 					},
 				},
-				Values: []*DataPoint{
+				Values: []*remote.DataPoint{
 					{
 						1564682818000, 10.5,
 					},
@@ -261,7 +262,7 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 			},
 			{
 				Name: "MetricA",
-				GroupInfo: []*GroupInfo{
+				GroupInfo: []*remote.GroupInfo{
 					{
 						Name: "tag",
 						Tags: []string{"host", "pool"},
@@ -271,7 +272,7 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 						},
 					},
 				},
-				Values: []*DataPoint{
+				Values: []*remote.DataPoint{
 					{
 						1564682818000, 10.5,
 					},
@@ -322,12 +323,12 @@ func TestDatasource_Query(t *testing.T) {
 		KairosDBClient: mockClient,
 	}
 
-	mockClient.response = []*MetricQueryResults{
+	mockClient.response = []*remote.MetricQueryResults{
 		{
-			Results: []*MetricQueryResult{
+			Results: []*remote.MetricQueryResult{
 				{
 					Name: "MetricA",
-					Values: []*DataPoint{
+					Values: []*remote.DataPoint{
 						{
 							1564682818000, 5,
 						},
@@ -336,10 +337,10 @@ func TestDatasource_Query(t *testing.T) {
 			},
 		},
 		{
-			Results: []*MetricQueryResult{
+			Results: []*remote.MetricQueryResult{
 				{
 					Name: "MetricB",
-					Values: []*DataPoint{
+					Values: []*remote.DataPoint{
 						{
 							1564682818000, 10.5,
 						},

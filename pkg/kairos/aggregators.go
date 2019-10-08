@@ -3,6 +3,7 @@ package kairos
 import (
 	"fmt"
 	"github.com/zsabin/kairosdb-datasource/pkg/panel"
+	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"regexp"
 	"strconv"
 )
@@ -10,7 +11,7 @@ import (
 func ParseAggregator(aggregator *panel.Aggregator) (map[string]interface{}, error) {
 	result := map[string]interface{}{}
 	result["name"] = aggregator.Name
-	sampling := &Sampling{}
+	sampling := &remote.Sampling{}
 
 	for _, param := range aggregator.Parameters {
 		switch param.Type {

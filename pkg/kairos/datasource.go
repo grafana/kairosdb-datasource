@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"github.com/zsabin/kairosdb-datasource/pkg/panel"
+	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -13,40 +14,38 @@ import (
 
 type Datasource struct {
 	plugin.NetRPCUnsupportedPlugin
-	KairosDBClient Client
+	KairosDBClient remote.KairosDBClient
 	Logger         hclog.Logger
 }
 
 func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
-	var refIds []string
-	for _, query := range dsRequest.Queries {
-		refIds = append(refIds, query.RefId)
-	}
+	refIds := make([]string, 0)
+	var remoteQueries []*remote.MetricQuery
 
-	var kairosQueries []*MetricQuery
 	for _, dsQuery := range dsRequest.Queries {
+		refIds = append(refIds, dsQuery.RefId)
 		query, err := ds.CreateMetricQuery(dsQuery)
 		if err != nil {
 			return nil, err
 		}
-		kairosQueries = append(kairosQueries, query)
+		remoteQueries = append(remoteQueries, query)
 	}
 
-	kairosRequest := &MetricQueryRequest{
+	remoteRequest := &remote.MetricQueryRequest{
 		StartAbsolute: dsRequest.TimeRange.FromEpochMs,
 		EndAbsolute:   dsRequest.TimeRange.ToEpochMs,
-		Metrics:       kairosQueries,
+		Metrics:       remoteQueries,
 	}
 
-	results, err := ds.KairosDBClient.QueryMetrics(ctx, dsRequest.Datasource, kairosRequest)
+	results, err := ds.KairosDBClient.QueryMetrics(ctx, dsRequest.Datasource, remoteRequest)
 	if err != nil {
 		return nil, err
 	}
 
 	dsResults := make([]*datasource.QueryResult, 0)
 
-	for i, query := range results {
-		qr := ds.ParseQueryResult(query)
+	for i, result := range results {
+		qr := ds.ParseQueryResult(result)
 		qr.RefId = refIds[i]
 		dsResults = append(dsResults, qr)
 	}
@@ -56,33 +55,33 @@ func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.Datasourc
 	}, nil
 }
 
-func (ds *Datasource) CreateMetricQuery(dsQuery *datasource.Query) (*MetricQuery, error) {
-	panelRequest := &panel.MetricRequest{}
-	err := json.Unmarshal([]byte(dsQuery.ModelJson), panelRequest)
+func (ds *Datasource) CreateMetricQuery(dsQuery *datasource.Query) (*remote.MetricQuery, error) {
+	metricRequest := &panel.MetricRequest{}
+	err := json.Unmarshal([]byte(dsQuery.ModelJson), metricRequest)
 	if err != nil {
 		ds.Logger.Debug("Failed to unmarshal JSON", "value", dsQuery.ModelJson)
 		return nil, status.Errorf(codes.InvalidArgument, "failed to unmarshal request model: %v", err)
 	}
 
-	panelQuery := panelRequest.Query
+	metricQuery := metricRequest.Query
 
-	metricQuery := &MetricQuery{
-		Name: panelQuery.Name,
+	remoteQuery := &remote.MetricQuery{
+		Name: metricQuery.Name,
 	}
 
 	tags := map[string][]string{}
-	for name, values := range panelQuery.Tags {
+	for name, values := range metricQuery.Tags {
 		if len(values) > 0 {
 			tags[name] = values
 		}
 	}
 
 	if len(tags) > 0 {
-		metricQuery.Tags = tags
+		remoteQuery.Tags = tags
 	}
 
 	var aggregators []map[string]interface{}
-	for _, aggregator := range panelQuery.Aggregators {
+	for _, aggregator := range metricQuery.Aggregators {
 		result, err := ParseAggregator(aggregator)
 		if err != nil {
 			return nil, err
@@ -92,14 +91,14 @@ func (ds *Datasource) CreateMetricQuery(dsQuery *datasource.Query) (*MetricQuery
 	}
 
 	if len(aggregators) > 0 {
-		metricQuery.Aggregators = aggregators
+		remoteQuery.Aggregators = aggregators
 	}
 
-	groupby := panelQuery.GroupBy
-	if groupby != nil {
-		tagGroups := groupby.Tags
+	groupBy := metricQuery.GroupBy
+	if groupBy != nil {
+		tagGroups := groupBy.Tags
 		if len(tagGroups) > 0 {
-			metricQuery.GroupBy = []*Grouper{
+			remoteQuery.GroupBy = []*remote.Grouper{
 				{
 					Name: "tag",
 					Tags: tagGroups,
@@ -107,14 +106,14 @@ func (ds *Datasource) CreateMetricQuery(dsQuery *datasource.Query) (*MetricQuery
 			}
 		}
 	}
-	return metricQuery, nil
+	return remoteQuery, nil
 }
 
-func (ds *Datasource) ParseQueryResult(query *MetricQueryResults) *datasource.QueryResult {
+func (ds *Datasource) ParseQueryResult(results *remote.MetricQueryResults) *datasource.QueryResult {
 
 	seriesSet := make([]*datasource.TimeSeries, 0)
 
-	for _, result := range query.Results {
+	for _, result := range results.Results {
 		series := &datasource.TimeSeries{
 			Name: result.Name,
 			Tags: result.GetTaggedGroup(),

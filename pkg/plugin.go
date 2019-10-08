@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"github.com/zsabin/kairosdb-datasource/pkg/kairos"
+	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"net/http"
 	"os"
 	"time"
@@ -20,7 +21,7 @@ func main() {
 	logger.Info("Running KairosDB backend datasource")
 
 	// TODO support configuration of http client
-	kairosClient := kairos.ClientImpl{
+	kairosClient := remote.KairosDBClientImpl{
 		HttpClient: http.Client{
 			Timeout: time.Duration(time.Second * 30),
 		},

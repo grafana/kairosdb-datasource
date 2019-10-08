@@ -1,4 +1,4 @@
-package kairos
+package remote
 
 type MetricQueryRequest struct {
 	StartAbsolute int64          `json:"start_absolute"`

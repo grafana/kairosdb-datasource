@@ -1,4 +1,4 @@
-package kairos
+package remote
 
 import (
 	"encoding/json"
