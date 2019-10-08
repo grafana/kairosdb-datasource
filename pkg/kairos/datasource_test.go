@@ -81,12 +81,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 					{
 						Name:  "value",
 						Type:  "sampling",
-						Value: "1",
-					},
-					{
-						Name:  "unit",
-						Type:  "sampling_unit",
-						Value: "MINUTES",
+						Value: "1m",
 					},
 					{
 						Name:  "sampling",
@@ -101,12 +96,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 					{
 						Name:  "value",
 						Type:  "sampling",
-						Value: "1",
-					},
-					{
-						Name:  "unit",
-						Type:  "sampling_unit",
-						Value: "MINUTES",
+						Value: "1m",
 					},
 					{
 						Name:  "sampling",
@@ -148,7 +138,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 				"align_end_time":   false,
 				"sampling": &kairos.Sampling{
 					Value: 1,
-					Unit:  "MINUTES",
+					Unit:  "minutes",
 				},
 			},
 			{
@@ -158,7 +148,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 				"align_end_time":   false,
 				"sampling": &kairos.Sampling{
 					Value: 1,
-					Unit:  "MINUTES",
+					Unit:  "minutes",
 				},
 				"percentile": 0.95,
 			},
