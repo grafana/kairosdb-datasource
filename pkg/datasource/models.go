@@ -1,4 +1,4 @@
-package panel
+package datasource
 
 type MetricRequest struct {
 	Query *MetricQuery `json:"query"`

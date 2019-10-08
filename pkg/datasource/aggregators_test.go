@@ -1,4 +1,4 @@
-package kairos
+package datasource
 
 import (
 	"github.com/stretchr/testify/assert"

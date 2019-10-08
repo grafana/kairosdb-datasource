@@ -1,4 +1,4 @@
-package panel
+package datasource
 
 import (
 	"encoding/json"

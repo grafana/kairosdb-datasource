@@ -1,11 +1,10 @@
-package kairos
+package datasource
 
 import (
 	"encoding/json"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	"github.com/zsabin/kairosdb-datasource/pkg/panel"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
@@ -56,7 +55,7 @@ func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.Datasourc
 }
 
 func (ds *Datasource) CreateMetricQuery(dsQuery *datasource.Query) (*remote.MetricQuery, error) {
-	metricRequest := &panel.MetricRequest{}
+	metricRequest := &MetricRequest{}
 	err := json.Unmarshal([]byte(dsQuery.ModelJson), metricRequest)
 	if err != nil {
 		ds.Logger.Debug("Failed to unmarshal JSON", "value", dsQuery.ModelJson)

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/grafana/grafana_plugin_model/go/datasource"
+	grafana "github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	"github.com/zsabin/kairosdb-datasource/pkg/kairos"
+	"github.com/zsabin/kairosdb-datasource/pkg/datasource"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"net/http"
 	"os"
@@ -36,7 +36,7 @@ func main() {
 			MagicCookieValue: "datasource",
 		},
 		Plugins: map[string]plugin.Plugin{
-			"grafana-kairosdb-datasource": &datasource.DatasourcePluginImpl{Plugin: &kairos.Datasource{
+			"grafana-kairosdb-datasource": &grafana.DatasourcePluginImpl{Plugin: &datasource.Datasource{
 				KairosDBClient: kairosClient,
 				Logger:         logger,
 			}},

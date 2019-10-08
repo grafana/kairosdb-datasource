@@ -1,14 +1,13 @@
-package kairos
+package datasource
 
 import (
 	"fmt"
-	"github.com/zsabin/kairosdb-datasource/pkg/panel"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"regexp"
 	"strconv"
 )
 
-func ParseAggregator(aggregator *panel.Aggregator) (map[string]interface{}, error) {
+func ParseAggregator(aggregator *Aggregator) (map[string]interface{}, error) {
 	result := map[string]interface{}{}
 	result["name"] = aggregator.Name
 	sampling := &remote.Sampling{}

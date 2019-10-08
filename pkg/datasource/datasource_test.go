@@ -1,11 +1,10 @@
-package kairos
+package datasource
 
 import (
 	"context"
 	"encoding/json"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/stretchr/testify/assert"
-	"github.com/zsabin/kairosdb-datasource/pkg/panel"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"testing"
 )
@@ -21,13 +20,13 @@ func (m MockKairosDBClient) QueryMetrics(ctx context.Context, dsInfo *datasource
 func TestDatasource_CreateMetricQuery_MinimalQuery(t *testing.T) {
 	ds := &Datasource{}
 
-	panelQuery := &panel.MetricQuery{
+	metricQuery := &MetricQuery{
 		Name: "MetricA",
 	}
 
 	dsQuery := &datasource.Query{
 		RefId:     "A",
-		ModelJson: toModelJson(panelQuery),
+		ModelJson: toModelJson(metricQuery),
 	}
 
 	expectedQuery := &remote.MetricQuery{
@@ -43,7 +42,7 @@ func TestDatasource_CreateMetricQuery_MinimalQuery(t *testing.T) {
 func TestDatasource_CreateMetricQuery_WithTags(t *testing.T) {
 	ds := &Datasource{}
 
-	panelQuery := &panel.MetricQuery{
+	metricQuery := &MetricQuery{
 		Name: "MetricA",
 		Tags: map[string][]string{
 			"foo":  {"bar", "baz"},
@@ -53,7 +52,7 @@ func TestDatasource_CreateMetricQuery_WithTags(t *testing.T) {
 
 	dsQuery := &datasource.Query{
 		RefId:     "A",
-		ModelJson: toModelJson(panelQuery),
+		ModelJson: toModelJson(metricQuery),
 	}
 
 	expectedQuery := &remote.MetricQuery{
@@ -72,12 +71,12 @@ func TestDatasource_CreateMetricQuery_WithTags(t *testing.T) {
 func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 	ds := &Datasource{}
 
-	panelQuery := &panel.MetricQuery{
+	metricQuery := &MetricQuery{
 		Name: "MetricA",
-		Aggregators: []*panel.Aggregator{
+		Aggregators: []*Aggregator{
 			{
 				Name: "sum",
-				Parameters: []*panel.AggregatorParameter{
+				Parameters: []*AggregatorParameter{
 					{
 						Name:  "value",
 						Type:  "sampling",
@@ -92,7 +91,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 			},
 			{
 				Name: "percentile",
-				Parameters: []*panel.AggregatorParameter{
+				Parameters: []*AggregatorParameter{
 					{
 						Name:  "value",
 						Type:  "sampling",
@@ -112,7 +111,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 			},
 			{
 				Name: "scale",
-				Parameters: []*panel.AggregatorParameter{
+				Parameters: []*AggregatorParameter{
 					{
 						Name:  "factor",
 						Type:  "any",
@@ -125,7 +124,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 
 	dsQuery := &datasource.Query{
 		RefId:     "A",
-		ModelJson: toModelJson(panelQuery),
+		ModelJson: toModelJson(metricQuery),
 	}
 
 	expectedQuery := &remote.MetricQuery{
@@ -168,15 +167,15 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 func TestDatasource_CreateMetricQuery_WithGroupBy(t *testing.T) {
 	ds := &Datasource{}
 
-	panelQuery := &panel.MetricQuery{
+	metricQuery := &MetricQuery{
 		Name: "MetricA",
-		GroupBy: &panel.GroupBy{
+		GroupBy: &GroupBy{
 			Tags: []string{"host", "pool"},
 		},
 	}
 
 	dsQuery := &datasource.Query{
-		ModelJson: toModelJson(panelQuery),
+		ModelJson: toModelJson(metricQuery),
 	}
 
 	expectedQuery := &remote.MetricQuery{
@@ -358,13 +357,13 @@ func TestDatasource_Query(t *testing.T) {
 		Queries: []*datasource.Query{
 			{
 				RefId: "A",
-				ModelJson: toModelJson(&panel.MetricQuery{
+				ModelJson: toModelJson(&MetricQuery{
 					Name: "MetricA",
 				}),
 			},
 			{
 				RefId: "B",
-				ModelJson: toModelJson(&panel.MetricQuery{
+				ModelJson: toModelJson(&MetricQuery{
 					Name: "MetricB",
 				}),
 			},
@@ -412,8 +411,8 @@ func TestDatasource_Query(t *testing.T) {
 	assert.Equal(t, expectedResponse, actualResponse)
 }
 
-func toModelJson(query *panel.MetricQuery) string {
-	req := panel.MetricRequest{
+func toModelJson(query *MetricQuery) string {
+	req := MetricRequest{
 		Query: query,
 	}
 	rBytes, err := json.Marshal(req)
