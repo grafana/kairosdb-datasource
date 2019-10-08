@@ -1,9 +1,12 @@
 import {Aggregator} from "./aggregator";
-import {AnyAggregatorParameter} from "./parameters/any_aggregator_parameter";
+import {EnumAggregatorParameter} from "./parameters/enum_aggregator_parameter";
+import {TimeUnit} from "./utils";
 
 export class SamplerAggregator extends Aggregator {
     constructor() {
         super("sampler");
-        this.parameters = this.parameters.concat([new AnyAggregatorParameter("samplingUnit", "every")]);
+        this.parameters = this.parameters.concat([
+            new EnumAggregatorParameter("unit", TimeUnit, "every")
+        ]);
     }
 }
