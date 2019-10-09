@@ -13,8 +13,9 @@ import (
 
 type Datasource struct {
 	plugin.NetRPCUnsupportedPlugin
-	KairosDBClient remote.KairosDBClient
-	Logger         hclog.Logger
+	KairosDBClient      remote.KairosDBClient
+	AggregatorConverter AggregatorConverter
+	Logger              hclog.Logger
 }
 
 func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
@@ -81,7 +82,7 @@ func (ds *Datasource) CreateMetricQuery(dsQuery *datasource.Query) (*remote.Metr
 
 	var aggregators []map[string]interface{}
 	for _, aggregator := range metricQuery.Aggregators {
-		result, err := ParseAggregator(aggregator)
+		result, err := ds.AggregatorConverter.Convert(aggregator)
 		if err != nil {
 			return nil, err
 		}

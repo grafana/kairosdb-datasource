@@ -37,8 +37,9 @@ func main() {
 		},
 		Plugins: map[string]plugin.Plugin{
 			"grafana-kairosdb-datasource": &grafana.DatasourcePluginImpl{Plugin: &datasource.Datasource{
-				KairosDBClient: kairosClient,
-				Logger:         logger,
+				KairosDBClient:      kairosClient,
+				AggregatorConverter: datasource.AggregatorConverterImpl{},
+				Logger:              logger,
 			}},
 		},
 

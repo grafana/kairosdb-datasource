@@ -17,6 +17,14 @@ func (m MockKairosDBClient) QueryMetrics(ctx context.Context, dsInfo *datasource
 	return m.response, nil
 }
 
+type MockAggregatorConverter struct {
+	result map[string]interface{}
+}
+
+func (m MockAggregatorConverter) Convert(aggregator *Aggregator) (map[string]interface{}, error) {
+	return m.result, nil
+}
+
 func TestDatasource_CreateMetricQuery_MinimalQuery(t *testing.T) {
 	ds := &Datasource{}
 
@@ -69,53 +77,27 @@ func TestDatasource_CreateMetricQuery_WithTags(t *testing.T) {
 }
 
 func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
-	ds := &Datasource{}
+	aggregator := map[string]interface{}{
+		"name":  "foo",
+		"value": "bar",
+	}
+
+	ds := &Datasource{
+		AggregatorConverter: MockAggregatorConverter{
+			result: aggregator,
+		},
+	}
 
 	metricQuery := &MetricQuery{
 		Name: "MetricA",
 		Aggregators: []*Aggregator{
 			{
-				Name: "sum",
+				Name: "foo",
 				Parameters: []*AggregatorParameter{
 					{
 						Name:  "value",
-						Type:  "sampling",
-						Value: "1m",
-					},
-					{
-						Name:  "sampling",
-						Type:  "alignment",
-						Value: "NONE",
-					},
-				},
-			},
-			{
-				Name: "percentile",
-				Parameters: []*AggregatorParameter{
-					{
-						Name:  "value",
-						Type:  "sampling",
-						Value: "1m",
-					},
-					{
-						Name:  "sampling",
-						Type:  "alignment",
-						Value: "SAMPLING",
-					},
-					{
-						Name:  "percentile",
 						Type:  "any",
-						Value: "0.95",
-					},
-				},
-			},
-			{
-				Name: "scale",
-				Parameters: []*AggregatorParameter{
-					{
-						Name:  "factor",
-						Type:  "any",
-						Value: "2",
+						Value: "bar",
 					},
 				},
 			},
@@ -130,31 +112,7 @@ func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
 	expectedQuery := &remote.MetricQuery{
 		Name: "MetricA",
 		Aggregators: []map[string]interface{}{
-			{
-				"name":             "sum",
-				"align_sampling":   false,
-				"align_start_time": false,
-				"align_end_time":   false,
-				"sampling": &remote.Sampling{
-					Value: 1,
-					Unit:  "minutes",
-				},
-			},
-			{
-				"name":             "percentile",
-				"align_sampling":   true,
-				"align_start_time": false,
-				"align_end_time":   false,
-				"sampling": &remote.Sampling{
-					Value: 1,
-					Unit:  "minutes",
-				},
-				"percentile": 0.95,
-			},
-			{
-				"name":   "scale",
-				"factor": 2.0,
-			},
+			aggregator,
 		},
 	}
 

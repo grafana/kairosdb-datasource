@@ -2,43 +2,97 @@ package datasource
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"regexp"
 	"strconv"
 )
 
-func ParseAggregator(aggregator *Aggregator) (map[string]interface{}, error) {
+type ParseError struct {
+	message string
+}
+
+func (e *ParseError) Error() string {
+	return e.message
+}
+
+type AggregatorConverter interface {
+	Convert(aggregator *Aggregator) (map[string]interface{}, error)
+}
+
+type AggregatorConverterImpl struct{}
+
+func (c AggregatorConverterImpl) Convert(aggregator *Aggregator) (map[string]interface{}, error) {
 	result := map[string]interface{}{}
 	result["name"] = aggregator.Name
-	sampling := &remote.Sampling{}
 
 	for _, param := range aggregator.Parameters {
+		var converter ParameterConverter
 		switch param.Type {
 		case "alignment":
-			result["align_sampling"] = param.Value == "SAMPLING"
-			result["align_start_time"] = param.Value == "START_TIME"
-			result["align_end_time"] = false
+			converter = AlignmentParameterConverter{}
 		case "sampling":
-			duration, err := parseDuration(param.Value)
-			if err != nil {
-				return nil, err
-			}
-			sampling.Value = duration.Value
-			sampling.Unit = duration.Unit
+			converter = SamplingParameterConverter{}
+		case "enum":
+			converter = StringParameterConverter{}
+		case "any":
+			converter = AnyParameterConverter{}
 		default:
-			var value interface{}
-			value, err := strconv.ParseFloat(param.Value, 64)
-			if err != nil {
-				value = param.Value
+			return nil, &ParseError{
+				message: fmt.Sprintf("failed to parse aggregator: %s - unknown parameter type: %s", aggregator.Name, param.Type),
 			}
-			result[param.Name] = value
 		}
-	}
-	if sampling.Value != 0 && sampling.Unit != "" {
-		result["sampling"] = sampling
+		object, err := converter.Convert(param)
+		if err != nil {
+			//todo should return a ParseError
+			return nil, errors.Wrapf(err, "failed to parse aggregator: %s", aggregator.Name)
+		}
+
+		result = mergeMaps(result, object)
 	}
 
 	return result, nil
+}
+
+func mergeMaps(a map[string]interface{}, b map[string]interface{}) map[string]interface{} {
+	for k, v := range b {
+		a[k] = v
+	}
+	return a
+}
+
+type ParameterConverter interface {
+	Convert(param *AggregatorParameter) (map[string]interface{}, error)
+}
+
+type StringParameterConverter struct{}
+
+func (c StringParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
+	return map[string]interface{}{
+		param.Name: param.Value,
+	}, nil
+}
+
+type AnyParameterConverter struct{}
+
+func (c AnyParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
+	var value interface{}
+	value, err := strconv.ParseFloat(param.Value, 64)
+	if err != nil {
+		value = param.Value
+	}
+	return map[string]interface{}{
+		param.Name: value,
+	}, nil
+}
+
+type AlignmentParameterConverter struct{}
+
+func (c AlignmentParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
+	return map[string]interface{}{
+		"align_sampling":   param.Value == "SAMPLING",
+		"align_start_time": param.Value == "START_TIME",
+	}, nil
 }
 
 const (
@@ -63,26 +117,15 @@ var unitNameMappings = map[string]string{
 	"y":  YEARS,
 }
 
-type ParseError struct {
-	message string
-}
+type SamplingParameterConverter struct{}
 
-func (e *ParseError) Error() string {
-	return e.message
-}
-
-type Duration struct {
-	Value int64
-	Unit  string
-}
-
-func parseDuration(str string) (*Duration, error) {
+func (c SamplingParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
 	regex := regexp.MustCompile(`([0-9]+)([a-zA-Z]+)`)
-	matches := regex.FindStringSubmatch(str)
+	matches := regex.FindStringSubmatch(param.Value)
 
-	if len(matches) == 0 || matches[0] != str {
+	if len(matches) == 0 || matches[0] != param.Value {
 		return nil, &ParseError{
-			message: fmt.Sprintf("failed to parse duration - invalid format: '%s'", str),
+			message: fmt.Sprintf("failed to parse sampling - invalid format: '%s'", param.Value),
 		}
 	}
 
@@ -90,12 +133,14 @@ func parseDuration(str string) (*Duration, error) {
 	unit, ok := unitNameMappings[matches[2]]
 	if !ok {
 		return nil, &ParseError{
-			message: fmt.Sprintf("failed to parse duration - invalid unit: '%s'", matches[2]),
+			message: fmt.Sprintf("failed to parse sampling - invalid unit: '%s'", matches[2]),
 		}
 	}
 
-	return &Duration{
-		Value: value,
-		Unit:  unit,
+	return map[string]interface{}{
+		"sampling": &remote.Sampling{
+			Value: value,
+			Unit:  unit,
+		},
 	}, nil
 }
