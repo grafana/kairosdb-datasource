@@ -17,139 +17,20 @@ func (m MockKairosDBClient) QueryMetrics(ctx context.Context, dsInfo *datasource
 	return m.response, nil
 }
 
+type MockMetricQueryConverter struct {
+	result *remote.MetricQuery
+}
+
+func (m MockMetricQueryConverter) Convert(query *MetricQuery) (*remote.MetricQuery, error) {
+	return m.result, nil
+}
+
 type MockAggregatorConverter struct {
 	result map[string]interface{}
 }
 
-func (m MockAggregatorConverter) Convert(aggregator *Aggregator) (map[string]interface{}, error) {
+func (m MockAggregatorConverter) Convert(query *Aggregator) (map[string]interface{}, error) {
 	return m.result, nil
-}
-
-func TestDatasource_CreateMetricQuery_MinimalQuery(t *testing.T) {
-	ds := &Datasource{}
-
-	metricQuery := &MetricQuery{
-		Name: "MetricA",
-	}
-
-	dsQuery := &datasource.Query{
-		RefId:     "A",
-		ModelJson: toModelJson(metricQuery),
-	}
-
-	expectedQuery := &remote.MetricQuery{
-		Name: "MetricA",
-	}
-
-	actualQuery, err := ds.CreateMetricQuery(dsQuery)
-
-	assert.Nil(t, err)
-	assert.Equal(t, expectedQuery, actualQuery)
-}
-
-func TestDatasource_CreateMetricQuery_WithTags(t *testing.T) {
-	ds := &Datasource{}
-
-	metricQuery := &MetricQuery{
-		Name: "MetricA",
-		Tags: map[string][]string{
-			"foo":  {"bar", "baz"},
-			"foo1": {},
-		},
-	}
-
-	dsQuery := &datasource.Query{
-		RefId:     "A",
-		ModelJson: toModelJson(metricQuery),
-	}
-
-	expectedQuery := &remote.MetricQuery{
-		Name: "MetricA",
-		Tags: map[string][]string{
-			"foo": {"bar", "baz"},
-		},
-	}
-
-	actualQuery, err := ds.CreateMetricQuery(dsQuery)
-
-	assert.Nil(t, err)
-	assert.Equal(t, expectedQuery, actualQuery)
-}
-
-func TestDatasource_CreateMetricQuery_WithAggregators(t *testing.T) {
-	aggregator := map[string]interface{}{
-		"name":  "foo",
-		"value": "bar",
-	}
-
-	ds := &Datasource{
-		AggregatorConverter: MockAggregatorConverter{
-			result: aggregator,
-		},
-	}
-
-	metricQuery := &MetricQuery{
-		Name: "MetricA",
-		Aggregators: []*Aggregator{
-			{
-				Name: "foo",
-				Parameters: []*AggregatorParameter{
-					{
-						Name:  "value",
-						Type:  "any",
-						Value: "bar",
-					},
-				},
-			},
-		},
-	}
-
-	dsQuery := &datasource.Query{
-		RefId:     "A",
-		ModelJson: toModelJson(metricQuery),
-	}
-
-	expectedQuery := &remote.MetricQuery{
-		Name: "MetricA",
-		Aggregators: []map[string]interface{}{
-			aggregator,
-		},
-	}
-
-	actualQuery, err := ds.CreateMetricQuery(dsQuery)
-
-	assert.Nil(t, err)
-	assert.Equal(t, expectedQuery, actualQuery)
-}
-
-func TestDatasource_CreateMetricQuery_WithGroupBy(t *testing.T) {
-	ds := &Datasource{}
-
-	metricQuery := &MetricQuery{
-		Name: "MetricA",
-		GroupBy: &GroupBy{
-			Tags: []string{"host", "pool"},
-		},
-	}
-
-	dsQuery := &datasource.Query{
-		ModelJson: toModelJson(metricQuery),
-	}
-
-	expectedQuery := &remote.MetricQuery{
-		Name: "MetricA",
-		GroupBy: []*remote.Grouper{
-			{
-				Name: "tag",
-				Tags: []string{"host", "pool"},
-			},
-		},
-	}
-
-	actualQuery, err := ds.CreateMetricQuery(dsQuery)
-
-	assert.Nil(t, err)
-	assert.Equal(t, expectedQuery, actualQuery)
 }
 
 func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
@@ -275,10 +156,14 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 
 func TestDatasource_Query(t *testing.T) {
 	mockClient := &MockKairosDBClient{}
+	mockConverter := &MockMetricQueryConverter{}
 
 	ds := &Datasource{
-		KairosDBClient: mockClient,
+		KairosDBClient:       mockClient,
+		MetricQueryConverter: mockConverter,
 	}
+
+	mockConverter.result = &remote.MetricQuery{}
 
 	mockClient.response = []*remote.MetricQueryResults{
 		{
@@ -378,4 +263,107 @@ func toModelJson(query *MetricQuery) string {
 		panic("Failed to marshall metric request")
 	}
 	return string(rBytes)
+}
+
+func TestMetricQueryConverterImpl_Convert_minimalQuery(t *testing.T) {
+	converter := MetricQueryConverterImpl{}
+
+	result, err := converter.Convert(&MetricQuery{
+		Name: "MetricA",
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, &remote.MetricQuery{
+		Name: "MetricA",
+	}, result)
+}
+
+func TestMetricQueryConverterImpl_Convert_withTags(t *testing.T) {
+	converter := MetricQueryConverterImpl{}
+
+	result, err := converter.Convert(&MetricQuery{
+		Name: "MetricA",
+		Tags: map[string][]string{
+			"foo":  {"bar", "baz"},
+			"foo1": {},
+		},
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, &remote.MetricQuery{
+		Name: "MetricA",
+		Tags: map[string][]string{
+			"foo": {"bar", "baz"},
+		},
+	}, result)
+}
+
+func TestMetricQueryConverterImpl_Convert_WithAggregators(t *testing.T) {
+	aggregator := map[string]interface{}{
+		"name":  "foo",
+		"value": "baz",
+	}
+
+	converter := MetricQueryConverterImpl{
+		AggregatorConverter: MockAggregatorConverter{
+			result: aggregator,
+		},
+	}
+
+	result, err := converter.Convert(&MetricQuery{
+		Name: "MetricA",
+		Aggregators: []*Aggregator{
+			{
+				Name: "foo",
+				Parameters: []*AggregatorParameter{
+					{
+						Name:  "value",
+						Type:  "any",
+						Value: "bar",
+					},
+				},
+			},
+			{
+				Name: "bar",
+				Parameters: []*AggregatorParameter{
+					{
+						Name:  "value",
+						Type:  "any",
+						Value: "bar",
+					},
+				},
+			},
+		},
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, &remote.MetricQuery{
+		Name: "MetricA",
+		Aggregators: []map[string]interface{}{
+			aggregator,
+			aggregator,
+		},
+	}, result)
+}
+
+func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
+	converter := MetricQueryConverterImpl{}
+
+	result, err := converter.Convert(&MetricQuery{
+		Name: "MetricA",
+		GroupBy: &GroupBy{
+			Tags: []string{"host", "pool"},
+		},
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, &remote.MetricQuery{
+		Name: "MetricA",
+		GroupBy: []*remote.Grouper{
+			{
+				Name: "tag",
+				Tags: []string{"host", "pool"},
+			},
+		},
+	}, result)
 }

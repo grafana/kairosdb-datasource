@@ -13,9 +13,9 @@ import (
 
 type Datasource struct {
 	plugin.NetRPCUnsupportedPlugin
-	KairosDBClient      remote.KairosDBClient
-	AggregatorConverter AggregatorConverter
-	Logger              hclog.Logger
+	KairosDBClient       remote.KairosDBClient
+	MetricQueryConverter MetricQueryConverter
+	Logger               hclog.Logger
 }
 
 func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
@@ -24,11 +24,11 @@ func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.Datasourc
 
 	for _, dsQuery := range dsRequest.Queries {
 		refIds = append(refIds, dsQuery.RefId)
-		query, err := ds.CreateMetricQuery(dsQuery)
+		remoteQuery, err := ds.createRemoteMetricQuery(dsQuery)
 		if err != nil {
 			return nil, err
 		}
-		remoteQueries = append(remoteQueries, query)
+		remoteQueries = append(remoteQueries, remoteQuery)
 	}
 
 	remoteRequest := &remote.MetricQueryRequest{
@@ -55,7 +55,7 @@ func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.Datasourc
 	}, nil
 }
 
-func (ds *Datasource) CreateMetricQuery(dsQuery *datasource.Query) (*remote.MetricQuery, error) {
+func (ds *Datasource) createRemoteMetricQuery(dsQuery *datasource.Query) (*remote.MetricQuery, error) {
 	metricRequest := &MetricRequest{}
 	err := json.Unmarshal([]byte(dsQuery.ModelJson), metricRequest)
 	if err != nil {
@@ -63,50 +63,7 @@ func (ds *Datasource) CreateMetricQuery(dsQuery *datasource.Query) (*remote.Metr
 		return nil, status.Errorf(codes.InvalidArgument, "failed to unmarshal request model: %v", err)
 	}
 
-	metricQuery := metricRequest.Query
-
-	remoteQuery := &remote.MetricQuery{
-		Name: metricQuery.Name,
-	}
-
-	tags := map[string][]string{}
-	for name, values := range metricQuery.Tags {
-		if len(values) > 0 {
-			tags[name] = values
-		}
-	}
-
-	if len(tags) > 0 {
-		remoteQuery.Tags = tags
-	}
-
-	var aggregators []map[string]interface{}
-	for _, aggregator := range metricQuery.Aggregators {
-		result, err := ds.AggregatorConverter.Convert(aggregator)
-		if err != nil {
-			return nil, err
-		}
-
-		aggregators = append(aggregators, result)
-	}
-
-	if len(aggregators) > 0 {
-		remoteQuery.Aggregators = aggregators
-	}
-
-	groupBy := metricQuery.GroupBy
-	if groupBy != nil {
-		tagGroups := groupBy.Tags
-		if len(tagGroups) > 0 {
-			remoteQuery.GroupBy = []*remote.Grouper{
-				{
-					Name: "tag",
-					Tags: tagGroups,
-				},
-			}
-		}
-	}
-	return remoteQuery, nil
+	return ds.MetricQueryConverter.Convert(metricRequest.Query)
 }
 
 func (ds *Datasource) ParseQueryResult(results *remote.MetricQueryResults) *datasource.QueryResult {
@@ -133,4 +90,57 @@ func (ds *Datasource) ParseQueryResult(results *remote.MetricQueryResults) *data
 	return &datasource.QueryResult{
 		Series: seriesSet,
 	}
+}
+
+type MetricQueryConverter interface {
+	Convert(query *MetricQuery) (*remote.MetricQuery, error)
+}
+
+type MetricQueryConverterImpl struct {
+	AggregatorConverter AggregatorConverter
+}
+
+func (c MetricQueryConverterImpl) Convert(query *MetricQuery) (*remote.MetricQuery, error) {
+	remoteQuery := &remote.MetricQuery{
+		Name: query.Name,
+	}
+
+	tags := map[string][]string{}
+	for name, values := range query.Tags {
+		if len(values) > 0 {
+			tags[name] = values
+		}
+	}
+
+	if len(tags) > 0 {
+		remoteQuery.Tags = tags
+	}
+
+	var aggregators []map[string]interface{}
+	for _, aggregator := range query.Aggregators {
+		result, err := c.AggregatorConverter.Convert(aggregator)
+		if err != nil {
+			return nil, err
+		}
+
+		aggregators = append(aggregators, result)
+	}
+
+	if len(aggregators) > 0 {
+		remoteQuery.Aggregators = aggregators
+	}
+
+	groupBy := query.GroupBy
+	if groupBy != nil {
+		tagGroups := groupBy.Tags
+		if len(tagGroups) > 0 {
+			remoteQuery.GroupBy = []*remote.Grouper{
+				{
+					Name: "tag",
+					Tags: tagGroups,
+				},
+			}
+		}
+	}
+	return remoteQuery, nil
 }
