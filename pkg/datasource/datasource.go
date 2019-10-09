@@ -98,49 +98,49 @@ type MetricQueryConverter interface {
 
 type MetricQueryConverterImpl struct {
 	AggregatorConverter AggregatorConverter
+	GroupByConverter    GroupByConverter
 }
 
 func (c MetricQueryConverterImpl) Convert(query *MetricQuery) (*remote.MetricQuery, error) {
 	remoteQuery := &remote.MetricQuery{
 		Name: query.Name,
+		Tags: query.Tags,
 	}
 
-	tags := map[string][]string{}
-	for name, values := range query.Tags {
-		if len(values) > 0 {
-			tags[name] = values
-		}
-	}
-
-	if len(tags) > 0 {
-		remoteQuery.Tags = tags
-	}
-
-	var aggregators []map[string]interface{}
 	for _, aggregator := range query.Aggregators {
 		result, err := c.AggregatorConverter.Convert(aggregator)
 		if err != nil {
 			return nil, err
 		}
-
-		aggregators = append(aggregators, result)
+		remoteQuery.Aggregators = append(remoteQuery.Aggregators, result)
 	}
 
-	if len(aggregators) > 0 {
-		remoteQuery.Aggregators = aggregators
-	}
-
-	groupBy := query.GroupBy
-	if groupBy != nil {
-		tagGroups := groupBy.Tags
-		if len(tagGroups) > 0 {
-			remoteQuery.GroupBy = []*remote.Grouper{
-				{
-					Name: "tag",
-					Tags: tagGroups,
-				},
-			}
+	if query.GroupBy != nil {
+		result, err := c.GroupByConverter.Convert(query.GroupBy)
+		if err != nil {
+			return nil, err
 		}
+		remoteQuery.GroupBy = result
 	}
 	return remoteQuery, nil
+}
+
+type GroupByConverter interface {
+	Convert(groupBy *GroupBy) ([]*remote.Grouper, error)
+}
+
+type GroupByConverterImpl struct{}
+
+func (c GroupByConverterImpl) Convert(groupBy *GroupBy) ([]*remote.Grouper, error) {
+	var result []*remote.Grouper
+	tagGroups := groupBy.Tags
+	if len(tagGroups) > 0 {
+		result = []*remote.Grouper{
+			{
+				Name: "tag",
+				Tags: tagGroups,
+			},
+		}
+	}
+	return result, nil
 }

@@ -33,6 +33,14 @@ func (m MockAggregatorConverter) Convert(query *Aggregator) (map[string]interfac
 	return m.result, nil
 }
 
+type MockGroupByConverter struct {
+	result []*remote.Grouper
+}
+
+func (m MockGroupByConverter) Convert(groupBy *GroupBy) ([]*remote.Grouper, error) {
+	return m.result, nil
+}
+
 func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
 	ds := &Datasource{}
 
@@ -293,7 +301,8 @@ func TestMetricQueryConverterImpl_Convert_withTags(t *testing.T) {
 	assert.Equal(t, &remote.MetricQuery{
 		Name: "MetricA",
 		Tags: map[string][]string{
-			"foo": {"bar", "baz"},
+			"foo":  {"bar", "baz"},
+			"foo1": {},
 		},
 	}, result)
 }
@@ -347,7 +356,17 @@ func TestMetricQueryConverterImpl_Convert_WithAggregators(t *testing.T) {
 }
 
 func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
-	converter := MetricQueryConverterImpl{}
+	groupers := []*remote.Grouper{
+		{
+			Name: "tag",
+			Tags: []string{"host", "pool"},
+		},
+	}
+	converter := MetricQueryConverterImpl{
+		GroupByConverter: MockGroupByConverter{
+			result: groupers,
+		},
+	}
 
 	result, err := converter.Convert(&MetricQuery{
 		Name: "MetricA",
@@ -358,12 +377,7 @@ func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, &remote.MetricQuery{
-		Name: "MetricA",
-		GroupBy: []*remote.Grouper{
-			{
-				Name: "tag",
-				Tags: []string{"host", "pool"},
-			},
-		},
+		Name:    "MetricA",
+		GroupBy: groupers,
 	}, result)
 }
