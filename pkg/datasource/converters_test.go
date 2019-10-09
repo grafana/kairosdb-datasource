@@ -6,6 +6,115 @@ import (
 	"testing"
 )
 
+func TestMetricQueryConverterImpl_Convert_minimalQuery(t *testing.T) {
+	converter := MetricQueryConverterImpl{}
+
+	result, err := converter.Convert(&MetricQuery{
+		Name: "MetricA",
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, &remote.MetricQuery{
+		Name: "MetricA",
+	}, result)
+}
+
+func TestMetricQueryConverterImpl_Convert_withTags(t *testing.T) {
+	converter := MetricQueryConverterImpl{}
+
+	result, err := converter.Convert(&MetricQuery{
+		Name: "MetricA",
+		Tags: map[string][]string{
+			"foo":  {"bar", "baz"},
+			"foo1": {},
+		},
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, &remote.MetricQuery{
+		Name: "MetricA",
+		Tags: map[string][]string{
+			"foo":  {"bar", "baz"},
+			"foo1": {},
+		},
+	}, result)
+}
+
+func TestMetricQueryConverterImpl_Convert_WithAggregators(t *testing.T) {
+	aggregator := map[string]interface{}{
+		"name":  "foo",
+		"value": "baz",
+	}
+
+	converter := MetricQueryConverterImpl{
+		AggregatorConverter: MockAggregatorConverter{
+			result: aggregator,
+		},
+	}
+
+	result, err := converter.Convert(&MetricQuery{
+		Name: "MetricA",
+		Aggregators: []*Aggregator{
+			{
+				Name: "foo",
+				Parameters: []*AggregatorParameter{
+					{
+						Name:  "value",
+						Type:  "any",
+						Value: "bar",
+					},
+				},
+			},
+			{
+				Name: "bar",
+				Parameters: []*AggregatorParameter{
+					{
+						Name:  "value",
+						Type:  "any",
+						Value: "bar",
+					},
+				},
+			},
+		},
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, &remote.MetricQuery{
+		Name: "MetricA",
+		Aggregators: []map[string]interface{}{
+			aggregator,
+			aggregator,
+		},
+	}, result)
+}
+
+func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
+	groupers := []*remote.Grouper{
+		{
+			Name: "tag",
+			Tags: []string{"host", "pool"},
+		},
+	}
+	converter := MetricQueryConverterImpl{
+		GroupByConverter: MockGroupByConverter{
+			result: groupers,
+		},
+	}
+
+	result, err := converter.Convert(&MetricQuery{
+		Name: "MetricA",
+		GroupBy: &GroupBy{
+			Tags: []string{"host", "pool"},
+		},
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, &remote.MetricQuery{
+		Name:    "MetricA",
+		GroupBy: groupers,
+	}, result)
+}
+
 func TestAggregatorConverterImpl_Convert_invalidParamType(t *testing.T) {
 	converter := AggregatorConverterImpl{}
 	result, err := converter.Convert(&Aggregator{
