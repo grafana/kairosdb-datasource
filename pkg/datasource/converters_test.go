@@ -177,7 +177,7 @@ func TestAggregatorConverterImpl_Convert_invalidParamType(t *testing.T) {
 	})
 
 	assert.Nil(t, result)
-	assert.IsType(t, &ParseError{}, err)
+	assert.NotNil(t, err)
 }
 
 func TestStringParameterConverter_Convert(t *testing.T) {
@@ -276,7 +276,7 @@ func TestSamplingParameterConverter_Convert_invalidUnit(t *testing.T) {
 		Value: "1x",
 	})
 	assert.Nil(t, result)
-	assert.IsType(t, &ParseError{}, err)
+	assert.NotNil(t, err)
 }
 
 func TestSamplingParameterConverter_Convert_invalidFormat(t *testing.T) {
@@ -285,35 +285,35 @@ func TestSamplingParameterConverter_Convert_invalidFormat(t *testing.T) {
 		Value: "",
 	})
 	assert.Nil(t, result)
-	assert.IsType(t, &ParseError{}, err)
+	assert.NotNil(t, err)
 
 	result, err = converter.Convert(&AggregatorParameter{
 		Value: "h",
 	})
 	assert.Nil(t, result)
-	assert.IsType(t, &ParseError{}, err)
+	assert.NotNil(t, err)
 
 	result, err = converter.Convert(&AggregatorParameter{
 		Value: "1",
 	})
 	assert.Nil(t, result)
-	assert.IsType(t, &ParseError{}, err)
+	assert.NotNil(t, err)
 
 	result, err = converter.Convert(&AggregatorParameter{
 		Value: "h1",
 	})
 	assert.Nil(t, result)
-	assert.IsType(t, &ParseError{}, err)
+	assert.NotNil(t, err)
 
 	result, err = converter.Convert(&AggregatorParameter{
 		Value: "1h1h",
 	})
 	assert.Nil(t, result)
-	assert.IsType(t, &ParseError{}, err)
+	assert.NotNil(t, err)
 
 	result, err = converter.Convert(&AggregatorParameter{
 		Value: "1.5h",
 	})
 	assert.Nil(t, result)
-	assert.IsType(t, &ParseError{}, err)
+	assert.NotNil(t, err)
 }

@@ -1,20 +1,11 @@
 package datasource
 
 import (
-	"fmt"
 	"github.com/pkg/errors"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"regexp"
 	"strconv"
 )
-
-type ParseError struct {
-	message string
-}
-
-func (e *ParseError) Error() string {
-	return e.message
-}
 
 type MetricQueryConverter interface {
 	Convert(query *MetricQuery) (*remote.MetricQuery, error)
@@ -34,7 +25,7 @@ func (c MetricQueryConverterImpl) Convert(query *MetricQuery) (*remote.MetricQue
 	for _, aggregator := range query.Aggregators {
 		result, err := c.AggregatorConverter.Convert(aggregator)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "failed to parse query for metric:%s", query.Name)
 		}
 		remoteQuery.Aggregators = append(remoteQuery.Aggregators, result)
 	}
@@ -42,7 +33,7 @@ func (c MetricQueryConverterImpl) Convert(query *MetricQuery) (*remote.MetricQue
 	if query.GroupBy != nil {
 		result, err := c.GroupByConverter.Convert(query.GroupBy)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "failed to parse query for metric:%s", query.Name)
 		}
 		remoteQuery.GroupBy = result
 	}
@@ -84,9 +75,7 @@ func (c AggregatorConverterImpl) Convert(aggregator *Aggregator) (map[string]int
 	for _, param := range aggregator.Parameters {
 		converter := c.ParameterConverterMappings[param.Type]
 		if converter == nil {
-			return nil, &ParseError{
-				message: fmt.Sprintf("failed to parse aggregator: %s - unknown parameter type: %s", aggregator.Name, param.Type),
-			}
+			return nil, errors.Errorf("failed to parse aggregator: %s - unknown parameter type: %s", aggregator.Name, param.Type)
 		}
 
 		object, err := converter.Convert(param)
@@ -174,17 +163,13 @@ func (c SamplingParameterConverter) Convert(param *AggregatorParameter) (map[str
 	matches := regex.FindStringSubmatch(param.Value)
 
 	if len(matches) == 0 || matches[0] != param.Value {
-		return nil, &ParseError{
-			message: fmt.Sprintf("failed to parse sampling - invalid format: '%s'", param.Value),
-		}
+		return nil, errors.Errorf("failed to parse sampling - invalid format: '%s'", param.Value)
 	}
 
 	value, _ := strconv.ParseInt(matches[1], 10, 64)
 	unit, ok := unitNameMappings[matches[2]]
 	if !ok {
-		return nil, &ParseError{
-			message: fmt.Sprintf("failed to parse sampling - invalid unit: '%s'", matches[2]),
-		}
+		return nil, errors.Errorf("failed to parse sampling - invalid unit: '%s'", matches[2])
 	}
 
 	return map[string]interface{}{
