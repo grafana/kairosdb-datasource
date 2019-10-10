@@ -11,7 +11,7 @@ import (
 )
 
 func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
-	ds := &Datasource{}
+	ds := &KairosDBDatasource{}
 
 	kairosResults := &remote.MetricQueryResults{
 		Results: []*remote.MetricQueryResult{
@@ -53,7 +53,7 @@ func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
 }
 
 func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
-	ds := &Datasource{}
+	ds := &KairosDBDatasource{}
 
 	kairosResults := &remote.MetricQueryResults{
 		Results: []*remote.MetricQueryResult{
@@ -138,7 +138,7 @@ func TestDatasource_Query(t *testing.T) {
 	mockConverter := NewMockMetricQueryConverter(ctrl)
 	mockClient := remote.NewMockKairosDBClient(ctrl)
 
-	ds := &Datasource{
+	ds := &KairosDBDatasource{
 		KairosDBClient:       mockClient,
 		MetricQueryConverter: mockConverter,
 	}

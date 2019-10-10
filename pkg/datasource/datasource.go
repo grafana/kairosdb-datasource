@@ -12,14 +12,14 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type Datasource struct {
+type KairosDBDatasource struct {
 	plugin.NetRPCUnsupportedPlugin
 	KairosDBClient       remote.KairosDBClient
 	MetricQueryConverter MetricQueryConverter
 	Logger               hclog.Logger
 }
 
-func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
+func (ds *KairosDBDatasource) Query(ctx context.Context, dsRequest *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
 	refIds := make([]string, 0)
 	var remoteQueries []*remote.MetricQuery
 
@@ -57,7 +57,7 @@ func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.Datasourc
 	}, nil
 }
 
-func (ds *Datasource) createRemoteMetricQuery(dsQuery *datasource.Query) (*remote.MetricQuery, error) {
+func (ds *KairosDBDatasource) createRemoteMetricQuery(dsQuery *datasource.Query) (*remote.MetricQuery, error) {
 	metricRequest := &MetricRequest{}
 	err := json.Unmarshal([]byte(dsQuery.ModelJson), metricRequest)
 	if err != nil {
@@ -68,7 +68,7 @@ func (ds *Datasource) createRemoteMetricQuery(dsQuery *datasource.Query) (*remot
 	return ds.MetricQueryConverter.Convert(metricRequest.Query)
 }
 
-func (ds *Datasource) ParseQueryResult(results *remote.MetricQueryResults) *datasource.QueryResult {
+func (ds *KairosDBDatasource) ParseQueryResult(results *remote.MetricQueryResults) *datasource.QueryResult {
 
 	seriesSet := make([]*datasource.TimeSeries, 0)
 

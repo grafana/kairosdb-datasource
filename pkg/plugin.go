@@ -48,7 +48,7 @@ func main() {
 			MagicCookieValue: "datasource",
 		},
 		Plugins: map[string]plugin.Plugin{
-			"grafana-kairosdb-datasource": &grafana.DatasourcePluginImpl{Plugin: &datasource.Datasource{
+			"grafana-kairosdb-datasource": &grafana.DatasourcePluginImpl{Plugin: &datasource.KairosDBDatasource{
 				KairosDBClient:       kairosClient,
 				MetricQueryConverter: metricQueryConverter,
 				Logger:               logger,
