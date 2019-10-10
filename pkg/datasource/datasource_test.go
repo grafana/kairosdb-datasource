@@ -25,22 +25,6 @@ func (m MockMetricQueryConverter) Convert(query *MetricQuery) (*remote.MetricQue
 	return m.result, nil
 }
 
-type MockAggregatorConverter struct {
-	result map[string]interface{}
-}
-
-func (m MockAggregatorConverter) Convert(query *Aggregator) (map[string]interface{}, error) {
-	return m.result, nil
-}
-
-type MockGroupByConverter struct {
-	result []*remote.Grouper
-}
-
-func (m MockGroupByConverter) Convert(groupBy *GroupBy) ([]*remote.Grouper, error) {
-	return m.result, nil
-}
-
 func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
 	ds := &Datasource{}
 
@@ -162,6 +146,7 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 	assert.Equal(t, expectedResults, actualResults)
 }
 
+//TODO verify remote MetricQuery
 func TestDatasource_Query(t *testing.T) {
 	mockClient := &MockKairosDBClient{}
 	mockConverter := &MockMetricQueryConverter{}

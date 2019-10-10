@@ -6,6 +6,22 @@ import (
 	"testing"
 )
 
+type MockAggregatorConverter struct {
+	result map[string]interface{}
+}
+
+func (m MockAggregatorConverter) Convert(query *Aggregator) (map[string]interface{}, error) {
+	return m.result, nil
+}
+
+type MockGroupByConverter struct {
+	result []*remote.Grouper
+}
+
+func (m MockGroupByConverter) Convert(groupBy *GroupBy) ([]*remote.Grouper, error) {
+	return m.result, nil
+}
+
 func TestMetricQueryConverterImpl_Convert_minimalQuery(t *testing.T) {
 	converter := MetricQueryConverterImpl{}
 
@@ -55,26 +71,8 @@ func TestMetricQueryConverterImpl_Convert_WithAggregators(t *testing.T) {
 	result, err := converter.Convert(&MetricQuery{
 		Name: "MetricA",
 		Aggregators: []*Aggregator{
-			{
-				Name: "foo",
-				Parameters: []*AggregatorParameter{
-					{
-						Name:  "value",
-						Type:  "any",
-						Value: "bar",
-					},
-				},
-			},
-			{
-				Name: "bar",
-				Parameters: []*AggregatorParameter{
-					{
-						Name:  "value",
-						Type:  "any",
-						Value: "bar",
-					},
-				},
-			},
+			{},
+			{},
 		},
 	})
 
@@ -102,10 +100,8 @@ func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
 	}
 
 	result, err := converter.Convert(&MetricQuery{
-		Name: "MetricA",
-		GroupBy: &GroupBy{
-			Tags: []string{"host", "pool"},
-		},
+		Name:    "MetricA",
+		GroupBy: &GroupBy{},
 	})
 
 	assert.Nil(t, err)
@@ -115,10 +111,64 @@ func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
 	}, result)
 }
 
+func TestAggregatorConverterImpl_Convert_singleParam(t *testing.T) {
+	converter := AggregatorConverterImpl{
+		ParameterConverterMappings: map[string]ParameterConverter{
+			"foo": StringParameterConverter{},
+		},
+	}
+	result, err := converter.Convert(&Aggregator{
+		Name: "test",
+		Parameters: []*AggregatorParameter{
+			{
+				Type:  "foo",
+				Name:  "key",
+				Value: "value",
+			},
+		},
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, map[string]interface{}{
+		"name": "test",
+		"key":  "value",
+	}, result)
+}
+
+func TestAggregatorConverterImpl_Convert_multipleParams(t *testing.T) {
+	converter := AggregatorConverterImpl{
+		ParameterConverterMappings: map[string]ParameterConverter{
+			"foo": StringParameterConverter{},
+		},
+	}
+	result, err := converter.Convert(&Aggregator{
+		Name: "test",
+		Parameters: []*AggregatorParameter{
+			{
+				Type:  "foo",
+				Name:  "key1",
+				Value: "value1",
+			},
+			{
+				Type:  "foo",
+				Name:  "key2",
+				Value: "value2",
+			},
+		},
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, map[string]interface{}{
+		"name": "test",
+		"key1": "value1",
+		"key2": "value2",
+	}, result)
+}
+
 func TestAggregatorConverterImpl_Convert_invalidParamType(t *testing.T) {
 	converter := AggregatorConverterImpl{}
 	result, err := converter.Convert(&Aggregator{
-		Name: "foo",
+		Name: "test",
 		Parameters: []*AggregatorParameter{
 			{
 				Type: "bogus",

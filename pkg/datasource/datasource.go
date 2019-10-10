@@ -5,6 +5,7 @@ import (
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
+	"github.com/pkg/errors"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
@@ -26,7 +27,7 @@ func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.Datasourc
 		refIds = append(refIds, dsQuery.RefId)
 		remoteQuery, err := ds.createRemoteMetricQuery(dsQuery)
 		if err != nil {
-			return nil, err
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		remoteQueries = append(remoteQueries, remoteQuery)
 	}
@@ -39,6 +40,7 @@ func (ds *Datasource) Query(ctx context.Context, dsRequest *datasource.Datasourc
 
 	results, err := ds.KairosDBClient.QueryMetrics(ctx, dsRequest.Datasource, remoteRequest)
 	if err != nil {
+		//TODO decorate error with proper gRPC status code
 		return nil, err
 	}
 
@@ -60,7 +62,7 @@ func (ds *Datasource) createRemoteMetricQuery(dsQuery *datasource.Query) (*remot
 	err := json.Unmarshal([]byte(dsQuery.ModelJson), metricRequest)
 	if err != nil {
 		ds.Logger.Debug("Failed to unmarshal JSON", "value", dsQuery.ModelJson)
-		return nil, status.Errorf(codes.InvalidArgument, "failed to unmarshal request model: %v", err)
+		return nil, errors.Wrap(err, "failed to unmarshal request model")
 	}
 
 	return ds.MetricQueryConverter.Convert(metricRequest.Query)

@@ -28,6 +28,18 @@ func main() {
 		Logger: logger,
 	}
 
+	metricQueryConverter := datasource.MetricQueryConverterImpl{
+		AggregatorConverter: datasource.AggregatorConverterImpl{
+			ParameterConverterMappings: map[string]datasource.ParameterConverter{
+				"alignment": datasource.AlignmentParameterConverter{},
+				"sampling":  datasource.SamplingParameterConverter{},
+				"enum":      datasource.StringParameterConverter{},
+				"any":       datasource.AnyParameterConverter{},
+			},
+		},
+		GroupByConverter: datasource.GroupByConverterImpl{},
+	}
+
 	plugin.Serve(&plugin.ServeConfig{
 
 		HandshakeConfig: plugin.HandshakeConfig{
@@ -37,11 +49,9 @@ func main() {
 		},
 		Plugins: map[string]plugin.Plugin{
 			"grafana-kairosdb-datasource": &grafana.DatasourcePluginImpl{Plugin: &datasource.Datasource{
-				KairosDBClient: kairosClient,
-				MetricQueryConverter: datasource.MetricQueryConverterImpl{
-					AggregatorConverter: datasource.AggregatorConverterImpl{},
-				},
-				Logger: logger,
+				KairosDBClient:       kairosClient,
+				MetricQueryConverter: metricQueryConverter,
+				Logger:               logger,
 			}},
 		},
 

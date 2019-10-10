@@ -73,45 +73,42 @@ type AggregatorConverter interface {
 	Convert(aggregator *Aggregator) (map[string]interface{}, error)
 }
 
-type AggregatorConverterImpl struct{}
+type AggregatorConverterImpl struct {
+	ParameterConverterMappings map[string]ParameterConverter
+}
 
 func (c AggregatorConverterImpl) Convert(aggregator *Aggregator) (map[string]interface{}, error) {
 	result := map[string]interface{}{}
 	result["name"] = aggregator.Name
 
 	for _, param := range aggregator.Parameters {
-		var converter ParameterConverter
-		switch param.Type {
-		case "alignment":
-			converter = AlignmentParameterConverter{}
-		case "sampling":
-			converter = SamplingParameterConverter{}
-		case "enum":
-			converter = StringParameterConverter{}
-		case "any":
-			converter = AnyParameterConverter{}
-		default:
+		converter := c.ParameterConverterMappings[param.Type]
+		if converter == nil {
 			return nil, &ParseError{
 				message: fmt.Sprintf("failed to parse aggregator: %s - unknown parameter type: %s", aggregator.Name, param.Type),
 			}
 		}
+
 		object, err := converter.Convert(param)
 		if err != nil {
-			//todo should return a ParseError
 			return nil, errors.Wrapf(err, "failed to parse aggregator: %s", aggregator.Name)
 		}
 
 		result = mergeMaps(result, object)
 	}
-
 	return result, nil
 }
 
 func mergeMaps(a map[string]interface{}, b map[string]interface{}) map[string]interface{} {
-	for k, v := range b {
-		a[k] = v
+	result := map[string]interface{}{}
+	for k, v := range a {
+		result[k] = v
 	}
-	return a
+
+	for k, v := range b {
+		result[k] = v
+	}
+	return result
 }
 
 type ParameterConverter interface {
