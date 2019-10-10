@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestPanelMetricRequest(t *testing.T) {
+func TestMetricRequest(t *testing.T) {
 	expected := &MetricRequest{
 		RefID: "A",
 		Query: &MetricQuery{

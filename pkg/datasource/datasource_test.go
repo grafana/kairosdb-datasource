@@ -3,27 +3,12 @@ package datasource
 import (
 	"context"
 	"encoding/json"
+	"github.com/golang/mock/gomock"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/stretchr/testify/assert"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"testing"
 )
-
-type MockKairosDBClient struct {
-	response []*remote.MetricQueryResults
-}
-
-func (m MockKairosDBClient) QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *remote.MetricQueryRequest) ([]*remote.MetricQueryResults, error) {
-	return m.response, nil
-}
-
-type MockMetricQueryConverter struct {
-	result *remote.MetricQuery
-}
-
-func (m MockMetricQueryConverter) Convert(query *MetricQuery) (*remote.MetricQuery, error) {
-	return m.result, nil
-}
 
 func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
 	ds := &Datasource{}
@@ -146,46 +131,20 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 	assert.Equal(t, expectedResults, actualResults)
 }
 
-//TODO verify remote MetricQuery
 func TestDatasource_Query(t *testing.T) {
-	mockClient := &MockKairosDBClient{}
-	mockConverter := &MockMetricQueryConverter{}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockConverter := NewMockMetricQueryConverter(ctrl)
+	mockClient := remote.NewMockKairosDBClient(ctrl)
 
 	ds := &Datasource{
 		KairosDBClient:       mockClient,
 		MetricQueryConverter: mockConverter,
 	}
 
-	mockConverter.result = &remote.MetricQuery{}
-
-	mockClient.response = []*remote.MetricQueryResults{
-		{
-			Results: []*remote.MetricQueryResult{
-				{
-					Name: "MetricA",
-					Values: []*remote.DataPoint{
-						{
-							1564682818000, 5,
-						},
-					},
-				},
-			},
-		},
-		{
-			Results: []*remote.MetricQueryResult{
-				{
-					Name: "MetricB",
-					Values: []*remote.DataPoint{
-						{
-							1564682818000, 10.5,
-						},
-					},
-				},
-			},
-		},
-	}
-
 	dsRequest := &datasource.DatasourceRequest{
+		Datasource: &datasource.DatasourceInfo{},
 		TimeRange: &datasource.TimeRange{
 			FromEpochMs: 1564682808000,
 			ToEpochMs:   1564682828000,
@@ -206,7 +165,53 @@ func TestDatasource_Query(t *testing.T) {
 		},
 	}
 
-	expectedResponse := &datasource.DatasourceResponse{
+	mockConverter.EXPECT().
+		Convert(gomock.Any()).
+		Return(&remote.MetricQuery{}, nil).
+		AnyTimes()
+
+	expectedMetricRequest := &remote.MetricQueryRequest{
+		StartAbsolute: 1564682808000,
+		EndAbsolute:   1564682828000,
+		Metrics: []*remote.MetricQuery{
+			{}, {},
+		},
+	}
+
+	mockClient.EXPECT().
+		QueryMetrics(context.TODO(), dsRequest.Datasource, expectedMetricRequest).
+		Return([]*remote.MetricQueryResults{
+			{
+				Results: []*remote.MetricQueryResult{
+					{
+						Name: "MetricA",
+						Values: []*remote.DataPoint{
+							{
+								1564682814000, 5,
+							},
+						},
+					},
+				},
+			},
+			{
+				Results: []*remote.MetricQueryResult{
+					{
+						Name: "MetricB",
+						Values: []*remote.DataPoint{
+							{
+								1564682818000, 10.5,
+							},
+						},
+					},
+				},
+			},
+		}, nil).
+		Times(1)
+
+	response, err := ds.Query(context.TODO(), dsRequest)
+
+	assert.Nil(t, err)
+	assert.Equal(t, &datasource.DatasourceResponse{
 		Results: []*datasource.QueryResult{
 			{
 				RefId: "A",
@@ -216,7 +221,7 @@ func TestDatasource_Query(t *testing.T) {
 						Tags: map[string]string{},
 						Points: []*datasource.Point{
 							{
-								Timestamp: 1564682818000,
+								Timestamp: 1564682814000,
 								Value:     5,
 							},
 						},
@@ -239,12 +244,7 @@ func TestDatasource_Query(t *testing.T) {
 				},
 			},
 		},
-	}
-
-	actualResponse, err := ds.Query(context.TODO(), dsRequest)
-
-	assert.Nil(t, err)
-	assert.Equal(t, expectedResponse, actualResponse)
+	}, response)
 }
 
 func toModelJson(query *MetricQuery) string {

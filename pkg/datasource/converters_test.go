@@ -1,26 +1,11 @@
 package datasource
 
 import (
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"testing"
 )
-
-type MockAggregatorConverter struct {
-	result map[string]interface{}
-}
-
-func (m MockAggregatorConverter) Convert(query *Aggregator) (map[string]interface{}, error) {
-	return m.result, nil
-}
-
-type MockGroupByConverter struct {
-	result []*remote.Grouper
-}
-
-func (m MockGroupByConverter) Convert(groupBy *GroupBy) ([]*remote.Grouper, error) {
-	return m.result, nil
-}
 
 func TestMetricQueryConverterImpl_Convert_minimalQuery(t *testing.T) {
 	converter := MetricQueryConverterImpl{}
@@ -57,16 +42,23 @@ func TestMetricQueryConverterImpl_Convert_withTags(t *testing.T) {
 }
 
 func TestMetricQueryConverterImpl_Convert_WithAggregators(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockAggregatorConverter := NewMockAggregatorConverter(ctrl)
+	converter := MetricQueryConverterImpl{
+		AggregatorConverter: mockAggregatorConverter,
+	}
+
 	aggregator := map[string]interface{}{
 		"name":  "foo",
 		"value": "baz",
 	}
 
-	converter := MetricQueryConverterImpl{
-		AggregatorConverter: MockAggregatorConverter{
-			result: aggregator,
-		},
-	}
+	mockAggregatorConverter.EXPECT().
+		Convert(gomock.Any()).
+		Return(aggregator, nil).
+		AnyTimes()
 
 	result, err := converter.Convert(&MetricQuery{
 		Name: "MetricA",
@@ -87,17 +79,25 @@ func TestMetricQueryConverterImpl_Convert_WithAggregators(t *testing.T) {
 }
 
 func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockGroupByConverter := NewMockGroupByConverter(ctrl)
+	converter := MetricQueryConverterImpl{
+		GroupByConverter: mockGroupByConverter,
+	}
+
 	groupers := []*remote.Grouper{
 		{
 			Name: "tag",
 			Tags: []string{"host", "pool"},
 		},
 	}
-	converter := MetricQueryConverterImpl{
-		GroupByConverter: MockGroupByConverter{
-			result: groupers,
-		},
-	}
+
+	mockGroupByConverter.EXPECT().
+		Convert(gomock.Any()).
+		Return(groupers, nil).
+		AnyTimes()
 
 	result, err := converter.Convert(&MetricQuery{
 		Name:    "MetricA",
