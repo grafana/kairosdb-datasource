@@ -47,7 +47,7 @@ func TestMetricQueryConverterImpl_Convert_WithAggregators(t *testing.T) {
 
 	mockAggregatorConverter := NewMockAggregatorConverter(ctrl)
 	converter := MetricQueryConverterImpl{
-		AggregatorConverter: mockAggregatorConverter,
+		aggregatorConverter: mockAggregatorConverter,
 	}
 
 	aggregator := map[string]interface{}{
@@ -84,7 +84,7 @@ func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
 
 	mockGroupByConverter := NewMockGroupByConverter(ctrl)
 	converter := MetricQueryConverterImpl{
-		GroupByConverter: mockGroupByConverter,
+		groupByConverter: mockGroupByConverter,
 	}
 
 	groupers := []*remote.Grouper{
@@ -113,8 +113,8 @@ func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
 
 func TestAggregatorConverterImpl_Convert_singleParam(t *testing.T) {
 	converter := AggregatorConverterImpl{
-		ParameterConverterMappings: map[string]ParameterConverter{
-			"foo": StringParameterConverter{},
+		parameterConverterMappings: map[string]ParameterConverter{
+			"foo": &StringParameterConverter{},
 		},
 	}
 	result, err := converter.Convert(&Aggregator{
@@ -137,8 +137,8 @@ func TestAggregatorConverterImpl_Convert_singleParam(t *testing.T) {
 
 func TestAggregatorConverterImpl_Convert_multipleParams(t *testing.T) {
 	converter := AggregatorConverterImpl{
-		ParameterConverterMappings: map[string]ParameterConverter{
-			"foo": StringParameterConverter{},
+		parameterConverterMappings: map[string]ParameterConverter{
+			"foo": &StringParameterConverter{},
 		},
 	}
 	result, err := converter.Convert(&Aggregator{

@@ -57,12 +57,12 @@ func setup() {
 		Body:       ioutil.NopCloser(bytes.NewBuffer(okResponsePayload)),
 	}
 
-	httpClient := http.Client{
+	httpClient := &http.Client{
 		Transport: mockTransport,
 	}
 
-	kairosClient = KairosDBClientImpl{
-		HttpClient: httpClient,
+	kairosClient = &KairosDBClientImpl{
+		httpClient: httpClient,
 	}
 
 	dsInfo = &datasource.DatasourceInfo{

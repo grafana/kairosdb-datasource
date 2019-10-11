@@ -12,18 +12,25 @@ type MetricQueryConverter interface {
 }
 
 type MetricQueryConverterImpl struct {
-	AggregatorConverter AggregatorConverter
-	GroupByConverter    GroupByConverter
+	aggregatorConverter AggregatorConverter
+	groupByConverter    GroupByConverter
 }
 
-func (c MetricQueryConverterImpl) Convert(query *MetricQuery) (*remote.MetricQuery, error) {
+func NewMetricQueryConverterImpl(aggregatorConverter AggregatorConverter, groupByConverter GroupByConverter) *MetricQueryConverterImpl {
+	return &MetricQueryConverterImpl{
+		aggregatorConverter: aggregatorConverter,
+		groupByConverter:    groupByConverter,
+	}
+}
+
+func (c *MetricQueryConverterImpl) Convert(query *MetricQuery) (*remote.MetricQuery, error) {
 	remoteQuery := &remote.MetricQuery{
 		Name: query.Name,
 		Tags: query.Tags,
 	}
 
 	for _, aggregator := range query.Aggregators {
-		result, err := c.AggregatorConverter.Convert(aggregator)
+		result, err := c.aggregatorConverter.Convert(aggregator)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to parse query for metric:%s", query.Name)
 		}
@@ -31,7 +38,7 @@ func (c MetricQueryConverterImpl) Convert(query *MetricQuery) (*remote.MetricQue
 	}
 
 	if query.GroupBy != nil {
-		result, err := c.GroupByConverter.Convert(query.GroupBy)
+		result, err := c.groupByConverter.Convert(query.GroupBy)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to parse query for metric:%s", query.Name)
 		}
@@ -46,7 +53,7 @@ type GroupByConverter interface {
 
 type GroupByConverterImpl struct{}
 
-func (c GroupByConverterImpl) Convert(groupBy *GroupBy) ([]*remote.Grouper, error) {
+func (c *GroupByConverterImpl) Convert(groupBy *GroupBy) ([]*remote.Grouper, error) {
 	var result []*remote.Grouper
 	tagGroups := groupBy.Tags
 	if len(tagGroups) > 0 {
@@ -65,15 +72,21 @@ type AggregatorConverter interface {
 }
 
 type AggregatorConverterImpl struct {
-	ParameterConverterMappings map[string]ParameterConverter
+	parameterConverterMappings map[string]ParameterConverter
 }
 
-func (c AggregatorConverterImpl) Convert(aggregator *Aggregator) (map[string]interface{}, error) {
+func NewAggregatorConverterImpl(paramConverterMappings map[string]ParameterConverter) *AggregatorConverterImpl {
+	return &AggregatorConverterImpl{
+		parameterConverterMappings: paramConverterMappings,
+	}
+}
+
+func (c *AggregatorConverterImpl) Convert(aggregator *Aggregator) (map[string]interface{}, error) {
 	result := map[string]interface{}{}
 	result["name"] = aggregator.Name
 
 	for _, param := range aggregator.Parameters {
-		converter := c.ParameterConverterMappings[param.Type]
+		converter := c.parameterConverterMappings[param.Type]
 		if converter == nil {
 			return nil, errors.Errorf("failed to parse aggregator: %s - unknown parameter type: %s", aggregator.Name, param.Type)
 		}
@@ -106,7 +119,7 @@ type ParameterConverter interface {
 
 type StringParameterConverter struct{}
 
-func (c StringParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
+func (c *StringParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
 	return map[string]interface{}{
 		param.Name: param.Value,
 	}, nil
@@ -114,7 +127,7 @@ func (c StringParameterConverter) Convert(param *AggregatorParameter) (map[strin
 
 type AnyParameterConverter struct{}
 
-func (c AnyParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
+func (c *AnyParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
 	var value interface{}
 	value, err := strconv.ParseFloat(param.Value, 64)
 	if err != nil {
@@ -127,7 +140,7 @@ func (c AnyParameterConverter) Convert(param *AggregatorParameter) (map[string]i
 
 type AlignmentParameterConverter struct{}
 
-func (c AlignmentParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
+func (c *AlignmentParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
 	return map[string]interface{}{
 		"align_sampling":   param.Value == "SAMPLING",
 		"align_start_time": param.Value == "START_TIME",
@@ -158,7 +171,7 @@ var unitNameMappings = map[string]string{
 
 type SamplingParameterConverter struct{}
 
-func (c SamplingParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
+func (c *SamplingParameterConverter) Convert(param *AggregatorParameter) (map[string]interface{}, error) {
 	regex := regexp.MustCompile(`([0-9]+)([a-zA-Z]+)`)
 	matches := regex.FindStringSubmatch(param.Value)
 

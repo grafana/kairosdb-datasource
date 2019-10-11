@@ -21,24 +21,18 @@ func main() {
 	logger.Info("Running KairosDB backend datasource")
 
 	// TODO support configuration of http client
-	kairosClient := remote.KairosDBClientImpl{
-		HttpClient: http.Client{
-			Timeout: time.Duration(time.Second * 30),
-		},
-		Logger: logger,
-	}
+	kairosClient := remote.NewKairosDBClientImpl(&http.Client{
+		Timeout: time.Duration(time.Second * 30),
+	}, logger)
 
-	metricQueryConverter := datasource.MetricQueryConverterImpl{
-		AggregatorConverter: datasource.AggregatorConverterImpl{
-			ParameterConverterMappings: map[string]datasource.ParameterConverter{
-				"alignment": datasource.AlignmentParameterConverter{},
-				"sampling":  datasource.SamplingParameterConverter{},
-				"enum":      datasource.StringParameterConverter{},
-				"any":       datasource.AnyParameterConverter{},
-			},
-		},
-		GroupByConverter: datasource.GroupByConverterImpl{},
-	}
+	aggregatorConverter := datasource.NewAggregatorConverterImpl(
+		map[string]datasource.ParameterConverter{
+			"alignment": &datasource.AlignmentParameterConverter{},
+			"sampling":  &datasource.SamplingParameterConverter{},
+			"enum":      &datasource.StringParameterConverter{},
+			"any":       &datasource.AnyParameterConverter{},
+		})
+	metricQueryConverter := datasource.NewMetricQueryConverterImpl(aggregatorConverter, &datasource.GroupByConverterImpl{})
 
 	plugin.Serve(&plugin.ServeConfig{
 
@@ -48,13 +42,10 @@ func main() {
 			MagicCookieValue: "datasource",
 		},
 		Plugins: map[string]plugin.Plugin{
-			"grafana-kairosdb-datasource": &grafana.DatasourcePluginImpl{Plugin: &datasource.KairosDBDatasource{
-				KairosDBClient:       kairosClient,
-				MetricQueryConverter: metricQueryConverter,
-				Logger:               logger,
-			}},
+			"grafana-kairosdb-datasource": &grafana.DatasourcePluginImpl{
+				Plugin: datasource.NewKairosDBDatasource(kairosClient, metricQueryConverter, logger),
+			},
 		},
-
 		// A non-nil value here enables gRPC serving for this plugin...
 		GRPCServer: plugin.DefaultGRPCServer,
 	})

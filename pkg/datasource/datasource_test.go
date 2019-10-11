@@ -139,8 +139,8 @@ func TestDatasource_Query(t *testing.T) {
 	mockClient := remote.NewMockKairosDBClient(ctrl)
 
 	ds := &KairosDBDatasource{
-		KairosDBClient:       mockClient,
-		MetricQueryConverter: mockConverter,
+		kairosDBClient:       mockClient,
+		metricQueryConverter: mockConverter,
 	}
 
 	dsRequest := &datasource.DatasourceRequest{

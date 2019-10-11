@@ -29,18 +29,25 @@ type KairosDBClient interface {
 }
 
 type KairosDBClientImpl struct {
-	HttpClient http.Client
-	Logger     hclog.Logger
+	httpClient *http.Client
+	logger     hclog.Logger
+}
+
+func NewKairosDBClientImpl(httpClient *http.Client, logger hclog.Logger) *KairosDBClientImpl {
+	return &KairosDBClientImpl{
+		httpClient: httpClient,
+		logger:     logger,
+	}
 }
 
 //TODO support authentication
-func (client KairosDBClientImpl) QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *MetricQueryRequest) ([]*MetricQueryResults, error) {
+func (client *KairosDBClientImpl) QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *MetricQueryRequest) ([]*MetricQueryResults, error) {
 	httpRequest, err := client.buildHTTPRequest(dsInfo, request)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := ctxhttp.Do(ctx, &client.HttpClient, httpRequest)
+	res, err := ctxhttp.Do(ctx, client.httpClient, httpRequest)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to execute HTTP request")
 	}

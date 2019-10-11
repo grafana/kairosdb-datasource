@@ -14,9 +14,17 @@ import (
 
 type KairosDBDatasource struct {
 	plugin.NetRPCUnsupportedPlugin
-	KairosDBClient       remote.KairosDBClient
-	MetricQueryConverter MetricQueryConverter
-	Logger               hclog.Logger
+	kairosDBClient       remote.KairosDBClient
+	metricQueryConverter MetricQueryConverter
+	logger               hclog.Logger
+}
+
+func NewKairosDBDatasource(client remote.KairosDBClient, converter MetricQueryConverter, logger hclog.Logger) *KairosDBDatasource {
+	return &KairosDBDatasource{
+		kairosDBClient:       client,
+		metricQueryConverter: converter,
+		logger:               logger,
+	}
 }
 
 func (ds *KairosDBDatasource) Query(ctx context.Context, dsRequest *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
@@ -38,7 +46,7 @@ func (ds *KairosDBDatasource) Query(ctx context.Context, dsRequest *datasource.D
 		Metrics:       remoteQueries,
 	}
 
-	results, err := ds.KairosDBClient.QueryMetrics(ctx, dsRequest.Datasource, remoteRequest)
+	results, err := ds.kairosDBClient.QueryMetrics(ctx, dsRequest.Datasource, remoteRequest)
 	if err != nil {
 		//TODO decorate error with proper gRPC status code
 		return nil, err
@@ -61,11 +69,11 @@ func (ds *KairosDBDatasource) createRemoteMetricQuery(dsQuery *datasource.Query)
 	metricRequest := &MetricRequest{}
 	err := json.Unmarshal([]byte(dsQuery.ModelJson), metricRequest)
 	if err != nil {
-		ds.Logger.Debug("Failed to unmarshal JSON", "value", dsQuery.ModelJson)
+		ds.logger.Debug("Failed to unmarshal JSON", "value", dsQuery.ModelJson)
 		return nil, errors.Wrap(err, "failed to unmarshal request model")
 	}
 
-	return ds.MetricQueryConverter.Convert(metricRequest.Query)
+	return ds.metricQueryConverter.Convert(metricRequest.Query)
 }
 
 func (ds *KairosDBDatasource) ParseQueryResult(results *remote.MetricQueryResults) *datasource.QueryResult {
