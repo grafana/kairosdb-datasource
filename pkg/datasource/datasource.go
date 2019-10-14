@@ -3,27 +3,27 @@ package datasource
 import (
 	"encoding/json"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
-	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"github.com/pkg/errors"
+	"github.com/zsabin/kairosdb-datasource/pkg/logging"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
+var logger = logging.Get("datasource").Named("KairosDBDatasource")
+
 type KairosDBDatasource struct {
 	plugin.NetRPCUnsupportedPlugin
 	kairosDBClient       remote.KairosDBClient
 	metricQueryConverter MetricQueryConverter
-	logger               hclog.Logger
 }
 
-func NewKairosDBDatasource(client remote.KairosDBClient, converter MetricQueryConverter, logger hclog.Logger) *KairosDBDatasource {
+func NewKairosDBDatasource(client remote.KairosDBClient, converter MetricQueryConverter) *KairosDBDatasource {
 	return &KairosDBDatasource{
 		kairosDBClient:       client,
 		metricQueryConverter: converter,
-		logger:               logger,
 	}
 }
 
@@ -35,7 +35,7 @@ func (ds *KairosDBDatasource) Query(ctx context.Context, dsRequest *datasource.D
 		refIds = append(refIds, dsQuery.RefId)
 		remoteQuery, err := ds.createRemoteMetricQuery(dsQuery)
 		if err != nil {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
+			return nil, status.Errorf(codes.InvalidArgument, "failed to parse metric query: %s", err)
 		}
 		remoteQueries = append(remoteQueries, remoteQuery)
 	}
@@ -48,8 +48,7 @@ func (ds *KairosDBDatasource) Query(ctx context.Context, dsRequest *datasource.D
 
 	results, err := ds.kairosDBClient.QueryMetrics(ctx, dsRequest.Datasource, remoteRequest)
 	if err != nil {
-		//TODO decorate error with proper gRPC status code
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "remote metric query failed: %s", err)
 	}
 
 	dsResults := make([]*datasource.QueryResult, 0)
@@ -69,7 +68,7 @@ func (ds *KairosDBDatasource) createRemoteMetricQuery(dsQuery *datasource.Query)
 	metricRequest := &MetricRequest{}
 	err := json.Unmarshal([]byte(dsQuery.ModelJson), metricRequest)
 	if err != nil {
-		ds.logger.Debug("Failed to unmarshal JSON", "value", dsQuery.ModelJson)
+		logger.Debug("Failed to unmarshal JSON", "value", dsQuery.ModelJson)
 		return nil, errors.Wrap(err, "failed to unmarshal request model")
 	}
 

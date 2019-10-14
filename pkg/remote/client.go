@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
-	"github.com/hashicorp/go-hclog"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context/ctxhttp"
 	"io/ioutil"
@@ -30,13 +29,11 @@ type KairosDBClient interface {
 
 type KairosDBClientImpl struct {
 	httpClient *http.Client
-	logger     hclog.Logger
 }
 
-func NewKairosDBClientImpl(httpClient *http.Client, logger hclog.Logger) *KairosDBClientImpl {
+func NewKairosDBClientImpl(httpClient *http.Client) *KairosDBClientImpl {
 	return &KairosDBClientImpl{
 		httpClient: httpClient,
-		logger:     logger,
 	}
 }
 
