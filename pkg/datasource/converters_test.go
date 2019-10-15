@@ -111,6 +111,33 @@ func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
 	}, result)
 }
 
+func TestGroupByConverterImpl_Convert_noTags(t *testing.T) {
+	converter := datasource.GroupByConverterImpl{}
+
+	result, err := converter.Convert(&datasource.GroupBy{
+		Tags: nil,
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, []*remote.Grouper{}, result)
+}
+
+func TestGroupByConverterImpl_Convert(t *testing.T) {
+	converter := datasource.GroupByConverterImpl{}
+
+	result, err := converter.Convert(&datasource.GroupBy{
+		Tags: []string{"foo", "bar"},
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, []*remote.Grouper{
+		{
+			Name: "tag",
+			Tags: []string{"foo", "bar"},
+		},
+	}, result)
+}
+
 func TestAggregatorConverterImpl_Convert_singleParam(t *testing.T) {
 	converter := datasource.NewAggregatorConverterImpl(map[string]datasource.ParameterConverter{
 		"foo": &datasource.StringParameterConverter{},

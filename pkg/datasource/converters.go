@@ -54,17 +54,14 @@ type GroupByConverter interface {
 type GroupByConverterImpl struct{}
 
 func (c *GroupByConverterImpl) Convert(groupBy *GroupBy) ([]*remote.Grouper, error) {
-	var result []*remote.Grouper
-	tagGroups := groupBy.Tags
-	if len(tagGroups) > 0 {
-		result = []*remote.Grouper{
-			{
-				Name: "tag",
-				Tags: tagGroups,
-			},
-		}
+	groupers := make([]*remote.Grouper, 0)
+	if len(groupBy.Tags) > 0 {
+		groupers = append(groupers, &remote.Grouper{
+			Name: "tag",
+			Tags: groupBy.Tags,
+		})
 	}
-	return result, nil
+	return groupers, nil
 }
 
 type AggregatorConverter interface {
