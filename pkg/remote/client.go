@@ -23,22 +23,18 @@ func (e *ResponseError) Error() string {
 	return fmt.Sprintf("KairosDB response error: status=%d, messages=[%v]", e.Status, strings.Join(e.Messages, ", "))
 }
 
-type KairosDBClient interface {
-	QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *MetricQueryRequest) ([]*MetricQueryResults, error)
-}
-
-type KairosDBClientImpl struct {
+type KairosDBClient struct {
 	httpClient *http.Client
 }
 
-func NewKairosDBClientImpl(httpClient *http.Client) *KairosDBClientImpl {
-	return &KairosDBClientImpl{
+func NewKairosDBClient(httpClient *http.Client) *KairosDBClient {
+	return &KairosDBClient{
 		httpClient: httpClient,
 	}
 }
 
 //TODO support authentication
-func (client *KairosDBClientImpl) QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *MetricQueryRequest) ([]*MetricQueryResults, error) {
+func (client *KairosDBClient) QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *MetricQueryRequest) ([]*MetricQueryResults, error) {
 	httpRequest, err := client.buildHTTPRequest(dsInfo, request)
 	if err != nil {
 		return nil, err
@@ -69,7 +65,7 @@ func (client *KairosDBClientImpl) QueryMetrics(ctx context.Context, dsInfo *data
 	}
 }
 
-func (client *KairosDBClientImpl) buildHTTPRequest(dsInfo *datasource.DatasourceInfo, request *MetricQueryRequest) (*http.Request, error) {
+func (client *KairosDBClient) buildHTTPRequest(dsInfo *datasource.DatasourceInfo, request *MetricQueryRequest) (*http.Request, error) {
 	reqBody, err := json.Marshal(request)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal metric query request body")

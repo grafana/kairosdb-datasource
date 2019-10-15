@@ -1,16 +1,18 @@
-package datasource
+package datasource_test
 
 import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/zsabin/kairosdb-datasource/pkg/datasource"
+	"github.com/zsabin/kairosdb-datasource/pkg/datasource/internal/mock_datasource"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"testing"
 )
 
 func TestMetricQueryConverterImpl_Convert_minimalQuery(t *testing.T) {
-	converter := MetricQueryConverterImpl{}
+	converter := datasource.MetricQueryConverterImpl{}
 
-	result, err := converter.Convert(&MetricQuery{
+	result, err := converter.Convert(&datasource.MetricQuery{
 		Name: "MetricA",
 	})
 
@@ -21,9 +23,9 @@ func TestMetricQueryConverterImpl_Convert_minimalQuery(t *testing.T) {
 }
 
 func TestMetricQueryConverterImpl_Convert_withTags(t *testing.T) {
-	converter := MetricQueryConverterImpl{}
+	converter := datasource.MetricQueryConverterImpl{}
 
-	result, err := converter.Convert(&MetricQuery{
+	result, err := converter.Convert(&datasource.MetricQuery{
 		Name: "MetricA",
 		Tags: map[string][]string{
 			"foo":  {"bar", "baz"},
@@ -45,10 +47,9 @@ func TestMetricQueryConverterImpl_Convert_WithAggregators(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockAggregatorConverter := NewMockAggregatorConverter(ctrl)
-	converter := MetricQueryConverterImpl{
-		aggregatorConverter: mockAggregatorConverter,
-	}
+	mockAggregatorConverter := mock_datasource.NewMockAggregatorConverter(ctrl)
+	mockGroupByConverter := mock_datasource.NewMockGroupByConverter(ctrl)
+	converter := datasource.NewMetricQueryConverterImpl(mockAggregatorConverter, mockGroupByConverter)
 
 	aggregator := map[string]interface{}{
 		"name":  "foo",
@@ -60,9 +61,9 @@ func TestMetricQueryConverterImpl_Convert_WithAggregators(t *testing.T) {
 		Return(aggregator, nil).
 		AnyTimes()
 
-	result, err := converter.Convert(&MetricQuery{
+	result, err := converter.Convert(&datasource.MetricQuery{
 		Name: "MetricA",
-		Aggregators: []*Aggregator{
+		Aggregators: []*datasource.Aggregator{
 			{},
 			{},
 		},
@@ -82,10 +83,9 @@ func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockGroupByConverter := NewMockGroupByConverter(ctrl)
-	converter := MetricQueryConverterImpl{
-		groupByConverter: mockGroupByConverter,
-	}
+	mockAggregatorConverter := mock_datasource.NewMockAggregatorConverter(ctrl)
+	mockGroupByConverter := mock_datasource.NewMockGroupByConverter(ctrl)
+	converter := datasource.NewMetricQueryConverterImpl(mockAggregatorConverter, mockGroupByConverter)
 
 	groupers := []*remote.Grouper{
 		{
@@ -99,9 +99,9 @@ func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
 		Return(groupers, nil).
 		AnyTimes()
 
-	result, err := converter.Convert(&MetricQuery{
+	result, err := converter.Convert(&datasource.MetricQuery{
 		Name:    "MetricA",
-		GroupBy: &GroupBy{},
+		GroupBy: &datasource.GroupBy{},
 	})
 
 	assert.Nil(t, err)
@@ -112,14 +112,13 @@ func TestMetricQueryConverterImpl_Convert_WithGroupBy(t *testing.T) {
 }
 
 func TestAggregatorConverterImpl_Convert_singleParam(t *testing.T) {
-	converter := AggregatorConverterImpl{
-		parameterConverterMappings: map[string]ParameterConverter{
-			"foo": &StringParameterConverter{},
-		},
-	}
-	result, err := converter.Convert(&Aggregator{
+	converter := datasource.NewAggregatorConverterImpl(map[string]datasource.ParameterConverter{
+		"foo": &datasource.StringParameterConverter{},
+	})
+
+	result, err := converter.Convert(&datasource.Aggregator{
 		Name: "test",
-		Parameters: []*AggregatorParameter{
+		Parameters: []*datasource.AggregatorParameter{
 			{
 				Type:  "foo",
 				Name:  "key",
@@ -136,14 +135,13 @@ func TestAggregatorConverterImpl_Convert_singleParam(t *testing.T) {
 }
 
 func TestAggregatorConverterImpl_Convert_multipleParams(t *testing.T) {
-	converter := AggregatorConverterImpl{
-		parameterConverterMappings: map[string]ParameterConverter{
-			"foo": &StringParameterConverter{},
-		},
-	}
-	result, err := converter.Convert(&Aggregator{
+	converter := datasource.NewAggregatorConverterImpl(map[string]datasource.ParameterConverter{
+		"foo": &datasource.StringParameterConverter{},
+	})
+
+	result, err := converter.Convert(&datasource.Aggregator{
 		Name: "test",
-		Parameters: []*AggregatorParameter{
+		Parameters: []*datasource.AggregatorParameter{
 			{
 				Type:  "foo",
 				Name:  "key1",
@@ -166,10 +164,10 @@ func TestAggregatorConverterImpl_Convert_multipleParams(t *testing.T) {
 }
 
 func TestAggregatorConverterImpl_Convert_invalidParamType(t *testing.T) {
-	converter := AggregatorConverterImpl{}
-	result, err := converter.Convert(&Aggregator{
+	converter := datasource.AggregatorConverterImpl{}
+	result, err := converter.Convert(&datasource.Aggregator{
 		Name: "test",
-		Parameters: []*AggregatorParameter{
+		Parameters: []*datasource.AggregatorParameter{
 			{
 				Type: "bogus",
 			},
@@ -181,8 +179,8 @@ func TestAggregatorConverterImpl_Convert_invalidParamType(t *testing.T) {
 }
 
 func TestStringParameterConverter_Convert(t *testing.T) {
-	converter := StringParameterConverter{}
-	result, err := converter.Convert(&AggregatorParameter{
+	converter := datasource.StringParameterConverter{}
+	result, err := converter.Convert(&datasource.AggregatorParameter{
 		Name:  "unit",
 		Value: "MINUTES",
 	})
@@ -194,8 +192,8 @@ func TestStringParameterConverter_Convert(t *testing.T) {
 }
 
 func TestAnyParameterConverter_Convert_float(t *testing.T) {
-	converter := AnyParameterConverter{}
-	result, err := converter.Convert(&AggregatorParameter{
+	converter := datasource.AnyParameterConverter{}
+	result, err := converter.Convert(&datasource.AggregatorParameter{
 		Name:  "value",
 		Value: "1.5",
 	})
@@ -207,8 +205,8 @@ func TestAnyParameterConverter_Convert_float(t *testing.T) {
 }
 
 func TestAnyParameterConverter_Convert_string(t *testing.T) {
-	converter := AnyParameterConverter{}
-	result, err := converter.Convert(&AggregatorParameter{
+	converter := datasource.AnyParameterConverter{}
+	result, err := converter.Convert(&datasource.AggregatorParameter{
 		Name:  "value",
 		Value: "string",
 	})
@@ -220,8 +218,8 @@ func TestAnyParameterConverter_Convert_string(t *testing.T) {
 }
 
 func TestAlignmentParameterConverter_Convert(t *testing.T) {
-	converter := AlignmentParameterConverter{}
-	result, err := converter.Convert(&AggregatorParameter{
+	converter := datasource.AlignmentParameterConverter{}
+	result, err := converter.Convert(&datasource.AggregatorParameter{
 		Value: "SAMPLING",
 	})
 
@@ -231,7 +229,7 @@ func TestAlignmentParameterConverter_Convert(t *testing.T) {
 		"align_start_time": false,
 	}, result)
 
-	result, err = converter.Convert(&AggregatorParameter{
+	result, err = converter.Convert(&datasource.AggregatorParameter{
 		Value: "START_TIME",
 	})
 
@@ -243,8 +241,8 @@ func TestAlignmentParameterConverter_Convert(t *testing.T) {
 }
 
 func TestSamplingParameterConverter_Convert(t *testing.T) {
-	converter := SamplingParameterConverter{}
-	result, err := converter.Convert(&AggregatorParameter{
+	converter := datasource.SamplingParameterConverter{}
+	result, err := converter.Convert(&datasource.AggregatorParameter{
 		Value: "1h",
 	})
 
@@ -256,8 +254,8 @@ func TestSamplingParameterConverter_Convert(t *testing.T) {
 		},
 	}, result)
 
-	converter = SamplingParameterConverter{}
-	result, err = converter.Convert(&AggregatorParameter{
+	converter = datasource.SamplingParameterConverter{}
+	result, err = converter.Convert(&datasource.AggregatorParameter{
 		Value: "10ms",
 	})
 
@@ -271,8 +269,8 @@ func TestSamplingParameterConverter_Convert(t *testing.T) {
 }
 
 func TestSamplingParameterConverter_Convert_invalidUnit(t *testing.T) {
-	converter := SamplingParameterConverter{}
-	result, err := converter.Convert(&AggregatorParameter{
+	converter := datasource.SamplingParameterConverter{}
+	result, err := converter.Convert(&datasource.AggregatorParameter{
 		Value: "1x",
 	})
 	assert.Nil(t, result)
@@ -280,38 +278,38 @@ func TestSamplingParameterConverter_Convert_invalidUnit(t *testing.T) {
 }
 
 func TestSamplingParameterConverter_Convert_invalidFormat(t *testing.T) {
-	converter := SamplingParameterConverter{}
-	result, err := converter.Convert(&AggregatorParameter{
+	converter := datasource.SamplingParameterConverter{}
+	result, err := converter.Convert(&datasource.AggregatorParameter{
 		Value: "",
 	})
 	assert.Nil(t, result)
 	assert.NotNil(t, err)
 
-	result, err = converter.Convert(&AggregatorParameter{
+	result, err = converter.Convert(&datasource.AggregatorParameter{
 		Value: "h",
 	})
 	assert.Nil(t, result)
 	assert.NotNil(t, err)
 
-	result, err = converter.Convert(&AggregatorParameter{
+	result, err = converter.Convert(&datasource.AggregatorParameter{
 		Value: "1",
 	})
 	assert.Nil(t, result)
 	assert.NotNil(t, err)
 
-	result, err = converter.Convert(&AggregatorParameter{
+	result, err = converter.Convert(&datasource.AggregatorParameter{
 		Value: "h1",
 	})
 	assert.Nil(t, result)
 	assert.NotNil(t, err)
 
-	result, err = converter.Convert(&AggregatorParameter{
+	result, err = converter.Convert(&datasource.AggregatorParameter{
 		Value: "1h1h",
 	})
 	assert.Nil(t, result)
 	assert.NotNil(t, err)
 
-	result, err = converter.Convert(&AggregatorParameter{
+	result, err = converter.Convert(&datasource.AggregatorParameter{
 		Value: "1.5h",
 	})
 	assert.Nil(t, result)

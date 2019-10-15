@@ -1,17 +1,19 @@
-package datasource
+package datasource_test
 
 import (
 	"context"
 	"encoding/json"
 	"github.com/golang/mock/gomock"
-	"github.com/grafana/grafana_plugin_model/go/datasource"
+	grafana "github.com/grafana/grafana_plugin_model/go/datasource"
 	"github.com/stretchr/testify/assert"
+	"github.com/zsabin/kairosdb-datasource/pkg/datasource"
+	"github.com/zsabin/kairosdb-datasource/pkg/datasource/internal/mock_datasource"
 	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"testing"
 )
 
 func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
-	ds := &KairosDBDatasource{}
+	ds := &datasource.KairosDBDatasource{}
 
 	kairosResults := &remote.MetricQueryResults{
 		Results: []*remote.MetricQueryResult{
@@ -29,12 +31,12 @@ func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
 		},
 	}
 
-	expectedResults := &datasource.QueryResult{
-		Series: []*datasource.TimeSeries{
+	expectedResults := &grafana.QueryResult{
+		Series: []*grafana.TimeSeries{
 			{
 				Name: "MetricA",
 				Tags: map[string]string{},
-				Points: []*datasource.Point{
+				Points: []*grafana.Point{
 					{
 						Timestamp: 1564682818000,
 						Value:     10.5,
@@ -53,7 +55,7 @@ func TestDatasource_ParseQueryResult_SingleSeries(t *testing.T) {
 }
 
 func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
-	ds := &KairosDBDatasource{}
+	ds := &datasource.KairosDBDatasource{}
 
 	kairosResults := &remote.MetricQueryResults{
 		Results: []*remote.MetricQueryResult{
@@ -96,15 +98,15 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 		},
 	}
 
-	expectedResults := &datasource.QueryResult{
-		Series: []*datasource.TimeSeries{
+	expectedResults := &grafana.QueryResult{
+		Series: []*grafana.TimeSeries{
 			{
 				Name: "MetricA",
 				Tags: map[string]string{
 					"host":        "server1",
 					"data_center": "dc1",
 				},
-				Points: []*datasource.Point{
+				Points: []*grafana.Point{
 					{
 						Timestamp: 1564682818000,
 						Value:     10.5,
@@ -117,7 +119,7 @@ func TestDatasource_ParseQueryResult_MultipleSeries(t *testing.T) {
 					"host":        "server2",
 					"data_center": "dc2",
 				},
-				Points: []*datasource.Point{
+				Points: []*grafana.Point{
 					{
 						Timestamp: 1564682818000,
 						Value:     10.5,
@@ -135,30 +137,27 @@ func TestDatasource_Query(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockConverter := NewMockMetricQueryConverter(ctrl)
-	mockClient := remote.NewMockKairosDBClient(ctrl)
+	mockConverter := mock_datasource.NewMockMetricQueryConverter(ctrl)
+	mockClient := mock_datasource.NewMockKairosDBClient(ctrl)
 
-	ds := &KairosDBDatasource{
-		kairosDBClient:       mockClient,
-		metricQueryConverter: mockConverter,
-	}
+	ds := datasource.NewKairosDBDatasource(mockClient, mockConverter)
 
-	dsRequest := &datasource.DatasourceRequest{
-		Datasource: &datasource.DatasourceInfo{},
-		TimeRange: &datasource.TimeRange{
+	dsRequest := &grafana.DatasourceRequest{
+		Datasource: &grafana.DatasourceInfo{},
+		TimeRange: &grafana.TimeRange{
 			FromEpochMs: 1564682808000,
 			ToEpochMs:   1564682828000,
 		},
-		Queries: []*datasource.Query{
+		Queries: []*grafana.Query{
 			{
 				RefId: "A",
-				ModelJson: toModelJson(&MetricQuery{
+				ModelJson: toModelJson(&datasource.MetricQuery{
 					Name: "MetricA",
 				}),
 			},
 			{
 				RefId: "B",
-				ModelJson: toModelJson(&MetricQuery{
+				ModelJson: toModelJson(&datasource.MetricQuery{
 					Name: "MetricB",
 				}),
 			},
@@ -211,15 +210,15 @@ func TestDatasource_Query(t *testing.T) {
 	response, err := ds.Query(context.TODO(), dsRequest)
 
 	assert.Nil(t, err)
-	assert.Equal(t, &datasource.DatasourceResponse{
-		Results: []*datasource.QueryResult{
+	assert.Equal(t, &grafana.DatasourceResponse{
+		Results: []*grafana.QueryResult{
 			{
 				RefId: "A",
-				Series: []*datasource.TimeSeries{
+				Series: []*grafana.TimeSeries{
 					{
 						Name: "MetricA",
 						Tags: map[string]string{},
-						Points: []*datasource.Point{
+						Points: []*grafana.Point{
 							{
 								Timestamp: 1564682814000,
 								Value:     5,
@@ -230,11 +229,11 @@ func TestDatasource_Query(t *testing.T) {
 			},
 			{
 				RefId: "B",
-				Series: []*datasource.TimeSeries{
+				Series: []*grafana.TimeSeries{
 					{
 						Name: "MetricB",
 						Tags: map[string]string{},
-						Points: []*datasource.Point{
+						Points: []*grafana.Point{
 							{
 								Timestamp: 1564682818000,
 								Value:     10.5,
@@ -247,8 +246,8 @@ func TestDatasource_Query(t *testing.T) {
 	}, response)
 }
 
-func toModelJson(query *MetricQuery) string {
-	req := MetricRequest{
+func toModelJson(query *datasource.MetricQuery) string {
+	req := datasource.MetricRequest{
 		Query: query,
 	}
 	rBytes, err := json.Marshal(req)

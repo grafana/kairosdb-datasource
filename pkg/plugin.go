@@ -16,7 +16,7 @@ func main() {
 	logger.Info("Running KairosDB backend datasource")
 
 	// TODO support configuration of http client
-	kairosClient := remote.NewKairosDBClientImpl(&http.Client{
+	kairosClient := remote.NewKairosDBClient(&http.Client{
 		Timeout: time.Duration(time.Second * 30),
 	})
 

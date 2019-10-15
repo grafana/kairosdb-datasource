@@ -28,7 +28,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-var kairosClient KairosDBClient
+var kairosClient *KairosDBClient
 var mockTransport *MockTransport
 var dsInfo *datasource.DatasourceInfo
 
@@ -61,7 +61,7 @@ func setup() {
 		Transport: mockTransport,
 	}
 
-	kairosClient = &KairosDBClientImpl{
+	kairosClient = &KairosDBClient{
 		httpClient: httpClient,
 	}
 

@@ -14,13 +14,17 @@ import (
 
 var logger = logging.Get("datasource").Named("KairosDBDatasource")
 
+type KairosDBClient interface {
+	QueryMetrics(ctx context.Context, dsInfo *datasource.DatasourceInfo, request *remote.MetricQueryRequest) ([]*remote.MetricQueryResults, error)
+}
+
 type KairosDBDatasource struct {
 	plugin.NetRPCUnsupportedPlugin
-	kairosDBClient       remote.KairosDBClient
+	kairosDBClient       KairosDBClient
 	metricQueryConverter MetricQueryConverter
 }
 
-func NewKairosDBDatasource(client remote.KairosDBClient, converter MetricQueryConverter) *KairosDBDatasource {
+func NewKairosDBDatasource(client KairosDBClient, converter MetricQueryConverter) *KairosDBDatasource {
 	return &KairosDBDatasource{
 		kairosDBClient:       client,
 		metricQueryConverter: converter,
