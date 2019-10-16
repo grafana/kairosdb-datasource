@@ -7,7 +7,7 @@ package mock_datasource
 import (
 	gomock "github.com/golang/mock/gomock"
 	datasource "github.com/grafana/grafana_plugin_model/go/datasource"
-	remote "github.com/zsabin/kairosdb-datasource/pkg/remote"
+	remote "github.com/grafana/kairosdb-datasource/pkg/remote"
 	context "golang.org/x/net/context"
 	reflect "reflect"
 )

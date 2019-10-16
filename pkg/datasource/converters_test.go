@@ -2,10 +2,10 @@ package datasource_test
 
 import (
 	"github.com/golang/mock/gomock"
+	"github.com/grafana/kairosdb-datasource/pkg/datasource"
+	"github.com/grafana/kairosdb-datasource/pkg/datasource/internal/mock_datasource"
+	"github.com/grafana/kairosdb-datasource/pkg/remote"
 	"github.com/stretchr/testify/assert"
-	"github.com/zsabin/kairosdb-datasource/pkg/datasource"
-	"github.com/zsabin/kairosdb-datasource/pkg/datasource/internal/mock_datasource"
-	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"testing"
 )
 

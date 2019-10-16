@@ -3,10 +3,10 @@ package datasource
 import (
 	"encoding/json"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
+	"github.com/grafana/kairosdb-datasource/pkg/logging"
+	"github.com/grafana/kairosdb-datasource/pkg/remote"
 	"github.com/hashicorp/go-plugin"
 	"github.com/pkg/errors"
-	"github.com/zsabin/kairosdb-datasource/pkg/logging"
-	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

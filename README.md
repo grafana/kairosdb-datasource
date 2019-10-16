@@ -28,7 +28,7 @@ If you wish to build the backend plugin, as well, your project must be setup wit
 Ensure your GOPATH environment variable points to your workspace:
 ```
 export GOPATH=$HOME/go
-cd $GOPATH/src/github.com/kairosdb
+cd $GOPATH/src/github.com/grafana
 git clone https://github.com/grafana/kairosdb-datasource
 ```
 
@@ -38,7 +38,7 @@ Be aware that grafana-server needs read access to the project directory.
 
 ```ini
 [plugin.kairosdb]
-path = $GOPATH/src/github.com/kairosdb/kairosdb-datasource
+path = $GOPATH/src/github.com/grafana/kairosdb-datasource
 ```
 
 Then compile the code and restart Grafana:

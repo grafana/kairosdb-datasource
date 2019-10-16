@@ -2,10 +2,10 @@ package main
 
 import (
 	grafana "github.com/grafana/grafana_plugin_model/go/datasource"
+	"github.com/grafana/kairosdb-datasource/pkg/datasource"
+	"github.com/grafana/kairosdb-datasource/pkg/logging"
+	"github.com/grafana/kairosdb-datasource/pkg/remote"
 	"github.com/hashicorp/go-plugin"
-	"github.com/zsabin/kairosdb-datasource/pkg/datasource"
-	"github.com/zsabin/kairosdb-datasource/pkg/logging"
-	"github.com/zsabin/kairosdb-datasource/pkg/remote"
 	"net/http"
 	"time"
 )
