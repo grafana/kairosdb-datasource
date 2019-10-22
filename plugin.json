@@ -4,6 +4,9 @@
   "type": "datasource",
   "metrics": true,
   "annotations": false,
+  "backend": true,
+  "alerting": true,
+  "executable": "grafana-kairosdb-datasource",
   "staticRoot": ".",
   "info": {
     "description": "datasource plugin for KairosDB",

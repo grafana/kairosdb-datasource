@@ -1,0 +1,6 @@
+{
+  "errors": [
+    "metrics[0].aggregate must be one of MIN,SUM,MAX,AVG,DEV",
+    "metrics[0].sampling.unit must be one of  SECONDS,MINUTES,HOURS,DAYS,WEEKS,YEARS"
+  ]
+}
