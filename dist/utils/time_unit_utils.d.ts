@@ -5,6 +5,10 @@ export declare class TimeUnitUtils {
     static convertTimeUnit(unit: string): string;
     static getShortUnit(unit: string): string;
     static getString(unit: TimeUnit): string;
+    static convertFromInterval(intervalString: string): {
+        value: string;
+        unit: string;
+    };
     private static TIME_UNIT_STRINGS;
     private static SHORT_UNITS;
     private static LONG_UNITS;

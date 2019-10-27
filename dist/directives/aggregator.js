@@ -26,11 +26,15 @@ System.register(["lodash", "./aggregator_editor"], function(exports_1) {
                 function AggregatorCtrl() {
                     this.isAutoValue = false;
                     this.isAutoValue = !lodash_1.default.isNil(this.value.autoValueSwitch) && this.value.autoValueSwitch.enabled;
-                    this.visibleParameters = this.isAutoValue ? this.getVisibleParameters() : this.value.parameters;
                 }
                 AggregatorCtrl.prototype.getVisibleParameters = function () {
-                    var dependentParametersTypes = this.value.autoValueSwitch.dependentParameters.map(function (parameter) { return parameter.type; });
-                    return this.value.parameters.filter(function (parameter) { return !lodash_1.default.includes(dependentParametersTypes, parameter.type); });
+                    if (this.isAutoValue) {
+                        var dependentParametersTypes = this.value.autoValueSwitch.dependentParameters.map(function (parameter) { return parameter.type; });
+                        return this.value.parameters.filter(function (parameter) { return !lodash_1.default.includes(dependentParametersTypes, parameter.type); });
+                    }
+                    else {
+                        return this.value.parameters;
+                    }
                 };
                 return AggregatorCtrl;
             })();

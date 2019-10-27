@@ -67,6 +67,7 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                 };
                 KairosDBDatasource.prototype.query = function (options) {
                     var _this = this;
+                    this.queryOptions = options;
                     var enabledTargets = lodash_1.default.cloneDeep(options.targets.filter(function (target) { return !target.hide; }));
                     var convertedTargets = lodash_1.default.map(enabledTargets, function (target) {
                         return _this.legacyTargetConverter.isApplicable(target) ?
@@ -76,11 +77,12 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                         return; // todo: target validation, throw message to grafana with detailed info
                     }
                     var aliases = convertedTargets.map(function (target) { return target.query.alias; });
+                    var templatingUtils = this.templateSrv;
                     var unpackedTargets = lodash_1.default.flatten(convertedTargets.map(function (target) {
-                        return _this.templatingUtils.replace(target.query.metricName)
-                            .map(function (metricName) {
+                        var replacedQuery = templatingUtils.replace(JSON.stringify(target.query), options.scopedVars);
+                        return [JSON.parse(replacedQuery)].map(function (query) {
                             var clonedTarget = lodash_1.default.cloneDeep(target);
-                            clonedTarget.query.metricName = metricName;
+                            clonedTarget.query = query;
                             return clonedTarget;
                         });
                     }));
@@ -94,9 +96,9 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     return this.executeRequest(this.getRequestBuilder().buildMetricTagsQuery(metricName, filters))
                         .then(this.handleMetricTagsResponse);
                 };
-                KairosDBDatasource.prototype.metricFindQuery = function (query) {
+                KairosDBDatasource.prototype.metricFindQuery = function (query, options) {
                     var _this = this;
-                    var func = this.templatingFunctionsCtrl.resolve(query);
+                    var func = this.templatingFunctionsCtrl.resolve(query, options.scopedVars);
                     return func().then(function (values) { return values.map(function (value) { return _this.mapToTemplatingValue(value); }); });
                 };
                 KairosDBDatasource.prototype.getMetricNames = function () {

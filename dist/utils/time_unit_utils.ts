@@ -23,6 +23,26 @@ export class TimeUnitUtils {
         return TimeUnit[unit];
     }
 
+    public static convertFromInterval(intervalString: string) {
+        const interval_regex = /(\d+(?:\.\d+)?)([Mwdhmsy])/;
+        const interval_regex_ms = /(\d+(?:\.\d+)?)(ms)/;
+        let matches = intervalString.match(interval_regex_ms);
+        if (!matches) {
+            matches = intervalString.match(interval_regex);
+        }
+        if (!matches) {
+            throw new Error('Expecting a number followed by one of "y M w d h m s ms"');
+        }
+
+        const value = matches[1];
+        const unit = TimeUnitUtils.convertTimeUnit(matches[2]);
+
+        return{
+            value,
+            unit
+        };
+    }
+
     private static TIME_UNIT_STRINGS = _.values(EnumValues(TimeUnit));
     private static SHORT_UNITS = _.zipObject(
         ["ms", "s", "m", "h", "d", "w", "M", "y"],

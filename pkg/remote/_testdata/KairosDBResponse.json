@@ -1,0 +1,45 @@
+{
+  "queries": [
+    {
+      "sample_size": 14368,
+      "results": [
+        {
+          "name": "abc.123",
+          "group_by": [
+            {
+              "name": "type",
+              "type": "number"
+            },
+            {
+              "name": "tag",
+              "tags": [
+                "host"
+              ],
+              "group": {
+                "host": "server1"
+              }
+            }
+          ],
+          "tags": {
+            "host": [
+              "server1"
+            ],
+            "customer": [
+              "bar"
+            ]
+          },
+          "values": [
+            [
+              1364968800000,
+              11019
+            ],
+            [
+              1366351200000,
+              2843
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

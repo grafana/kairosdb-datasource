@@ -10,5 +10,4 @@ export declare class ParameterObjectBuilder {
     private buildAlignmentParameter(parameter);
     private buildSamplingParameter(parameter, autoValue);
     private buildDefault(parameter);
-    private isOverriddenByAutoValue(parameter);
 }

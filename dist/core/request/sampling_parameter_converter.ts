@@ -3,6 +3,7 @@ import {Aggregator} from "../../beans/aggregators/aggregator";
 import {AggregatorParameter} from "../../beans/aggregators/parameters/aggregator_parameter";
 import {SamplingAggregatorParameter} from "../../beans/aggregators/parameters/sampling_aggregator_parameter";
 import {SamplingUnitAggregatorParameter} from "../../beans/aggregators/parameters/sampling_unit_aggregator_parameter";
+import {TimeUnitUtils} from "../../utils/time_unit_utils";
 import {SamplingConverter} from "./sampling_converter";
 
 export class SamplingParameterConverter {
@@ -15,17 +16,21 @@ export class SamplingParameterConverter {
     public convertSamplingParameters(aggregator: Aggregator) {
         const parameters = aggregator.parameters;
         const samplingParameterIndex = this.findParameterIndex(parameters, SamplingAggregatorParameter.TYPE);
-        const samplingUnitParameterIndex = this.findParameterIndex(parameters, SamplingUnitAggregatorParameter.TYPE);
 
-        if (samplingParameterIndex > -1 && samplingUnitParameterIndex > -1) {
+        if (samplingParameterIndex > -1) {
             const samplingParameter = parameters[samplingParameterIndex];
-            const samplingUnitParameter = parameters[samplingUnitParameterIndex];
-            if (this.samplingConverter.isApplicable(samplingParameter.value)) {
+            const relativeTime = TimeUnitUtils.convertFromInterval(samplingParameter.value);
+            const samplingUnitAggregatorParameter = new SamplingUnitAggregatorParameter();
+            if (this.samplingConverter.isApplicable(relativeTime.value)) {
                 const convertedSampling =
-                    this.samplingConverter.convert(samplingParameter.value, samplingUnitParameter.value);
+                    this.samplingConverter.convert(relativeTime.value, relativeTime.unit);
                 samplingParameter.value = convertedSampling.interval;
-                samplingUnitParameter.value = convertedSampling.unit;
+                samplingUnitAggregatorParameter.value = convertedSampling.unit;
+            } else {
+                samplingParameter.value = relativeTime.value;
+                samplingUnitAggregatorParameter.value = relativeTime.unit;
             }
+            parameters.push(samplingUnitAggregatorParameter);
         }
         return aggregator;
     }

@@ -5,5 +5,5 @@ export declare class TemplatingFunctionsCtrl {
     private templatingFunctionResolver;
     constructor(templatingFunctionResolver: TemplatingFunctionResolver);
     register(func: TemplatingFunction): void;
-    resolve(functionBody: string): () => Promise<string[]>;
+    resolve(functionBody: string, scopedVars: any): () => Promise<string[]>;
 }

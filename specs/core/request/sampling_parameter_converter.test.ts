@@ -8,19 +8,34 @@ import {TimeUnitUtils} from "../../../src/utils/time_unit_utils";
 import {buildSamplingConverterMock} from "../../mocks";
 
 describe("SamplingParameterConverter", () => {
-    const millisecondsString = TimeUnitUtils.getString(TimeUnit.MILLISECONDS);
-    const convertedValue = "42000000";
+    const millisecondsString = TimeUnitUtils.getString(TimeUnit.MINUTES);
+    const convertedValue = "5";
 
-    it("should update both sampling parameters", () => {
+    it("should convert unit for interval", () => {
         // given
         const samplingConverterMock = buildSamplingConverterMock(convertedValue, millisecondsString, true);
         const samplingParameterConverter = new SamplingParameterConverter(samplingConverterMock);
         const aggregator = new Aggregator("foo");
-        const samplingUnitAggregatorParameter = new SamplingUnitAggregatorParameter();
-        samplingUnitAggregatorParameter.value = TimeUnitUtils.getString(TimeUnit.HOURS);
         aggregator.parameters = [
-            new SamplingAggregatorParameter("text", "1.2"),
-            samplingUnitAggregatorParameter
+            new SamplingAggregatorParameter("text", "5m")
+        ];
+        // when
+        const convertedAggregator = samplingParameterConverter.convertSamplingParameters(aggregator);
+        // then
+        assert(samplingConverterMock.convert.calledOnce);
+        assert(samplingConverterMock.isApplicable.calledOnce);
+        convertedAggregator.parameters.should.have.lengthOf(2);
+        convertedAggregator.parameters[0].value.should.be.equal(convertedValue);
+        convertedAggregator.parameters[1].value.should.be.equal(millisecondsString);
+    });
+
+    it("should update both sampling parameters for float", () => {
+        // given
+        const samplingConverterMock = buildSamplingConverterMock(convertedValue, millisecondsString, true);
+        const samplingParameterConverter = new SamplingParameterConverter(samplingConverterMock);
+        const aggregator = new Aggregator("foo");
+        aggregator.parameters = [
+            new SamplingAggregatorParameter("text", "1.2ms")
         ];
         // when
         const convertedAggregator = samplingParameterConverter.convertSamplingParameters(aggregator);

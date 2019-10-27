@@ -5,18 +5,20 @@ import "./aggregator_editor";
 
 export class AggregatorCtrl {
     public value: Aggregator;
-    public visibleParameters: AggregatorParameter[];
     public isAutoValue: boolean = false;
 
     constructor() {
         this.isAutoValue = !_.isNil(this.value.autoValueSwitch) && this.value.autoValueSwitch.enabled;
-        this.visibleParameters = this.isAutoValue ? this.getVisibleParameters() : this.value.parameters;
     }
 
-    private getVisibleParameters(): AggregatorParameter[] {
-        const dependentParametersTypes =
-            this.value.autoValueSwitch.dependentParameters.map((parameter) => parameter.type);
-        return this.value.parameters.filter((parameter) => !_.includes(dependentParametersTypes, parameter.type));
+    public getVisibleParameters(): AggregatorParameter[] {
+        if (this.isAutoValue) {
+            const dependentParametersTypes =
+                this.value.autoValueSwitch.dependentParameters.map((parameter) => parameter.type);
+            return this.value.parameters.filter((parameter) => !_.includes(dependentParametersTypes, parameter.type));
+        } else  {
+            return this.value.parameters;
+        }
     }
 }
 

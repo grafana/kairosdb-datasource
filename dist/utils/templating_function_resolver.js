@@ -11,12 +11,13 @@ System.register(["lodash"], function(exports_1) {
                 function TemplatingFunctionResolver(templatingUtils) {
                     this.templatingUtils = templatingUtils;
                 }
-                TemplatingFunctionResolver.prototype.unpackFunction = function (matchedFunction, functionBody) {
+                TemplatingFunctionResolver.prototype.unpackFunction = function (scopedVar, matchedFunction, functionBody) {
                     var _this = this;
                     var matched = functionBody.match(matchedFunction.regexp);
                     var args = matched[1].split(TemplatingFunctionResolver.FUNCTION_ARGUMENTS_SEPARATOR).map(function (arg) { return arg.trim(); });
-                    var simpleArgs = args.filter(function (argument) { return !_this.isFilterArgument(argument); });
-                    var filters = lodash_1.default.difference(args, simpleArgs).map(function (filterArgument) { return _this.mapToFilter(filterArgument); });
+                    var replacedArgs = args.map(function (argument) { return _this.templatingUtils.replace(argument)[0]; });
+                    var simpleArgs = replacedArgs.filter(function (argument) { return !_this.isFilterArgument(argument); });
+                    var filters = lodash_1.default.difference(replacedArgs, simpleArgs).map(function (filterArgument) { return _this.mapToFilter(filterArgument); });
                     return function () { return matchedFunction.body.apply(matchedFunction, simpleArgs.concat([filters.reduce(function (filter1, filter2) { return lodash_1.default.merge(filter1, filter2); }, {})])); };
                 };
                 TemplatingFunctionResolver.prototype.mapToFilter = function (filter) {
