@@ -18,6 +18,10 @@ export enum Filter {
     GT, GTE, EQUAL, LTE, LT
 }
 
+export enum Indeterminate {
+    keep, discard
+}
+
 export function EnumValues(enumType) {
     return _.pickBy(_.values(enumType), (value) => !_.isNumber(value));
 }

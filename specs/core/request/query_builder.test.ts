@@ -57,20 +57,6 @@ describe("QueryBuilder", () => {
         datapointsQuery.withCredentials.should.be.false;
     });
 
-    it("should build request id containing panel id", () => {
-        // given
-        const panelId = "unique_panel_id";
-        const options = {
-            panelId,
-            range: defaultTimeRange
-        };
-        // when
-        const datapointsQuery = queryBuilder.buildDatapointsQuery([emptyTarget], options);
-        // then
-        // tslint:disable-next-line
-        datapointsQuery.requestId.should.contain(panelId);
-    });
-
     it("should use correct time range", () => {
         // given
         const from = moment(1511861103);

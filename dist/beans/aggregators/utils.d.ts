@@ -27,4 +27,8 @@ export declare enum Filter {
     LTE = 3,
     LT = 4
 }
+export declare enum Indeterminate {
+    keep = 0,
+    discard = 1
+}
 export declare function EnumValues(enumType: any): any;

@@ -34,7 +34,8 @@ System.register(["./aggregator", "./parameters/any_aggregator_parameter", "./par
                     var _this = _super.call(this, FilterAggregator.NAME) || this;
                     _this.parameters = _this.parameters.concat([
                         new enum_aggregator_parameter_1.EnumAggregatorParameter("filter_op", utils_1.Filter, "filter"),
-                        new any_aggregator_parameter_1.AnyAggregatorParameter("threshold", "threshold")
+                        new any_aggregator_parameter_1.AnyAggregatorParameter("threshold", "threshold"),
+                        new enum_aggregator_parameter_1.EnumAggregatorParameter("filter_indeterminate_inclusion", utils_1.Indeterminate, "if uncertain", utils_1.Indeterminate[utils_1.Indeterminate.keep])
                     ]);
                     return _this;
                 }
@@ -42,7 +43,8 @@ System.register(["./aggregator", "./parameters/any_aggregator_parameter", "./par
                     var rval = new FilterAggregator();
                     rval.parameters = [
                         enum_aggregator_parameter_1.EnumAggregatorParameter.fromObject(object.parameters[0]),
-                        any_aggregator_parameter_1.AnyAggregatorParameter.fromObject(object.parameters[1])
+                        any_aggregator_parameter_1.AnyAggregatorParameter.fromObject(object.parameters[1]),
+                        enum_aggregator_parameter_1.EnumAggregatorParameter.fromObject(object.parameters[2])
                     ];
                     return rval;
                 };

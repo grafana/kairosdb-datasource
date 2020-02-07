@@ -67,7 +67,6 @@ export class KairosDBQueryBuilder {
         return this.buildRequest({
             data,
             method: "POST",
-            requestId: this.buildRequestId("metric_names", panelId),
             url: "/datapoints/query"
         });
     }

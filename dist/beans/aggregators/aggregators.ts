@@ -32,7 +32,8 @@ export const AGGREGATORS = [
     new SamplerAggregator(),
     new ScaleAggregator(),
     new TrimAggregator(),
-    new FilterAggregator()
+    new FilterAggregator(),
+    new Aggregator("percent_remaining")
 ].sort( (a, b) => a.name.localeCompare(b.name));
 
 const RANGE_AGGREGATORS = ["avg", "dev", "count", "first", "gaps",
@@ -59,8 +60,10 @@ export function fromObject(object: any): Aggregator {
       return TrimAggregator.fromObject(object);
   } else if (object.name === "diff") {
       return new Aggregator("diff");
-  } else if (object.name === "filter") {
+  } else if (object.name === FilterAggregator.NAME) {
       return FilterAggregator.fromObject(object);
+  } else if (object.name === "percent_remaining") {
+      return new Aggregator("percent_remaining");
   }
 
   return object;

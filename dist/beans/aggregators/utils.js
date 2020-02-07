@@ -1,6 +1,6 @@
 System.register(["lodash"], function (exports_1, context_1) {
     "use strict";
-    var lodash_1, TimeUnit, Trim, Alignment, Filter;
+    var lodash_1, TimeUnit, Trim, Alignment, Filter, Indeterminate;
     var __moduleName = context_1 && context_1.id;
     function EnumValues(enumType) {
         return lodash_1.default.pickBy(lodash_1.default.values(enumType), function (value) { return !lodash_1.default.isNumber(value); });
@@ -45,6 +45,11 @@ System.register(["lodash"], function (exports_1, context_1) {
                 Filter[Filter["LT"] = 4] = "LT";
             })(Filter || (Filter = {}));
             exports_1("Filter", Filter);
+            (function (Indeterminate) {
+                Indeterminate[Indeterminate["keep"] = 0] = "keep";
+                Indeterminate[Indeterminate["discard"] = 1] = "discard";
+            })(Indeterminate || (Indeterminate = {}));
+            exports_1("Indeterminate", Indeterminate);
         }
     };
 });

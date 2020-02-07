@@ -1,8 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "outDir": "./dist",
     "module": "system",
-    "moduleResolution": "node"
-  }
+    "target": "es5",
+    "noImplicitAny": false,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true
+  },
+  "include": [
+    "**/*"
+  ]
 }

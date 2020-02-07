@@ -76,7 +76,6 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
                     return this.buildRequest({
                         data: data,
                         method: "POST",
-                        requestId: this.buildRequestId("metric_names", panelId),
                         url: "/datapoints/query"
                     });
                 };

@@ -33,8 +33,11 @@ System.register(["./aggregator", "./apdex_aggregator", "./divide_aggregator", ".
         else if (object.name === "diff") {
             return new aggregator_1.Aggregator("diff");
         }
-        else if (object.name === "filter") {
+        else if (object.name === filter_aggregator_1.FilterAggregator.NAME) {
             return filter_aggregator_1.FilterAggregator.fromObject(object);
+        }
+        else if (object.name === "percent_remaining") {
+            return new aggregator_1.Aggregator("percent_remaining");
         }
         return object;
     }
@@ -98,7 +101,8 @@ System.register(["./aggregator", "./apdex_aggregator", "./divide_aggregator", ".
                 new sampler_aggregator_1.SamplerAggregator(),
                 new scale_aggregator_1.ScaleAggregator(),
                 new trim_aggregator_1.TrimAggregator(),
-                new filter_aggregator_1.FilterAggregator()
+                new filter_aggregator_1.FilterAggregator(),
+                new aggregator_1.Aggregator("percent_remaining")
             ].sort(function (a, b) { return a.name.localeCompare(b.name); }));
             RANGE_AGGREGATORS = ["avg", "dev", "count", "first", "gaps",
                 "last", "least_squares", "max", "min", "gaps", "merge", "sum", "movingWindow"];

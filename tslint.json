@@ -10,7 +10,7 @@
     "one-variable-per-declaration": false,
     "no-reference": false,
     "variable-name": [
-      false, 
+      false,
       "allow-snake-case"
     ],
     "jsdoc-format": false,
