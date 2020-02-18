@@ -6,7 +6,9 @@ export declare class TagsSelectCtrl {
     constructor(uiSegmentSrv: any);
     onChange(): void;
     remove(segment: any): void;
-    private update;
+    private showPlusButtonIfNeeded;
+    private updateSelectedValues;
+    private isPlusButton;
 }
 export declare function TagsSelectDirective(): {
     bindToController: boolean;

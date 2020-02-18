@@ -26,29 +26,35 @@ System.register(["lodash"], function (exports_1, context_1) {
         execute: function () {
             TagsSelectCtrl = (function () {
                 function TagsSelectCtrl(uiSegmentSrv) {
-                    var _this = this;
                     this.uiSegmentSrv = uiSegmentSrv;
                     this.selectedValues = this.selectedValues || [];
-                    if (this.tagValues.length > 1) {
-                        this.segments = this.selectedValues
-                            .map(function (tagValue) { return _this.uiSegmentSrv.newSegment(tagValue); });
-                        this.segments.push(this.uiSegmentSrv.newPlusButton());
-                    }
+                    this.segments = this.selectedValues.map(this.uiSegmentSrv.newSegment);
+                    this.showPlusButtonIfNeeded();
                 }
                 TagsSelectCtrl.prototype.onChange = function () {
-                    if (!lodash_1.default.isNil(lodash_1.default.last(this.segments).value)) {
-                        this.segments.push(this.uiSegmentSrv.newPlusButton());
-                    }
-                    this.update();
+                    this.showPlusButtonIfNeeded();
+                    this.updateSelectedValues();
                 };
                 TagsSelectCtrl.prototype.remove = function (segment) {
                     this.segments = lodash_1.default.without(this.segments, segment);
-                    this.update();
+                    this.updateSelectedValues();
                 };
-                TagsSelectCtrl.prototype.update = function () {
+                TagsSelectCtrl.prototype.showPlusButtonIfNeeded = function () {
+                    var lastSeg = lodash_1.default.last(this.segments);
+                    if (!this.isPlusButton(lastSeg)) {
+                        this.segments.push(this.uiSegmentSrv.newPlusButton());
+                    }
+                };
+                TagsSelectCtrl.prototype.updateSelectedValues = function () {
+                    var _this = this;
                     this.selectedValues = this.segments
-                        .map(function (tagSegment) { return tagSegment.value; })
-                        .filter(function (value) { return !lodash_1.default.isNil(value); });
+                        .filter(function (segment) { return !_this.isPlusButton(segment); })
+                        .map(function (tagSegment) { return tagSegment.value; });
+                };
+                TagsSelectCtrl.prototype.isPlusButton = function (segment) {
+                    return !lodash_1.default.isNil(segment) &&
+                        segment.type === "plus-button" &&
+                        lodash_1.default.isNil(segment.value);
                 };
                 return TagsSelectCtrl;
             }());
