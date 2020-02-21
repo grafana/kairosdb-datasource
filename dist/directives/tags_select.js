@@ -2,6 +2,9 @@ System.register(["lodash"], function (exports_1, context_1) {
     "use strict";
     var lodash_1, TagsSelectCtrl;
     var __moduleName = context_1 && context_1.id;
+    function notNil(obj) {
+        return !lodash_1.default.isNil(obj);
+    }
     function TagsSelectDirective() {
         return {
             bindToController: true,
@@ -27,8 +30,8 @@ System.register(["lodash"], function (exports_1, context_1) {
             TagsSelectCtrl = (function () {
                 function TagsSelectCtrl(uiSegmentSrv) {
                     this.uiSegmentSrv = uiSegmentSrv;
-                    this.selectedValues = this.selectedValues || [];
-                    this.segments = this.selectedValues.map(this.uiSegmentSrv.newSegment);
+                    this.selectedValues = this.selectedValues.filter(notNil) || [];
+                    this.segments = this.selectedValues.map(uiSegmentSrv.newSegment);
                     this.showPlusButtonIfNeeded();
                 }
                 TagsSelectCtrl.prototype.onChange = function () {
@@ -52,7 +55,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                         .map(function (tagSegment) { return tagSegment.value; });
                 };
                 TagsSelectCtrl.prototype.isPlusButton = function (segment) {
-                    return !lodash_1.default.isNil(segment) &&
+                    return notNil(segment) &&
                         segment.type === "plus-button" &&
                         lodash_1.default.isNil(segment.value);
                 };

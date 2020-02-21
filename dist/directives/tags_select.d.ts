@@ -1,11 +1,15 @@
+export interface SegmentLike {
+    value: string | null;
+    type: "plus-button";
+}
 export declare class TagsSelectCtrl {
     private uiSegmentSrv;
     tagValues: string[];
     selectedValues: string[];
-    segments: any[];
+    segments: SegmentLike[];
     constructor(uiSegmentSrv: any);
     onChange(): void;
-    remove(segment: any): void;
+    remove(segment: SegmentLike): void;
     private showPlusButtonIfNeeded;
     private updateSelectedValues;
     private isPlusButton;
