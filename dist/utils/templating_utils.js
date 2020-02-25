@@ -15,7 +15,7 @@ System.register(["lodash"], function (exports_1, context_1) {
                     this.scopedVars = scopedVars;
                 }
                 TemplatingUtils.prototype.replace = function (expression) {
-                    var replacedExpression = this.templateSrv.replace(expression, this.scopedVars);
+                    var replacedExpression = this.templateSrv.replace(expression, this.scopedVars, TemplatingUtils.customFormatterFn);
                     if (replacedExpression) {
                         var matchedMultiValues = replacedExpression.match(TemplatingUtils.MULTI_VALUE_REGEX);
                         if (!lodash_1.default.isNil(matchedMultiValues)) {
@@ -38,7 +38,22 @@ System.register(["lodash"], function (exports_1, context_1) {
                     var _this = this;
                     return lodash_1.default.flatten(expressions.map(function (expression) { return _this.replace(expression); }));
                 };
-                TemplatingUtils.MULTI_VALUE_SEPARATOR = ",";
+                TemplatingUtils.MULTI_VALUE_SEPARATOR = "_MAGIC_DELIM_";
+                TemplatingUtils.customFormatterFn = function (value, _variable, _unused) {
+                    if (Array.isArray(value)) {
+                        if (value.length > 1) {
+                            var inner = value.join(TemplatingUtils.MULTI_VALUE_SEPARATOR);
+                            return "{" + inner + "}";
+                        }
+                        else if (value.length === 1) {
+                            return value[0];
+                        }
+                        else {
+                            throw Error("You can't format an empty array");
+                        }
+                    }
+                    return value;
+                };
                 TemplatingUtils.MULTI_VALUE_REGEX = /{.*?}/g;
                 TemplatingUtils.MULTI_VALUE_BOUNDARIES = /[{}]/g;
                 return TemplatingUtils;

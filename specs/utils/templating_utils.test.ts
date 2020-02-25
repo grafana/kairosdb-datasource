@@ -93,4 +93,44 @@ describe("TemplatingUtils", () => {
         values.should.contain("dc2_sth");
         values.should.contain("dc3_sth");
     });
+
+    it("should handle variable-values containing ','", () => {
+        // given
+        const variables = {
+            var_with_comma: ["v0,1", "v0,2"]
+        };
+        const templatingSrvMock = buildTemplatingSrvMock(variables);
+        const templatingUtils = new TemplatingUtils(templatingSrvMock, {});
+        const expressions = ["$var_with_comma"];
+        // when
+        const values = templatingUtils.replaceAll(expressions);
+        // then
+        values.should.contain("v0,1");
+        values.should.contain("v0,2");
+        values.should.not.contain("v0");
+        values.should.not.contain("1");
+    });
+
+    describe("Custom formatter fn", () => {
+        it("Does no special-casing for single values", () => {
+            const input = "hello";
+            const expected = "hello";
+            const actual = TemplatingUtils.customFormatterFn(input);
+            expected.should.equal(actual);
+        });
+
+        it("Uses the new MULTI_VALUE_SEPARATOR for multi-value", () => {
+            const input = ["thing,1", "thing,2"];
+            const expected = "{thing,1_MAGIC_DELIM_thing,2}";
+            const actual = TemplatingUtils.customFormatterFn(input);
+            expected.should.equal(actual);
+        });
+
+        it("Handles array with length 1 gracefully", () => {
+            const input = ["thing,1"];
+            const expected = "thing,1";
+            const actual = TemplatingUtils.customFormatterFn(input);
+            expected.should.equal(actual);
+        });
+    });
 });
