@@ -1,5 +1,6 @@
 export declare class TemplatingUtils {
     static MULTI_VALUE_SEPARATOR: string;
+    static customFormatterFn: (value: string | string[], _variable?: any, _unused?: any) => string;
     private static MULTI_VALUE_REGEX;
     private static MULTI_VALUE_BOUNDARIES;
     private templateSrv;
