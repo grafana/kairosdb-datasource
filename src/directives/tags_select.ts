@@ -1,5 +1,10 @@
 import _ from "lodash";
 
+export interface SegmentLike {
+    value: string | null;
+    type: "plus-button";
+}
+
 export class TagsSelectCtrl {
     // All possible values
     public tagValues: string[];
@@ -7,12 +12,13 @@ export class TagsSelectCtrl {
     public selectedValues: string[];
 
     // UI list of <all selected values> and the plus button
-    public segments: any[];
+    public segments: SegmentLike[];
 
     /** @ngInject **/
     constructor(private uiSegmentSrv) {
-        this.selectedValues = this.selectedValues || [];
-        this.segments = this.selectedValues.map(this.uiSegmentSrv.newSegment);
+        // The injected 'selectValues' contains a nullish value if there was a trailing [+] saved.
+        this.selectedValues = this.selectedValues.filter(notNil) || [];
+        this.segments = this.selectedValues.map(uiSegmentSrv.newSegment);
         this.showPlusButtonIfNeeded();
     }
 
@@ -21,7 +27,7 @@ export class TagsSelectCtrl {
         this.updateSelectedValues();
     }
 
-    public remove(segment): void {
+    public remove(segment: SegmentLike): void {
         this.segments = _.without(this.segments, segment);
         this.updateSelectedValues();
     }
@@ -40,7 +46,7 @@ export class TagsSelectCtrl {
             .map((tagSegment) => tagSegment.value);
     }
 
-    private isPlusButton(segment): boolean {
+    private isPlusButton(segment: SegmentLike): boolean {
         /**
          * A note on plus-button segments:
          * When you select a tag from a plus button, it mutates a "plus-button" segment from value
@@ -49,11 +55,15 @@ export class TagsSelectCtrl {
          * So this heuristic actually looks for the "visually, functionally" plus buttons - ones
          * that are unset.
          */
-        return !_.isNil(segment) &&
+        return notNil(segment) &&
             segment.type === "plus-button" &&
             _.isNil(segment.value);
     }
 
+}
+
+function notNil(obj: any): boolean {
+    return !_.isNil(obj);
 }
 
 export function TagsSelectDirective() {
