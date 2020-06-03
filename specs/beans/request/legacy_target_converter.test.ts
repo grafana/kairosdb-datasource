@@ -134,7 +134,7 @@ describe("LegacyTargetConverter", () => {
                                 value: "HOURS"
                             }
                         ],
-                        enabled: false
+                        enabled: true
                     },
                     name: "avg",
                     parameters: [
