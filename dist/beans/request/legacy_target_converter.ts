@@ -55,6 +55,7 @@ export class LegacyTargetConverter {
             return rangeAgg;
         } else {
             const rangeAgg = new RangeAggregator(horizontalAggregator.name);
+            rangeAgg.autoValueSwitch.enabled = false;
             rangeAgg.parameters[this.findParameterIndex(rangeAgg, "value")].value =
                 TimeUnitUtils.extractValue(horizontalAggregator.sampling_rate);
             rangeAgg.parameters[this.findParameterIndex(rangeAgg, "unit")].value =

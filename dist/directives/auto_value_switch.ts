@@ -12,6 +12,7 @@ export class AutoValueSwitch {
 
     constructor(dependentParameters: AggregatorParameter[]) {
         this.dependentParameters = dependentParameters;
+        this.enabled = true;
     }
 
 }

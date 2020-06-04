@@ -9,6 +9,7 @@ System.register([], function (exports_1, context_1) {
                 function AutoValueSwitch(dependentParameters) {
                     this.enabled = false;
                     this.dependentParameters = dependentParameters;
+                    this.enabled = true;
                 }
                 AutoValueSwitch.fromObject = function (object, dependentParameters) {
                     var rval = new AutoValueSwitch(dependentParameters);
