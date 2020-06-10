@@ -5,7 +5,8 @@ function AggregatorEditorLink(scope) {
     scope.newAggregator = null;
     scope.pickAggregator = (aggregatorName) => {
         if (aggregatorName) {
-            scope.newAggregator = fromObject(_.find(scope.ctrl.availableAggregators, (e) => e.name === aggregatorName));
+            const agg = _.find(scope.ctrl.availableAggregators, (e) => e.name === aggregatorName);
+            scope.newAggregator = fromObject(agg);
         }
     };
 

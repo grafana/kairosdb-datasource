@@ -6,7 +6,8 @@ System.register(["lodash", "../beans/aggregators/aggregators"], function (export
         scope.newAggregator = null;
         scope.pickAggregator = function (aggregatorName) {
             if (aggregatorName) {
-                scope.newAggregator = aggregators_1.fromObject(lodash_1.default.find(scope.ctrl.availableAggregators, function (e) { return e.name === aggregatorName; }));
+                var agg = lodash_1.default.find(scope.ctrl.availableAggregators, function (e) { return e.name === aggregatorName; });
+                scope.newAggregator = aggregators_1.fromObject(agg);
             }
         };
         scope.isAutoValue = function () {

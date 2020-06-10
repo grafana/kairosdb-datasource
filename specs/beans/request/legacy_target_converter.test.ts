@@ -244,8 +244,9 @@ describe("LegacyTargetConverter", () => {
     });
     describe("alias", () => {
         it("convert aggregators properly", () => {
-            // tslint:disable-next-line
-            sortNestedJSON(legacyTargetConverter.convert(legacy_complex).aggregators).should.be.deep.equal(sortNestedJSON(modern_complex.query.aggregators));
+            const converted = legacyTargetConverter.convert(legacy_complex).aggregators;
+            const modern = modern_complex.query.aggregators;
+            sortNestedJSON(converted).should.be.deep.equal(sortNestedJSON(modern));
         });
     });
 });

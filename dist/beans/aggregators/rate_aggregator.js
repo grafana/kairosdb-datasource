@@ -1,4 +1,4 @@
-System.register(["./aggregator", "./parameters/alignment_aggregator_parameter", "./parameters/enum_aggregator_parameter", "./utils"], function (exports_1, context_1) {
+System.register(["./aggregator", "./parameters/enum_aggregator_parameter", "./utils"], function (exports_1, context_1) {
     "use strict";
     var __extends = (this && this.__extends) || (function () {
         var extendStatics = Object.setPrototypeOf ||
@@ -10,15 +10,12 @@ System.register(["./aggregator", "./parameters/alignment_aggregator_parameter", 
             d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
         };
     })();
-    var aggregator_1, alignment_aggregator_parameter_1, enum_aggregator_parameter_1, utils_1, RateAggregator;
+    var aggregator_1, enum_aggregator_parameter_1, utils_1, RateAggregator;
     var __moduleName = context_1 && context_1.id;
     return {
         setters: [
             function (aggregator_1_1) {
                 aggregator_1 = aggregator_1_1;
-            },
-            function (alignment_aggregator_parameter_1_1) {
-                alignment_aggregator_parameter_1 = alignment_aggregator_parameter_1_1;
             },
             function (enum_aggregator_parameter_1_1) {
                 enum_aggregator_parameter_1 = enum_aggregator_parameter_1_1;
@@ -33,17 +30,15 @@ System.register(["./aggregator", "./parameters/alignment_aggregator_parameter", 
                 function RateAggregator() {
                     var _this = _super.call(this, RateAggregator.NAME) || this;
                     _this.parameters = _this.parameters.concat([
-                        new alignment_aggregator_parameter_1.AlignmentAggregatorParameter(),
                         new enum_aggregator_parameter_1.EnumAggregatorParameter("unit", utils_1.TimeUnit, "every")
                     ]);
                     return _this;
                 }
                 RateAggregator.fromObject = function (object) {
+                    var unitParam = object.parameters.find(function (p) { return p.name === "unit"; });
+                    var unitParamCopy = enum_aggregator_parameter_1.EnumAggregatorParameter.fromObject(unitParam);
                     var rval = new RateAggregator();
-                    rval.parameters = [
-                        alignment_aggregator_parameter_1.AlignmentAggregatorParameter.fromObject(object.parameters[0]),
-                        enum_aggregator_parameter_1.EnumAggregatorParameter.fromObject(object.parameters[1])
-                    ];
+                    rval.parameters = [unitParamCopy];
                     return rval;
                 };
                 RateAggregator.NAME = "rate";

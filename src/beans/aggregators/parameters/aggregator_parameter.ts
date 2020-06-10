@@ -2,7 +2,7 @@ abstract class AggregatorParameter {
     public name: string;
     public text: string;
     public value: string;
-    public type: string;
+    public type: AggregatorParameterType;
 
     constructor(name: string, text: string = name, value: string = null) {
         this.name = name;
@@ -11,4 +11,5 @@ abstract class AggregatorParameter {
     }
 }
 
+export type AggregatorParameterType = "alignment" | "any" | "enum" | "limited" | "sampling" | "sampling_unit";
 export { AggregatorParameter };

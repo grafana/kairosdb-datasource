@@ -53,7 +53,10 @@ export class KairosDBDatasource {
     }
 
     public initialize(): void {
-        this.metricNamesStore.initialize().then(() => this.initialized = true, () => this.initializationError = true);
+        this.metricNamesStore.initialize().then(
+          () => this.initialized = true,
+          () => this.initializationError = true
+        );
     }
 
     public testDatasource() {

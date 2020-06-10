@@ -31,4 +31,4 @@ export declare enum Indeterminate {
     keep = 0,
     discard = 1
 }
-export declare function EnumValues(enumType: any): any;
+export declare function EnumValues(enumType: object): string[];

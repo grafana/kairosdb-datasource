@@ -7,20 +7,20 @@ import {TimeUnit} from "./utils";
 export class RateAggregator extends Aggregator {
     public static readonly NAME = "rate";
 
-    public static fromObject(object: any): RateAggregator {
+    public static fromObject(object: Aggregator): RateAggregator {
+        const unitParam = object.parameters.find((p) => p.name === "unit");
+        const unitParamCopy = EnumAggregatorParameter.fromObject(unitParam);
+
         const rval = new RateAggregator();
-        rval.parameters = [
-            AlignmentAggregatorParameter.fromObject(object.parameters[0]),
-            EnumAggregatorParameter.fromObject(object.parameters[1])
-        ];
+        rval.parameters = [unitParamCopy];
         return rval;
     }
 
     constructor() {
         super(RateAggregator.NAME);
         this.parameters = this.parameters.concat([
-            new AlignmentAggregatorParameter(),
             new EnumAggregatorParameter("unit", TimeUnit, "every")
+            // per KairosDB docs, rate also supports `sampling` and `time_zone` params.
         ]);
     }
 }

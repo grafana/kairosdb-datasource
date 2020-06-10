@@ -22,6 +22,6 @@ export enum Indeterminate {
     keep, discard
 }
 
-export function EnumValues(enumType) {
+export function EnumValues(enumType: object): string[] {
     return _.pickBy(_.values(enumType), (value) => !_.isNumber(value));
 }
