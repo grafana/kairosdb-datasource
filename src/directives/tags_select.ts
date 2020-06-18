@@ -17,7 +17,7 @@ export class TagsSelectCtrl {
     /** @ngInject **/
     constructor(private uiSegmentSrv) {
         // The injected 'selectValues' contains a nullish value if there was a trailing [+] saved.
-        this.selectedValues = this.selectedValues.filter(notNil) || [];
+        this.selectedValues = (this.selectedValues || []).filter(notNil);
         this.segments = this.selectedValues.map(uiSegmentSrv.newSegment);
         this.showPlusButtonIfNeeded();
     }

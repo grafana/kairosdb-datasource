@@ -78,4 +78,14 @@ describe("TagsSelectCtrl", () => {
         ]);
     });
 
+    it("deals with undefined SelectedValues", () => {
+        // nasty hack to avoid DI
+        TagsSelectCtrl.prototype.selectedValues = undefined;
+        const tagsSelectCtrl: TagsSelectCtrl = new TagsSelectCtrl(uiSegmentSrv);
+        tagsSelectCtrl.selectedValues.should.deep.equal([]);
+        tagsSelectCtrl.segments.should.deep.equal([
+            newPlusButtonSegment(),
+        ]);
+    });
+
 });
