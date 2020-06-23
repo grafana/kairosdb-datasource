@@ -31,6 +31,7 @@ export class LegacyTargetConverter {
         if (!_.isNil(oldTarget.horizontalAggregators)) {
             newTarget.aggregators = oldTarget.horizontalAggregators.map((entry) => this.convertLegacyAggregator(entry));
         }
+        newTarget.overrideScalar = oldTarget.overrideScalar || false;
         return newTarget;
     }
 

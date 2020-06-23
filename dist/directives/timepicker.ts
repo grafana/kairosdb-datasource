@@ -62,7 +62,7 @@ export class TimePickerCtrl {
       timeRaw = this.timeSrv.timeRange().raw;
     }
 
-    if (!this.dashboard.isTimezoneUtc()) {
+    if (this.dashboard.getTimezone() !== "utc") {
       if (moment.isMoment(timeRaw.from)) {
         timeRaw.from.local();
       }
@@ -126,7 +126,7 @@ export class TimePickerCtrl {
   }
 
   public getAbsoluteMomentForTimezone(jsDate) {
-    return this.dashboard.isTimezoneUtc() ? moment(jsDate).utc() : moment(jsDate);
+    return this.dashboard.getTimezone() === "utc" ? moment(jsDate).utc() : moment(jsDate);
   }
 
   public setRelativeFilter(timespan) {

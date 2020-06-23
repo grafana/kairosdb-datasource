@@ -1,9 +1,9 @@
 System.register(["./aggregator", "./apdex_aggregator", "./divide_aggregator", "./filter_aggregator", "./percentile_aggregator", "./range_aggregator", "./rate_aggregator", "./sampler_aggregator", "./scale_aggregator", "./sma_aggregator", "./trim_aggregator"], function (exports_1, context_1) {
     "use strict";
-    var aggregator_1, apdex_aggregator_1, divide_aggregator_1, filter_aggregator_1, percentile_aggregator_1, range_aggregator_1, rate_aggregator_1, sampler_aggregator_1, scale_aggregator_1, sma_aggregator_1, trim_aggregator_1, AGGREGATORS, RANGE_AGGREGATORS;
+    var aggregator_1, apdex_aggregator_1, divide_aggregator_1, filter_aggregator_1, percentile_aggregator_1, range_aggregator_1, rate_aggregator_1, sampler_aggregator_1, scale_aggregator_1, sma_aggregator_1, trim_aggregator_1, RANGE_AGGREGATORS, AGGREGATORS, SCALAR_AGGREGATOR_NAMES, RANGE_AGGREGATOR_NAMES;
     var __moduleName = context_1 && context_1.id;
     function fromObject(object) {
-        if (RANGE_AGGREGATORS.indexOf(object.name) >= 0) {
+        if (RANGE_AGGREGATOR_NAMES.indexOf(object.name) >= 0) {
             return range_aggregator_1.RangeAggregator.fromObject(object);
         }
         else if (object.name === percentile_aggregator_1.PercentileAggregator.NAME) {
@@ -79,33 +79,44 @@ System.register(["./aggregator", "./apdex_aggregator", "./divide_aggregator", ".
             }
         ],
         execute: function () {
-            exports_1("AGGREGATORS", AGGREGATORS = [
+            RANGE_AGGREGATORS = [
                 new range_aggregator_1.RangeAggregator("avg"),
-                new range_aggregator_1.RangeAggregator("dev"),
                 new range_aggregator_1.RangeAggregator("count"),
+                new range_aggregator_1.RangeAggregator("dev"),
                 new range_aggregator_1.RangeAggregator("first"),
                 new range_aggregator_1.RangeAggregator("gaps"),
                 new range_aggregator_1.RangeAggregator("last"),
                 new range_aggregator_1.RangeAggregator("least_squares"),
                 new range_aggregator_1.RangeAggregator("max"),
                 new range_aggregator_1.RangeAggregator("min"),
-                new range_aggregator_1.RangeAggregator("merge"),
                 new range_aggregator_1.RangeAggregator("movingWindow"),
-                new percentile_aggregator_1.PercentileAggregator(),
-                new apdex_aggregator_1.ApdexAggregator(),
-                new sma_aggregator_1.SmaAggregator(),
                 new range_aggregator_1.RangeAggregator("sum"),
+            ];
+            exports_1("AGGREGATORS", AGGREGATORS = RANGE_AGGREGATORS.concat([
                 new aggregator_1.Aggregator("diff"),
+                new aggregator_1.Aggregator("percent_remaining"),
+                new apdex_aggregator_1.ApdexAggregator(),
                 new divide_aggregator_1.DivideAggregator(),
+                new filter_aggregator_1.FilterAggregator(),
+                new percentile_aggregator_1.PercentileAggregator(),
                 new rate_aggregator_1.RateAggregator(),
                 new sampler_aggregator_1.SamplerAggregator(),
                 new scale_aggregator_1.ScaleAggregator(),
+                new sma_aggregator_1.SmaAggregator(),
                 new trim_aggregator_1.TrimAggregator(),
-                new filter_aggregator_1.FilterAggregator(),
-                new aggregator_1.Aggregator("percent_remaining")
-            ].sort(function (a, b) { return a.name.localeCompare(b.name); }));
-            RANGE_AGGREGATORS = ["avg", "dev", "count", "first", "gaps",
-                "last", "least_squares", "max", "min", "gaps", "merge", "sum", "movingWindow"];
+            ]).sort(function (a, b) { return a.name.localeCompare(b.name); }));
+            exports_1("SCALAR_AGGREGATOR_NAMES", SCALAR_AGGREGATOR_NAMES = [
+                "apdex",
+                "avg",
+                "count",
+                "dev",
+                "max",
+                "min",
+                "percentile",
+                "percent_remaining",
+                "sum",
+            ]);
+            exports_1("RANGE_AGGREGATOR_NAMES", RANGE_AGGREGATOR_NAMES = RANGE_AGGREGATORS.map(function (agg) { return agg.name; }));
         }
     };
 });

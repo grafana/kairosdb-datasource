@@ -64,7 +64,7 @@ System.register(["angular", "app/core/utils/datemath", "lodash", "moment", "../u
                     if (!timeRaw) {
                         timeRaw = this.timeSrv.timeRange().raw;
                     }
-                    if (!this.dashboard.isTimezoneUtc()) {
+                    if (this.dashboard.getTimezone() !== "utc") {
                         if (moment_1.default.isMoment(timeRaw.from)) {
                             timeRaw.from.local();
                         }
@@ -119,7 +119,7 @@ System.register(["angular", "app/core/utils/datemath", "lodash", "moment", "../u
                     this.editTimeRaw.to = this.getAbsoluteMomentForTimezone(this.absolute.toJs);
                 };
                 TimePickerCtrl.prototype.getAbsoluteMomentForTimezone = function (jsDate) {
-                    return this.dashboard.isTimezoneUtc() ? moment_1.default(jsDate).utc() : moment_1.default(jsDate);
+                    return this.dashboard.getTimezone() === "utc" ? moment_1.default(jsDate).utc() : moment_1.default(jsDate);
                 };
                 TimePickerCtrl.prototype.setRelativeFilter = function (timespan) {
                     var range = { from: timespan.from, to: timespan.to };

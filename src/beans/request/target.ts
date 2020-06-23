@@ -21,6 +21,7 @@ export class KairosDBTarget {
           rval.aggregators = (object.aggregators || []).map(
               (val) => Aggregators.fromObject(val));
           rval.timeRange = object.timeRange;
+          rval.overrideScalar = object.overrideScalar;
       }
       return rval;
     }
@@ -31,6 +32,7 @@ export class KairosDBTarget {
     public groupBy: GroupBy = new GroupBy();
     public aggregators: Aggregator[] = [];
     public timeRange?: TimeRange;
+    public overrideScalar: boolean = undefined;
 
     public startTime(): number | undefined {
       if (this.timeRange) {

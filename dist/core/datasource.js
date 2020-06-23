@@ -64,14 +64,15 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                     this.metricNamesStore = new metric_names_store_1.MetricNamesStore(this, this.promiseUtils, this.url);
                     this.templatingUtils = new templating_utils_1.TemplatingUtils(templateSrv, {});
                     this.templatingFunctionsCtrl = new templating_functions_ctrl_1.TemplatingFunctionsCtrl(new templating_function_resolver_1.TemplatingFunctionResolver(this.templatingUtils));
-                    this.targetValidator = new target_validator_1.TargetValidator();
+                    this.targetValidator = new target_validator_1.TargetValidator(instanceSettings.jsonData.enforceScalarSetting);
                     this.legacyTargetConverter = new legacy_target_converter_1.LegacyTargetConverter();
                     this.snapToIntervals = time_unit_utils_1.TimeUnitUtils.intervalsToUnitValues(instanceSettings.jsonData.snapToIntervals);
+                    this.enforceScalarSetting = instanceSettings.jsonData.enforceScalarSetting;
                     this.registerTemplatingFunctions();
                 }
                 KairosDBDatasource.prototype.initialize = function () {
                     var _this = this;
-                    this.metricNamesStore.initialize().then(function () { return _this.initialized = true; }, function () { return _this.initializationError = true; });
+                    return this.metricNamesStore.initialize().then(function () { return _this.initialized = true; }, function () { return _this.initializationError = true; }).then(function () { return _this.initialized; });
                 };
                 KairosDBDatasource.prototype.testDatasource = function () {
                     return this.executeRequest(this.getRequestBuilder().buildHealthStatusQuery())
@@ -91,8 +92,11 @@ System.register(["lodash", "../beans/function", "../beans/request/legacy_target_
                             return target;
                         }
                     });
-                    if (!this.targetValidator.areValidTargets(convertedTargets)) {
-                        return;
+                    var panelTargetsFullyConfigured = this.targetValidator.areValidTargets(convertedTargets);
+                    if (!panelTargetsFullyConfigured.valid) {
+                        return Promise.reject({
+                            message: panelTargetsFullyConfigured.reason
+                        });
                     }
                     var templatingUtils = new templating_utils_1.TemplatingUtils(this.templateSrv, options.scopedVars);
                     var aliases = templatingUtils.replaceAll(convertedTargets.map(function (target) { return target.query.alias; }));

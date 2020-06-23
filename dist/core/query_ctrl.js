@@ -54,9 +54,9 @@ System.register(["app/plugins/sdk", "../beans/aggregators/aggregators", "../bean
                     var _this = _super.call(this, $scope, $injector) || this;
                     _this.aggregators = aggregators_1.AGGREGATORS;
                     _this.tagsInitializationError = undefined;
-                    _this.targetValidator = new target_validator_1.TargetValidator();
+                    _this.targetValidator = new target_validator_1.TargetValidator(_this.datasource.enforceScalarSetting);
                     _this.legacyTargetConverter = new legacy_target_converter_1.LegacyTargetConverter();
-                    _this.datasource.initialize();
+                    _this.datasource.initialize().then(function () { return $scope.$apply(); });
                     $scope.$watch("ctrl.target.query", _this.onTargetChange.bind(_this), true);
                     $scope.$watch("ctrl.target.query.metricName", _this.onMetricNameChanged.bind(_this));
                     if (_this.legacyTargetConverter.isApplicable(_this.target)) {
@@ -68,7 +68,7 @@ System.register(["app/plugins/sdk", "../beans/aggregators/aggregators", "../bean
                     else {
                         _this.target.query = _this.target.query || new target_1.KairosDBTarget();
                     }
-                    _this.initializeTags(_this.target.query.metricName, _this.target.query);
+                    _this.initializeTags(_this.target.query.metricName, _this.target.query, $scope);
                     return _this;
                 }
                 KairosDBQueryCtrl.prototype.getCollapsedText = function () {
@@ -79,12 +79,12 @@ System.register(["app/plugins/sdk", "../beans/aggregators/aggregators", "../bean
                         this.refresh();
                     }
                 };
-                KairosDBQueryCtrl.prototype.onMetricNameChanged = function (newMetricName, oldMetricName) {
+                KairosDBQueryCtrl.prototype.onMetricNameChanged = function (newMetricName, oldMetricName, $scope) {
                     if (newMetricName === oldMetricName) {
                         return;
                     }
                     var query = this.buildNewTarget(newMetricName);
-                    this.initializeTags(newMetricName, query);
+                    this.initializeTags(newMetricName, query, $scope);
                     this.target.query = query;
                 };
                 KairosDBQueryCtrl.prototype.buildNewTarget = function (metricName) {
@@ -97,16 +97,17 @@ System.register(["app/plugins/sdk", "../beans/aggregators/aggregators", "../bean
                         target.tags = oldQuery.tags;
                         target.groupBy = oldQuery.groupBy;
                         target.timeRange = oldQuery.timeRange;
+                        target.overrideScalar = oldQuery.overrideScalar;
                     }
                     return target;
                 };
-                KairosDBQueryCtrl.prototype.initializeTags = function (metricName, query) {
+                KairosDBQueryCtrl.prototype.initializeTags = function (metricName, query, $scope) {
                     var _this = this;
                     this.clear();
                     if (metricName) {
                         this.tags = new metric_tags_1.MetricTags();
                         this.datasource.getMetricTags(metricName)
-                            .then(function (tags) { return _this.tags.updateTags(tags); }, function (error) { return _this.tagsInitializationError = error.data.message; })
+                            .then(function (tags) { return $scope.$apply(function () { return _this.tags.updateTags(tags); }); }, function (error) { return _this.tagsInitializationError = error.data.message; })
                             .then(function () {
                             if (!_this.tagsInitializationError) {
                                 var newTags_1 = {};

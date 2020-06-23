@@ -1,4 +1,5 @@
 <div class="gf-form-inline" ng-repeat="segment in ctrl.segments">
+    <!-- Like "cluster", "host" and its tooltip -->
     <div class="gf-form" ng-if="$first">
         <label class="gf-form-label offset-width-8 width-10">
             <a bs-tooltip="'Values: ' + ctrl.tagValues.join(', ')">{{ctrl.tagName}}</a>
@@ -20,4 +21,3 @@
         <div class="gf-form-label gf-form-label--grow"></div>
     </div>
 </div>
-

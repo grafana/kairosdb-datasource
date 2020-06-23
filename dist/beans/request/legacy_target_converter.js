@@ -64,6 +64,7 @@ System.register(["lodash", "../../directives/group_by/group_by_time_entry", "../
                     if (!lodash_1.default.isNil(oldTarget.horizontalAggregators)) {
                         newTarget.aggregators = oldTarget.horizontalAggregators.map(function (entry) { return _this.convertLegacyAggregator(entry); });
                     }
+                    newTarget.overrideScalar = oldTarget.overrideScalar || false;
                     return newTarget;
                 };
                 LegacyTargetConverter.prototype.isApplicable = function (target) {

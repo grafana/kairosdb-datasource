@@ -10,37 +10,54 @@ import {ScaleAggregator} from "./scale_aggregator";
 import {SmaAggregator} from "./sma_aggregator";
 import {TrimAggregator} from "./trim_aggregator";
 
-export const AGGREGATORS = [
+const RANGE_AGGREGATORS = [
     new RangeAggregator("avg"),
-    new RangeAggregator("dev"),
     new RangeAggregator("count"),
+    new RangeAggregator("dev"),
     new RangeAggregator("first"),
     new RangeAggregator("gaps"),
     new RangeAggregator("last"),
     new RangeAggregator("least_squares"),
     new RangeAggregator("max"),
+    // merge intentionally excluded; mportal adds it automatically now
     new RangeAggregator("min"),
-    new RangeAggregator("merge"),
     new RangeAggregator("movingWindow"),
-    new PercentileAggregator(),
-    new ApdexAggregator(),
-    new SmaAggregator(),
     new RangeAggregator("sum"),
+];
+
+export const AGGREGATORS = RANGE_AGGREGATORS.concat([
     new Aggregator("diff"),
+    new Aggregator("percent_remaining"),
+    new ApdexAggregator(),
     new DivideAggregator(),
+    new FilterAggregator(),
+    new PercentileAggregator(),
     new RateAggregator(),
     new SamplerAggregator(),
     new ScaleAggregator(),
+    new SmaAggregator(),
     new TrimAggregator(),
-    new FilterAggregator(),
-    new Aggregator("percent_remaining")
-].sort( (a, b) => a.name.localeCompare(b.name));
+]).sort( (a, b) => a.name.localeCompare(b.name));
 
-const RANGE_AGGREGATORS = ["avg", "dev", "count", "first", "gaps",
-    "last", "least_squares", "max", "min", "gaps", "merge", "sum", "movingWindow"];
+// Loosely generated from:
+// tslint:disable-next-line
+// grep -H -q "doubleDataPointFactory" <path-to-kairosdb-extensions>/kairosdb-extensions/src/main/java/io/inscopemetrics/kairosdb/aggregators
+// Many of the java class names are synonyms of the names here.
+export const SCALAR_AGGREGATOR_NAMES = [
+  "apdex",
+  "avg",
+  "count",
+  "dev",
+  "max",
+  "min",
+  "percentile",
+  "percent_remaining",
+  "sum",
+];
+export const RANGE_AGGREGATOR_NAMES = RANGE_AGGREGATORS.map((agg) => agg.name);
 
 export function fromObject(object: Aggregator): Aggregator {
-  if (RANGE_AGGREGATORS.indexOf(object.name) >= 0) {
+  if (RANGE_AGGREGATOR_NAMES.indexOf(object.name) >= 0) {
       return RangeAggregator.fromObject(object);
   } else if (object.name === PercentileAggregator.NAME) {
       return PercentileAggregator.fromObject(object);

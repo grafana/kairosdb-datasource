@@ -18,14 +18,14 @@ export class KairosDBQueryCtrl extends QueryCtrl {
 
     public aggregators: Aggregator[] = AGGREGATORS;
     public tagsInitializationError: string = undefined;
-    private targetValidator: TargetValidator = new TargetValidator();
+    private targetValidator: TargetValidator = new TargetValidator(this.datasource.enforceScalarSetting);
     private tags: MetricTags;
     private legacyTargetConverter: LegacyTargetConverter = new LegacyTargetConverter();
 
     /** @ngInject **/
     constructor($scope, $injector) {
         super($scope, $injector);
-        this.datasource.initialize();
+        this.datasource.initialize().then(() => $scope.$apply());
         $scope.$watch("ctrl.target.query", this.onTargetChange.bind(this), true);
         $scope.$watch("ctrl.target.query.metricName", this.onMetricNameChanged.bind(this));
         if (this.legacyTargetConverter.isApplicable(this.target)) {
@@ -36,7 +36,7 @@ export class KairosDBQueryCtrl extends QueryCtrl {
         } else {
             this.target.query = this.target.query || new KairosDBTarget();
         }
-        this.initializeTags(this.target.query.metricName, this.target.query);
+        this.initializeTags(this.target.query.metricName, this.target.query, $scope);
     }
 
     public getCollapsedText(): string {
@@ -49,12 +49,12 @@ export class KairosDBQueryCtrl extends QueryCtrl {
         }
     }
 
-    private onMetricNameChanged(newMetricName, oldMetricName) {
+    private onMetricNameChanged(newMetricName, oldMetricName, $scope) {
         if (newMetricName === oldMetricName) {
             return;
         }
         const query = this.buildNewTarget(newMetricName);
-        this.initializeTags(newMetricName, query);
+        this.initializeTags(newMetricName, query, $scope);
         this.target.query = query;
     }
 
@@ -68,17 +68,18 @@ export class KairosDBQueryCtrl extends QueryCtrl {
           target.tags = oldQuery.tags;
           target.groupBy = oldQuery.groupBy;
           target.timeRange = oldQuery.timeRange;
+          target.overrideScalar = oldQuery.overrideScalar;
         }
         return target;
     }
 
-    private initializeTags(metricName: string, query: KairosDBTarget) {
+    private initializeTags(metricName: string, query: KairosDBTarget, $scope: any) {
         this.clear();
         if (metricName) {
             this.tags = new MetricTags();
             this.datasource.getMetricTags(metricName)
                 .then(
-                    (tags) => this.tags.updateTags(tags),
+                    (tags) => $scope.$apply(() => this.tags.updateTags(tags)),
                     (error) => this.tagsInitializationError = error.data.message
                 )
                 .then(

@@ -22,6 +22,7 @@ System.register(["app/core/utils/datemath", "../aggregators/aggregators", "./gro
                     this.tags = {};
                     this.groupBy = new group_by_1.GroupBy();
                     this.aggregators = [];
+                    this.overrideScalar = undefined;
                 }
                 KairosDBTarget.fromObject = function (object) {
                     var rval = new KairosDBTarget();
@@ -32,6 +33,7 @@ System.register(["app/core/utils/datemath", "../aggregators/aggregators", "./gro
                         rval.groupBy = group_by_1.GroupBy.fromObject(object.groupBy);
                         rval.aggregators = (object.aggregators || []).map(function (val) { return Aggregators.fromObject(val); });
                         rval.timeRange = object.timeRange;
+                        rval.overrideScalar = object.overrideScalar;
                     }
                     return rval;
                 };

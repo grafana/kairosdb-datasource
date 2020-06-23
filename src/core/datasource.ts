@@ -10,7 +10,7 @@ import {TemplatingUtils} from "../utils/templating_utils";
 import {TimeUnitUtils} from "../utils/time_unit_utils";
 import {MetricNamesStore} from "./metric_names_store";
 import {KairosDBQueryBuilder} from "./request/query_builder";
-import {TargetValidator} from "./request/target_validator";
+import {TargetValidator, ValidatorFailureResponse} from "./request/target_validator";
 import {KairosDBResponseHandler} from "./response/response_handler";
 import {SeriesNameBuilder} from "./response/series_name_builder";
 
@@ -18,6 +18,7 @@ export class KairosDBDatasource {
     public initialized: boolean = false;
     public initializationError: boolean = false;
     public metricNamesStore: MetricNamesStore;
+    public enforceScalarSetting?: boolean;
     private type: string;
     private url: string;
     private withCredentials: boolean;
@@ -46,17 +47,18 @@ export class KairosDBDatasource {
         this.metricNamesStore = new MetricNamesStore(this, this.promiseUtils, this.url);
         this.templatingUtils = new TemplatingUtils(templateSrv, {});
         this.templatingFunctionsCtrl = new TemplatingFunctionsCtrl(new TemplatingFunctionResolver(this.templatingUtils));
-        this.targetValidator = new TargetValidator();
+        this.targetValidator = new TargetValidator(instanceSettings.jsonData.enforceScalarSetting);
         this.legacyTargetConverter = new LegacyTargetConverter();
         this.snapToIntervals = TimeUnitUtils.intervalsToUnitValues(instanceSettings.jsonData.snapToIntervals);
+        this.enforceScalarSetting = instanceSettings.jsonData.enforceScalarSetting;
         this.registerTemplatingFunctions();
     }
 
-    public initialize(): void {
-        this.metricNamesStore.initialize().then(
-          () => this.initialized = true,
-          () => this.initializationError = true
-        );
+    public initialize(): Promise<boolean> {
+        return this.metricNamesStore.initialize().then(
+            () => this.initialized = true,
+            () => this.initializationError = true
+        ).then(() => this.initialized);
     }
 
     public testDatasource() {
@@ -75,10 +77,15 @@ export class KairosDBDatasource {
               return target;
             }
         });
-
-        if (!this.targetValidator.areValidTargets(convertedTargets)) {
-            return; // todo: target validation, throw message to grafana with detailed info
+        const panelTargetsFullyConfigured = this.targetValidator.areValidTargets(convertedTargets);
+        if (!panelTargetsFullyConfigured.valid) {
+          // in order for valid to be false, this must be a ValidatorFailureResponse
+          // but type interence doesn't catch this so we must cast
+          return Promise.reject({
+            message: (panelTargetsFullyConfigured as ValidatorFailureResponse).reason
+          });
         }
+
         const templatingUtils = new TemplatingUtils(this.templateSrv, options.scopedVars);
         const aliases = templatingUtils.replaceAll(convertedTargets.map((target) => target.query.alias));
         const unpackedTargets = _.flatten(convertedTargets.map((target) => {

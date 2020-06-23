@@ -15,6 +15,7 @@ export declare class KairosDBTarget {
     groupBy: GroupBy;
     aggregators: Aggregator[];
     timeRange?: TimeRange;
+    overrideScalar: boolean;
     startTime(): number | undefined;
     endTime(): number | undefined;
     asString(): string;

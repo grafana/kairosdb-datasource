@@ -13,4 +13,14 @@
             </info-popover>
         </div>
     </div>
+    <div class="gf-form-inline">
+        <div class="gf-form max-width-30">
+            <span class="gf-form-label width-15">Require Scalar Aggregators</span>
+            <input type="checkbox" class="gf-form-input" ng-model='ctrl.current.jsonData.enforceScalarSetting'></input>
+            <info-popover mode="right-absolute">
+                <p>This setting allows for enforcement that queries include at least one scalar aggregator per query.</p>
+                <p>This option should be enabled when most data is histograms that need to be converted into scalars in order to be graphed in common visualizers, e.g. timeseries line graphs</p>
+            </info-popover>
+        </div>
+    </div>
 </div>
