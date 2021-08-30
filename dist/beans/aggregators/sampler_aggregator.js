@@ -22,7 +22,9 @@ System.register(["./aggregator", "./parameters/enum_aggregator_parameter", "./ut
                 __extends(SamplerAggregator, _super);
                 function SamplerAggregator() {
                     _super.call(this, "sampler");
-                    this.parameters = this.parameters.concat([new enum_aggregator_parameter_1.EnumAggregatorParameter("unit", utils_1.TimeUnit, "every")]);
+                    this.parameters = this.parameters.concat([
+                        new enum_aggregator_parameter_1.EnumAggregatorParameter("unit", utils_1.TimeUnit, "every")
+                    ]);
                 }
                 return SamplerAggregator;
             })(aggregator_1.Aggregator);

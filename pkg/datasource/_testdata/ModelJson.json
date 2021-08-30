@@ -1,0 +1,91 @@
+{
+  "query": {
+    "aggregators": [
+      {
+        "autoValueSwitch": {
+          "dependentParameters": [
+            {
+              "name": "value",
+              "text": "every",
+              "type": "sampling",
+              "value": "1"
+            },
+            {
+              "allowedValues": {
+                "0": "MILLISECONDS",
+                "1": "SECONDS",
+                "2": "MINUTES",
+                "3": "HOURS",
+                "4": "DAYS",
+                "5": "WEEKS",
+                "6": "MONTHS",
+                "7": "YEARS"
+              },
+              "name": "unit",
+              "text": "unit",
+              "type": "sampling_unit",
+              "value": "HOURS"
+            }
+          ],
+          "enabled": false
+        },
+        "name": "sum",
+        "parameters": [
+          {
+            "allowedValues": {
+              "0": "NONE",
+              "1": "START_TIME",
+              "2": "SAMPLING"
+            },
+            "name": "sampling",
+            "text": "align by",
+            "type": "alignment",
+            "value": "NONE"
+          },
+          {
+            "name": "value",
+            "text": "every",
+            "type": "sampling",
+            "value": "1"
+          },
+          {
+            "allowedValues": {
+              "0": "MILLISECONDS",
+              "1": "SECONDS",
+              "2": "MINUTES",
+              "3": "HOURS",
+              "4": "DAYS",
+              "5": "WEEKS",
+              "6": "MONTHS",
+              "7": "YEARS"
+            },
+            "name": "unit",
+            "text": "unit",
+            "type": "sampling_unit",
+            "value": "HOURS"
+          }
+        ]
+      }
+    ],
+    "groupBy": {
+      "tags": [
+        "host",
+        "datacenter"
+      ],
+      "time": [],
+      "value": []
+    },
+    "metricName": "abc.123",
+    "tags": {
+      "datacenter": [],
+      "customer": [
+        "bar"
+      ],
+      "host": [
+        "foo",
+        "foo2"
+      ]
+    }
+  },
+  "refId": "A"
+}

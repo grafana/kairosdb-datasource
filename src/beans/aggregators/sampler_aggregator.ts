@@ -5,6 +5,8 @@ import {TimeUnit} from "./utils";
 export class SamplerAggregator extends Aggregator {
     constructor() {
         super("sampler");
-        this.parameters = this.parameters.concat([new EnumAggregatorParameter("unit", TimeUnit, "every")]);
+        this.parameters = this.parameters.concat([
+            new EnumAggregatorParameter("unit", TimeUnit, "every")
+        ]);
     }
 }

@@ -4,7 +4,7 @@
             <strong>{{ctrl.value.name}}</strong>
         </label>
     </div>
-    <div class="gf-form" ng-repeat="parameter in ctrl.visibleParameters">
+    <div class="gf-form" ng-repeat="parameter in ctrl.getVisibleParameters()">
         <label class="gf-form-label">
             {{parameter.text}} {{parameter.value}}
         </label>
