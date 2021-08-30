@@ -1,6 +1,8 @@
-Starting in Grafana 3.x the KairosDB data source is no longer included out of the box.
+# Archived - KairosDB data source plugin no longer supported
 
-But it is easy to install this plugin!
+There is no community maintainer for this plugin and Grafana Labs is not maintaining it either. If you want to take over as maintainer, then please contact us by [opening an issue on the main Grafana repositiory](https://github.com/grafana/grafana/issues/new) or via [GitHub discussions](https://github.com/grafana/grafana/discussions).
+
+Starting in Grafana 3.x the KairosDB data source is no longer included out of the box.
 
 ## Installation
 Either clone this repo into your grafana plugins directory (default /var/lib/grafana/plugins if your installing grafana with package). Then run grunt to compile typescript.
