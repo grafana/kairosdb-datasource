@@ -7,6 +7,7 @@ export declare class KairosDBQueryBuilder {
     private templatingUtils;
     private samplingParameterConverter;
     constructor(withCredentials: boolean, url: string, apiPath: string, templateSrv: any, scopedVars: any);
+    buildHealthStatusQuery(): any;
     buildMetricNameQuery(): any;
     buildMetricTagsQuery(metricName: string, filters?: {}): any;
     buildDatapointsQuery(targets: any, options: any): any;

@@ -39,6 +39,12 @@ System.register(["lodash", "../../beans/request/datapoints_query", "../../beans/
                     this.groupBysBuilder = new group_bys_builder_1.GroupBysBuilder(this.templatingUtils, samplingConverter);
                     this.samplingParameterConverter = new sampling_parameter_converter_1.SamplingParameterConverter(samplingConverter);
                 }
+                KairosDBQueryBuilder.prototype.buildHealthStatusQuery = function () {
+                    return this.buildRequest({
+                        method: "GET",
+                        url: "/health/status"
+                    });
+                };
                 KairosDBQueryBuilder.prototype.buildMetricNameQuery = function () {
                     return this.buildRequest({
                         method: "GET",
